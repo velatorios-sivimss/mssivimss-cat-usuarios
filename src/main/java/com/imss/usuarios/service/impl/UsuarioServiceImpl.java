@@ -1,10 +1,6 @@
 package com.imss.usuarios.service.impl;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-
-
 
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -17,10 +13,10 @@ import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
 import com.imss.usuarios.beans.Usuario;
+import com.imss.usuarios.beans.NivelDto;
 import com.imss.usuarios.exception.BadRequestException;
 import com.imss.usuarios.model.request.UsuarioDto;
 import com.imss.usuarios.model.request.UsuarioRequest;
-import com.imss.usuarios.model.response.UsuarioResponse;
 import com.imss.usuarios.service.UsuarioService;
 import com.imss.usuarios.util.AppConstantes;
 import com.imss.usuarios.util.ConvertirGenerico;
@@ -45,8 +41,10 @@ public class UsuarioServiceImpl implements UsuarioService {
 
 	@Override
 	public Response<?> consultarUsuarios(DatosRequest request, Authentication authentication) throws IOException {
-		Usuario usuario= new Usuario();
-		return providerRestTemplate.consumirServicio(usuario.obtenerUsuarios(request).getDatos(), urlDominioConsulta + "/generico/paginado",
+		Usuario usuario = new Usuario();
+		NivelDto nivel = new NivelDto(1,1,1);
+		
+		return providerRestTemplate.consumirServicio(usuario.obtenerUsuarios(request, nivel).getDatos(), urlDominioConsulta + "/generico/paginado",
 				authentication);
 
 
@@ -55,7 +53,9 @@ public class UsuarioServiceImpl implements UsuarioService {
 	@Override
 	public Response<?> buscarUsuario(DatosRequest request, Authentication authentication) throws IOException {
 		Usuario usuario= new Usuario();
-		return providerRestTemplate.consumirServicio(usuario.buscarUsuario(request).getDatos(), urlDominioConsulta + "/generico/paginado",
+		NivelDto nivel = new NivelDto(1,1,1);
+		
+		return providerRestTemplate.consumirServicio(usuario.buscarUsuario(request, nivel).getDatos(), urlDominioConsulta + "/generico/paginado",
 				authentication);
 	}
 
@@ -66,18 +66,6 @@ public class UsuarioServiceImpl implements UsuarioService {
 				authentication);
 	}
 
-	@Override
-	public Response<?> catalogoUsuario(DatosRequest request, Authentication authentication) throws IOException {
-		Usuario usuario= new Usuario();
-		List<UsuarioResponse> usuarioResponses;
-		Response<?> response = providerRestTemplate.consumirServicio(usuario.catalogoUsuario().getDatos(),
-				urlDominioConsulta + "/generico/consulta", authentication);
-		if (response.getCodigo() == 200) {
-			usuarioResponses = Arrays.asList(modelMapper.map(response.getDatos(), UsuarioResponse[].class));
-			response.setDatos(ConvertirGenerico.convertInstanceOfObject(usuarioResponses));
-		}
-		return response;
-	}
 
 	@Override
 	public Response<?> agregarUsuario(DatosRequest request, Authentication authentication) throws IOException {

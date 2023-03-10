@@ -15,8 +15,6 @@ public interface UsuarioService {
 
 	Response<?> detalleUsuario(DatosRequest request, Authentication authentication) throws IOException;
 
-	Response<?> catalogoUsuario(DatosRequest request, Authentication authentication) throws IOException;
-
 	Response<?> agregarUsuario(DatosRequest request, Authentication authentication) throws IOException;
 
 	Response<?> actualizarUsuario(DatosRequest request, Authentication authentication) throws IOException;

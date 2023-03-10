@@ -15,17 +15,20 @@ import lombok.Setter;
 @Getter
 @JsonIgnoreType(value = true)
 public class UsuarioRequest {
+	
 	private Integer id;
-	private String materno;
-	private String  nombre;
-	private String correo;
 	private String curp;
-	private String claveUsuario;
 	private String claveMatricula;
-	private String password;
+	private String nombre;
 	private String paterno;
+	private String materno;
+	private String fecNacimiento;
+	private String correo;
 	private Integer idOficina;
+	private Integer idDelegacion;
 	private Integer idVelatorio;
 	private Integer idRol;
-	private Integer idDelegacion;
+	private String claveUsuario;
+	private String password;
+	
 }

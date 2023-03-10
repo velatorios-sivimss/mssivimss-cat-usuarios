@@ -17,54 +17,47 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/")
+@RequestMapping("/usuarios")
 public class UsuarioController {
 
 	private UsuarioService usuarioService;
 	
-	@PostMapping("usuarios/consulta")
+	@PostMapping("/consulta")
 	public Response<?> consultaLista(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
 	
 		return usuarioService.consultarUsuarios(request,authentication);
       
 	}
 	
-	@PostMapping("usuario/buscar")
+	@PostMapping("/buscar")
 	public Response<?> buscar(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
 	
 		return usuarioService.buscarUsuario(request,authentication);
       
 	}
 	
-	@PostMapping("usuario")
-	public Response<?> catalogo(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
-	
-		return usuarioService.catalogoUsuario(request,authentication);
-      
-	}
-	
-	@PostMapping("usuario/detalle")
+	@PostMapping("/detalle")
 	public Response<?> detalle(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
 	
 		return usuarioService.detalleUsuario(request,authentication);
       
 	}
 	
-	@PostMapping("usuario/agregar")
+	@PostMapping("/agregar")
 	public Response<?> agregar(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
 	
 		return usuarioService.agregarUsuario(request,authentication);
       
 	}
 	
-	@PostMapping("usuario/actualizar")
+	@PostMapping("/actualizar")
 	public Response<?> actualizar(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
 	
 		return usuarioService.actualizarUsuario(request,authentication);
       
 	}
 	
-	@PostMapping("usuario/cambiar-estatus")
+	@PostMapping("/cambiar-estatus")
 	public Response<?> cambiarEstatus(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
 	
 		return usuarioService.cambiarEstatusUsuario(request,authentication);

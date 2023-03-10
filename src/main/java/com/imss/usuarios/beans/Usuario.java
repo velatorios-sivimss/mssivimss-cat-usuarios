@@ -22,37 +22,41 @@ import lombok.Setter;
 @Setter
 @Getter
 public class Usuario {
+	
 	private Integer id;
-	private String materno;
-	private String nombre;
-	private String correo;
 	private String curp;
-	private String claveUsuario;
 	private String claveMatricula;
-	private String password;
+    private String nombre;
 	private String paterno;
+	private String materno;
+	private String fecNacimiento;
+	private String correo;
 	private Integer idOficina;
+	private Integer idDelegacion;
 	private Integer idVelatorio;
 	private Integer idRol;
-	private Integer idDelegacion;
+	private String claveUsuario;
+	private String password;
 	private String claveAlta;
 	private String claveModifica;
 	private String claveBaja;
 
 	public Usuario(UsuarioRequest usuarioRequest) {
 		this.id = usuarioRequest.getId();
+		this.curp = usuarioRequest.getCurp();
+		this.claveMatricula = usuarioRequest.getClaveMatricula();
 		this.nombre = usuarioRequest.getNombre();
 		this.paterno = usuarioRequest.getPaterno();
 		this.materno = usuarioRequest.getMaterno();
-		this.curp = usuarioRequest.getCurp();
+		this.fecNacimiento = usuarioRequest.getFecNacimiento();
 		this.correo = usuarioRequest.getCorreo();
-		this.password = usuarioRequest.getPassword();
-		this.claveUsuario = usuarioRequest.getClaveUsuario();
-		this.claveMatricula = usuarioRequest.getClaveMatricula();
 		this.idOficina = usuarioRequest.getIdOficina();
+		this.idDelegacion = usuarioRequest.getIdDelegacion();
 		this.idVelatorio = usuarioRequest.getIdVelatorio();
 		this.idRol = usuarioRequest.getIdRol();
-		this.idDelegacion = usuarioRequest.getIdDelegacion();
+		this.claveUsuario = usuarioRequest.getClaveUsuario();
+		this.password = usuarioRequest.getPassword();
+		
 	}
 
 	public DatosRequest insertar() {
@@ -123,20 +127,36 @@ public class Usuario {
 		return request;
 	}
 
-	public DatosRequest obtenerUsuarios(DatosRequest request) {
+	public DatosRequest obtenerUsuarios(DatosRequest request, NivelDto nivel) {
 		
-		String query = "SELECT * FROM SVT_USUARIOS ORDER BY ID_USUARIO DESC";	
-		String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
+		StringBuilder query = new StringBuilder("SELECT * FROM SVT_USUARIOS ");
+		if (nivel.getNivel() > 1) {
+			query.append(" WHERE ID_DELEGACION = ").append(nivel.getDelegacion());
+			if (nivel.getNivel() == 3) {
+				query.append(" AND ID_VELATORIO = ").append(nivel.getVelatorio());
+			}
+		}
+        query.append(" ORDER BY ID_USUARIO DESC");
+        
+		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes());
 		request.getDatos().put(AppConstantes.QUERY, encoded);
 
 		return request;
 	}
 
-	public DatosRequest buscarUsuario(DatosRequest request) {
+	public DatosRequest buscarUsuario(DatosRequest request, NivelDto nivel) {
 		String palabra = request.getDatos().get("palabra").toString();
-		String query = "SELECT ID_USUARIO as id, DES_CURP as curp, CVE_MATRICULA as matricula, CONCAT(NOM_USUARIO,' ',NOM_APELLIDO_PATERNO,' ' ,NOM_APELLIDO_MATERNO) as nombre, DES_CORREOE as correo, CVE_ESTATUS as estatus \r\n"
-				+ " FROM SVT_USUARIOS WHERE NOM_USUARIO = '" + palabra + "' ORDER BY ID_USUARIO DESC";
-		String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
+		StringBuilder query = new StringBuilder("SELECT * FROM SVT_USUARIOS ");
+		query.append(" WHERE CONCAT(NOM_USUARIO,' ',NOM_APELLIDO_PATERNO,' ' ,NOM_APELLIDO_MATERNO) LIKE '%" + palabra + "%'");
+		if (nivel.getNivel() > 1) {
+			query.append(" AND ID_DELEGACION = ").append(nivel.getDelegacion());
+			if (nivel.getNivel() == 3) {
+				query.append(" AND ID_VELATORIO = ").append(nivel.getVelatorio());
+			}
+		}
+		query.append(" ORDER BY ID_USUARIO DESC");
+		
+		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes());
 		request.getDatos().remove("palabra");
 		request.getDatos().put(AppConstantes.QUERY, encoded);
 		return request;
@@ -144,21 +164,13 @@ public class Usuario {
 
 	public DatosRequest detalleUsuario(DatosRequest request) {
 		String idUsuario = request.getDatos().get("id").toString();
-		String query = "SELECT ID_USUARIO as id, DES_CURP as curp, CVE_MATRICULA as matricula, CONCAT(NOM_USUARIO,' ',NOM_APELLIDO_PATERNO,' ' ,NOM_APELLIDO_MATERNO) as nombre, DES_CORREOE as correo, CVE_ESTATUS as estatus \r\n"
-				+ " FROM SVT_USUARIOS WHERE ID_USUARIO = " + Integer.parseInt(idUsuario) + " ORDER BY ID_USUARIO DESC";
-		String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
+		StringBuilder query = new StringBuilder("SELECT * FROM SVT_USUARIOS ");
+		query.append(" WHERE ID_USUARIO = " + Integer.parseInt(idUsuario));
+		
+		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes());
 		request.getDatos().remove("id");
 		request.getDatos().put(AppConstantes.QUERY, encoded);
 		return request;
 	}
 
-	public DatosRequest catalogoUsuario() {
-		DatosRequest request = new DatosRequest();
-		Map<String, Object> parametro = new HashMap<>();
-		String query = "SELECT * FROM SVT_USUARIOS";
-		String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
-		parametro.put(AppConstantes.QUERY, encoded);
-		request.setDatos(parametro);
-		return request;
-	}
 }

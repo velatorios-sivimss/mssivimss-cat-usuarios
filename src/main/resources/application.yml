@@ -1,7 +1,7 @@
 server:
   port: 8080
   servlet:
-    contextPath: /mssivimss-cat-usuarios
+    contextPath: /ms-usr
 spring:
   mvc:
     pathmatch:

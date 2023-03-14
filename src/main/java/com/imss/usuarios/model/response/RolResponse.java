@@ -17,11 +17,12 @@ import lombok.ToString;
 @Getter
 @ToString
 @JsonIgnoreType(value = true)
-public class UsuarioResponse {
-
+public class RolResponse {
+	
 	@JsonProperty(value = "id")
-	private Integer ID_USUARIO;
+	private Integer ID_ROL;
 	
 	@JsonProperty(value = "nombre")
-	private String NOM_USUARIO;
+	private String DES_ROL;
+	
 }

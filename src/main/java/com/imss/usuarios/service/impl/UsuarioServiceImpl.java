@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
@@ -29,7 +30,6 @@ import com.imss.usuarios.util.AppConstantes;
 import com.imss.usuarios.util.ConvertirGenerico;
 import com.imss.usuarios.util.DatosRequest;
 import com.imss.usuarios.util.ProviderServiceRestTemplate;
-import com.imss.usuarios.util.QueryHelper;
 import com.imss.usuarios.util.Response;
 
 @Service
@@ -43,6 +43,9 @@ public class UsuarioServiceImpl implements UsuarioService {
 
 	@Autowired
 	private ModelMapper modelMapper;
+	
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
 	private static final Logger log = LoggerFactory.getLogger(UsuarioServiceImpl.class);
 
@@ -146,8 +149,10 @@ public class UsuarioServiceImpl implements UsuarioService {
 		Response<?> request1 = providerRestTemplate.consumirServicio(usuario.totalUsuarios(request).getDatos(), urlDominioConsulta + "/generico/consulta",
 				authentication);
 		ArrayList<LinkedHashMap> datos1 = (ArrayList) request1.getDatos();
-		usuario.setClaveUsuario(generarUsuario(primerNombre, usuarioRequest.getPaterno(), datos1.get(0).get("TOTAL").toString()));
-		usuario.setPassword(generaContrasena(primerNombre, usuarioRequest.getPaterno()));
+		usuario.setClaveUsuario(generarUsuario(primerNombre, usuarioRequest.getPaterno(), datos1.get(0).get("total").toString()));
+		
+		CharSequence contrasena = generaContrasena(primerNombre, usuarioRequest.getPaterno());
+		usuario.setPassword(passwordEncoder.encode(contrasena));
 		usuario.setIdUsuarioAlta(usuarioDto.getId());
 		
 		return providerRestTemplate.consumirServicio(usuario.insertar().getDatos(), urlDominioConsulta + "/generico/crear",

@@ -1,8 +1,12 @@
 package com.imss.usuarios.service.impl;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Random;
 
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -88,13 +92,41 @@ public class UsuarioServiceImpl implements UsuarioService {
 				authentication);
 		
 	}
+	
+	@Override
+	public Response<?> validaMatricula(DatosRequest request, Authentication authentication) throws IOException {
+		Gson gson = new Gson();
+
+		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
+		UsuarioRequest usuarioRequest = gson.fromJson(datosJson, UsuarioRequest.class);
+		Usuario usuario = new Usuario(usuarioRequest);
+		return providerRestTemplate.consumirServicio(usuario.checaMatricula(request).getDatos(), urlDominioConsulta + "/generico/consulta",
+				authentication);
+		
+	}
 
 	@Override
 	public Response<?> detalleUsuario(DatosRequest request, Authentication authentication) throws IOException {
 		Usuario usuario= new Usuario();
-		String cveUsuario = generarUsuario("Pedro Antonio","Sanchez");
-		System.out.println(cveUsuario);
 		return providerRestTemplate.consumirServicio(usuario.detalleUsuario(request).getDatos(), urlDominioConsulta + "/generico/consulta",
+				authentication);
+	}
+	
+	@Override
+	public Response<?> pruebausrpass(DatosRequest request, Authentication authentication) throws IOException {
+		Usuario usuario= new Usuario();
+		// Prueba
+		Response<?> request1 = providerRestTemplate.consumirServicio(usuario.totalUsuarios(request).getDatos(), urlDominioConsulta + "/generico/consulta",
+				authentication);
+		ArrayList<LinkedHashMap> datos1 = (ArrayList) request1.getDatos();
+		String nombre = "Pedro Antonio";
+		String paterno = "Sanchez";
+		Integer espacio = nombre.indexOf(' ');
+		String primerNombre = (espacio == -1) ? nombre : nombre.substring(0, espacio);
+		String cveUsuario = generarUsuario(primerNombre, paterno, datos1.get(0).get("total").toString());
+		String contrasena = generaContrasena(primerNombre, paterno);
+		// Fin Prueba 
+		return providerRestTemplate.consumirServicio(datos1.get(0), urlDominioConsulta + "/generico/consulta",
 				authentication);
 	}
 
@@ -107,8 +139,16 @@ public class UsuarioServiceImpl implements UsuarioService {
 		UsuarioDto usuarioDto = gson.fromJson((String) authentication.getPrincipal(), UsuarioDto.class);
 
 		UsuarioRequest usuarioRequest = gson.fromJson(datosJson, UsuarioRequest.class);
-		Usuario usuario= new Usuario(usuarioRequest);
-		usuario.setClaveAlta(usuarioDto.getCorreo());
+		Usuario usuario = new Usuario(usuarioRequest);
+		
+		Integer espacio = usuarioRequest.getNombre().indexOf(' ');
+		String primerNombre = (espacio == -1) ? usuarioRequest.getNombre() : usuarioRequest.getNombre().substring(0, espacio);
+		Response<?> request1 = providerRestTemplate.consumirServicio(usuario.totalUsuarios(request).getDatos(), urlDominioConsulta + "/generico/consulta",
+				authentication);
+		ArrayList<LinkedHashMap> datos1 = (ArrayList) request1.getDatos();
+		usuario.setClaveUsuario(generarUsuario(primerNombre, usuarioRequest.getPaterno(), datos1.get(0).get("TOTAL").toString()));
+		usuario.setPassword(generaContrasena(primerNombre, usuarioRequest.getPaterno()));
+		usuario.setIdUsuarioAlta(usuarioDto.getId());
 		
 		return providerRestTemplate.consumirServicio(usuario.insertar().getDatos(), urlDominioConsulta + "/generico/crear",
 				authentication);
@@ -126,7 +166,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 			throw new BadRequestException(HttpStatus.BAD_REQUEST, "Informacion incompleta");
 		}
 		Usuario usuario= new Usuario(usuarioRequest);
-		usuario.setClaveModifica(usuarioDto.getCorreo());
+		usuario.setIdUsuarioModifica(usuarioDto.getId());
 		
 		return providerRestTemplate.consumirServicio(usuario.actualizar().getDatos(), urlDominioConsulta + "/generico/actualizar",
 				authentication);
@@ -144,18 +184,22 @@ public class UsuarioServiceImpl implements UsuarioService {
 			throw new BadRequestException(HttpStatus.BAD_REQUEST, "Informacion incompleta");
 		}
 		Usuario usuario= new Usuario(usuarioRequest);
-		usuario.setClaveBaja(usuarioDto.getCorreo());
+		usuario.setIdUsuarioBaja(usuarioDto.getId());
 		return providerRestTemplate.consumirServicio(usuario.cambiarEstatus().getDatos(), urlDominioConsulta + "/generico/actualizar",
 				authentication);
 	}
 	
-	private String generarUsuario(String nombre, String paterno) {
-		Integer espacio = nombre.indexOf(' ');
-		String primerNombre = (espacio == -1) ? nombre : nombre.substring(0, espacio);
-		String cveUsuario = primerNombre.concat(paterno.substring(0, 1)).concat("001");
+	private String generarUsuario(String primerNombre, String paterno, String consecutivo) {
 		
-		return cveUsuario;
+		return primerNombre.concat(paterno.substring(0, 1)).concat(String.format("%03d", Integer.parseInt(consecutivo) + 1));
 	}
 
+	private String generaContrasena(String primerNombre, String paterno) {
+		char[] caracterEsp = {'#','$','^','+','=','!','*','(',')','@','%','&'};
+		String mes = String.format("%02d", Calendar.getInstance().get(Calendar.MONTH) + 1);
+
+		return primerNombre.concat(String.valueOf(caracterEsp[new Random().nextInt(11)])).concat(".").
+				concat(paterno.substring(0, 2)).concat(mes);
+	}
 	
 }

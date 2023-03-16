@@ -37,9 +37,10 @@ public class Usuario {
 	private Integer idRol;
 	private String claveUsuario;
 	private String password;
-	private String claveAlta;
-	private String claveModifica;
-	private String claveBaja;
+	private Integer idUsuarioAlta;
+	private Integer idUsuarioModifica;
+	private Integer idUsuarioBaja;
+	private Integer estatus;
 
 	public Usuario(UsuarioRequest usuarioRequest) {
 		this.id = usuarioRequest.getId();
@@ -56,6 +57,7 @@ public class Usuario {
 		this.idRol = usuarioRequest.getIdRol();
 		this.claveUsuario = usuarioRequest.getClaveUsuario();
 		this.password = usuarioRequest.getPassword();
+		this.estatus = usuarioRequest.getEstatus();
 		
 	}
 	
@@ -76,24 +78,24 @@ public class Usuario {
 		final QueryHelper q = new QueryHelper("INSERT INTO SVT_USUARIOS");
 		q.agregarParametroValues("DES_CURP", "'" + this.curp + "'");
 		q.agregarParametroValues("CVE_MATRICULA", "'" + this.claveUsuario + "'");
-		q.agregarParametroValues("CVE_USUARIO", "'" + this.claveUsuario + "'");
 		q.agregarParametroValues("NOM_USUARIO", "'" + this.nombre + "'");
 		q.agregarParametroValues("NOM_APELLIDO_PATERNO", "'" + this.paterno + "'");
 		q.agregarParametroValues("NOM_APELLIDO_MATERNO", "'" + this.materno + "'");
-		q.agregarParametroValues("FEC_NACIMIENTO", "NULL");
+		q.agregarParametroValues("FEC_NACIMIENTO", "'" + this.fecNacimiento + "'");
 		q.agregarParametroValues("DES_CORREOE", "'" + this.correo + "'");
 		q.agregarParametroValues("ID_OFICINA", "" + this.idOficina + "");
 		q.agregarParametroValues("ID_DELEGACION", "" + this.idDelegacion + "");
 		q.agregarParametroValues("ID_VELATORIO", "" + this.idVelatorio + "");
 		q.agregarParametroValues("ID_ROL", "" + this.idRol + "");
 		q.agregarParametroValues("CVE_ESTATUS", "1");
+		q.agregarParametroValues("CVE_USUARIO", "'" + this.claveUsuario + "'");
 		q.agregarParametroValues("CVE_CONTRASENIA", "'" + this.password + "'");
 		q.agregarParametroValues("FEC_ALTA", "NOW()");
-		q.agregarParametroValues("CVE_MATRICULA_ALTA", "'" + this.claveAlta + "'");
+		q.agregarParametroValues("ID_USUARIO_ALTA", "'" + this.idUsuarioAlta + "'");
 		q.agregarParametroValues("FEC_ACTUALIZACION", "NULL");
 		q.agregarParametroValues("FEC_BAJA", "NULL");
-		q.agregarParametroValues("CVE_MATRICULA_MODIFICA", "NULL");
-		q.agregarParametroValues("CVE_MATRICULA_BAJA", "NULL");
+		q.agregarParametroValues("ID_USUARIO_MODIFICA", "NULL");
+		q.agregarParametroValues("ID_USUARIO_BAJA", "NULL");
 		String query = q.obtenerQueryInsertar();
 		String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
 		parametro.put(AppConstantes.QUERY, encoded);
@@ -107,16 +109,13 @@ public class Usuario {
 		Map<String, Object> parametro = new HashMap<>();
 
 		final QueryHelper q = new QueryHelper("UPDATE SVT_USUARIOS");
-		q.agregarParametroValues("DES_CURP", "'" + this.curp + "'");
-		q.agregarParametroValues("NOM_USUARIO", "'" + this.nombre + "'");
-		q.agregarParametroValues("NOM_APELLIDO_PATERNO", "'" + this.paterno + "'");
-		q.agregarParametroValues("NOM_APELLIDO_MATERNO", "'" + this.materno + "'");
 		q.agregarParametroValues("DES_CORREOE", "'" + this.correo + "'");
 		q.agregarParametroValues("ID_OFICINA", "" + this.idOficina + "");
 		q.agregarParametroValues("ID_DELEGACION", "" + this.idDelegacion + "");
 		q.agregarParametroValues("ID_VELATORIO", "" + this.idVelatorio + "");
 		q.agregarParametroValues("ID_ROL", "" + this.idRol + "");
-		q.agregarParametroValues("CVE_MATRICULA_MODIFICA", "'" + this.claveModifica + "'");
+		q.agregarParametroValues("CVE_ESTATUS", "" + this.getEstatus() + "");
+		q.agregarParametroValues("ID_USUARIO_MODIFICA", "'" + this.idUsuarioModifica + "'");
 		q.agregarParametroValues("FEC_ACTUALIZACION", "NOW()");
 		q.addWhere("ID_USUARIO = " + this.id);
 		String query = q.obtenerQueryActualizar();
@@ -129,8 +128,8 @@ public class Usuario {
 	public DatosRequest cambiarEstatus() {
 		DatosRequest request = new DatosRequest();
 		Map<String, Object> parametro = new HashMap<>();
-		String query = "UPDATE SVT_USUARIOS SET CVE_ESTATUS=!CVE_ESTATUS , FEC_BAJA=NOW(), CVE_MATRICULA_BAJA='"
-				+ this.claveBaja + "' WHERE ID_USUARIO=" + this.id + ";";
+		String query = "UPDATE SVT_USUARIOS SET CVE_ESTATUS=!CVE_ESTATUS , FEC_BAJA=NOW(), ID_USUARIO_BAJA='"
+				+ this.idUsuarioBaja + "' WHERE ID_USUARIO = " + this.id + ";";
 		String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
 		parametro.put(AppConstantes.QUERY, encoded);
 		request.setDatos(parametro);
@@ -139,7 +138,10 @@ public class Usuario {
 
 	public DatosRequest obtenerUsuarios(DatosRequest request, BusquedaDto busqueda) {
 		
-		StringBuilder query = new StringBuilder("SELECT * FROM SVT_USUARIOS ");
+		StringBuilder query = new StringBuilder("SELECT ID_USUARIO AS id, DES_CURP AS curp, CVE_MATRICULA AS matricula, "
+				+ " NOM_USUARIO AS nombre, NOM_APELLIDO_PATERNO AS paterno, NOM_APELLIDO_MATERNO AS materno, "
+				+ " FEC_NACIMIENTO AS fecNacimiento, DES_CORREOE AS correo, ID_OFICINA AS idOficina, ID_DELEGACION AS idDelegacion, "
+				+ " ID_VELATORIO AS idVelatorio, ID_ROL AS rol, CVE_ESTATUS AS estatus, CVE_USUARIO AS usuario FROM SVT_USUARIOS ");
 		if (busqueda.getIdOficina() > 1) {
 			query.append(" WHERE ID_DELEGACION = ").append(busqueda.getIdDelegacion());
 			if (busqueda.getIdOficina() == 3) {
@@ -156,7 +158,10 @@ public class Usuario {
 
 	public DatosRequest buscarUsuario(DatosRequest request) {
 		
-		StringBuilder query = new StringBuilder("SELECT * FROM SVT_USUARIOS ");
+		StringBuilder query = new StringBuilder("SELECT ID_USUARIO AS id, DES_CURP AS curp, CVE_MATRICULA AS matricula, "
+				+ " NOM_USUARIO AS nombre, NOM_APELLIDO_PATERNO AS paterno, NOM_APELLIDO_MATERNO AS materno, "
+				+ " FEC_NACIMIENTO AS fecNacimiento, DES_CORREOE AS correo, ID_OFICINA AS idOficina, ID_DELEGACION AS idDelegacion, "
+				+ " ID_VELATORIO AS idVelatorio, ID_ROL AS rol, CVE_ESTATUS AS estatus, CVE_USUARIO AS usuario FROM SVT_USUARIOS ");
 		query.append(" WHERE 1 = 1" );
 		if (this.getIdOficina() != null) {
 			query.append(" AND ID_OFICINA = ").append(this.getIdOficina());
@@ -180,7 +185,10 @@ public class Usuario {
 
 	public DatosRequest detalleUsuario(DatosRequest request) {
 		String idUsuario = request.getDatos().get("id").toString();
-		StringBuilder query = new StringBuilder("SELECT * FROM SVT_USUARIOS ");
+		StringBuilder query = new StringBuilder("SELECT ID_USUARIO AS id, DES_CURP AS curp, CVE_MATRICULA AS matricula, "
+				+ " NOM_USUARIO AS nombre, NOM_APELLIDO_PATERNO AS paterno, NOM_APELLIDO_MATERNO AS materno, "
+				+ " FEC_NACIMIENTO AS fecNacimiento, DES_CORREOE AS correo, ID_OFICINA AS idOficina, ID_DELEGACION AS idDelegacion, "
+				+ " ID_VELATORIO AS idVelatorio, ID_ROL AS rol, CVE_ESTATUS AS estatus, CVE_USUARIO AS usuario FROM SVT_USUARIOS ");
 		query.append(" WHERE ID_USUARIO = " + Integer.parseInt(idUsuario));
 		
 		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes());
@@ -192,10 +200,26 @@ public class Usuario {
 	public DatosRequest checaCurp(DatosRequest request) {
 		String query = null;
 		if (!this.curp.matches("[A-Z]{4}\\d{6}[HM][A-Z]{2}[B-DF-HJ-NP-TV-Z]{3}[A-Z0-9][0-9]")) {
-			query = "SELECT 2 AS VALOR FROM DUAL";
+			query = "SELECT 2 AS valor FROM DUAL";
 	    } else {
-	    	query = "SELECT COUNT(*) AS VALOR FROM SVT_USUARIOS WHERE DES_CURP = '" + this.curp + "'";
+	    	query = "SELECT COUNT(*) AS valor FROM SVT_USUARIOS WHERE DES_CURP = '" + this.curp + "'";
 	    }
+		
+		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes());
+		request.getDatos().put(AppConstantes.QUERY, encoded);
+		return request;
+	}
+	
+	public DatosRequest checaMatricula(DatosRequest request) {
+		String query = "SELECT COUNT(*) AS valor FROM SVT_USUARIOS WHERE CVE_MATRICULA = " + this.claveMatricula;
+		
+		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes());
+		request.getDatos().put(AppConstantes.QUERY, encoded);
+		return request;
+	}
+	
+	public DatosRequest totalUsuarios(DatosRequest request) {
+		String query = "SELECT COUNT(*) AS total FROM SVT_USUARIOS";
 		
 		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes());
 		request.getDatos().put(AppConstantes.QUERY, encoded);

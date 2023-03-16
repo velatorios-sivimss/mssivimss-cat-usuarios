@@ -49,11 +49,25 @@ public class UsuarioController {
 		return usuarioService.validaCurp(request,authentication);
       
 	}
+
+	@PostMapping("/valida-matricula")
+	public Response<?> validaMatricula(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
+	
+		return usuarioService.validaMatricula(request,authentication);
+      
+	}
 	
 	@PostMapping("/detalle")
 	public Response<?> detalle(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
 	
 		return usuarioService.detalleUsuario(request,authentication);
+      
+	}
+	
+	@PostMapping("/prbusrpass")
+	public Response<?> pruebausrpass(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
+	
+		return usuarioService.pruebausrpass(request,authentication);
       
 	}
 	
@@ -77,4 +91,5 @@ public class UsuarioController {
 		return usuarioService.cambiarEstatusUsuario(request,authentication);
       
 	}
+	
 }

@@ -30,5 +30,6 @@ public class UsuarioRequest {
 	private Integer idRol;
 	private String claveUsuario;
 	private String password;
+	private Integer estatus;
 	
 }

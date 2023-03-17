@@ -97,6 +97,21 @@ public class UsuarioServiceImpl implements UsuarioService {
 	}
 	
 	@Override
+	public Response<?> consistCurp(DatosRequest request, Authentication authentication) throws IOException {
+		Gson gson = new Gson();
+
+		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
+		UsuarioRequest usuarioRequest = gson.fromJson(datosJson, UsuarioRequest.class);
+		Usuario usuario = new Usuario(usuarioRequest);
+		usuario.setNombre(usuarioRequest.getNombre().toUpperCase());
+		usuario.setPaterno(usuarioRequest.getPaterno().toUpperCase());
+		usuario.setMaterno(usuarioRequest.getMaterno().toUpperCase());
+		return providerRestTemplate.consumirServicio(usuario.consistenciaCurp(request).getDatos(), urlDominioConsulta + "/generico/consulta",
+				authentication);
+		
+	}
+	
+	@Override
 	public Response<?> validaMatricula(DatosRequest request, Authentication authentication) throws IOException {
 		Gson gson = new Gson();
 

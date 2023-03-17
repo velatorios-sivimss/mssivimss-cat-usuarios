@@ -49,6 +49,13 @@ public class UsuarioController {
 		return usuarioService.validaCurp(request,authentication);
       
 	}
+	
+	@PostMapping("/consist-curp")
+	public Response<?> consistCurp(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
+	
+		return usuarioService.consistCurp(request,authentication);
+      
+	}
 
 	@PostMapping("/valida-matricula")
 	public Response<?> validaMatricula(@RequestBody DatosRequest request,Authentication authentication) throws IOException {

@@ -205,7 +205,7 @@ public class Usuario {
 	    	query = "SELECT COUNT(*) AS valor FROM SVT_USUARIOS WHERE DES_CURP = '" + this.curp + "'";
 	    }
 		
-		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes());
+		String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
 		request.getDatos().put(AppConstantes.QUERY, encoded);
 		return request;
 	}
@@ -222,6 +222,35 @@ public class Usuario {
 		String query = "SELECT COUNT(*) AS total FROM SVT_USUARIOS";
 		
 		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes());
+		request.getDatos().put(AppConstantes.QUERY, encoded);
+		return request;
+	}
+	
+	public DatosRequest consistenciaCurp(DatosRequest request) {
+		String query;
+		Boolean valido = true;
+	    this.nombre = this.nombre.replace("JOSE ", "");
+	    this.nombre = this.nombre.replace("MARIA ", "");
+	    System.out.println(this.curp.substring(15, 16));
+
+		if (!this.paterno.substring(0, 2).equals(this.curp.substring(0, 2))) {
+			valido = false;
+		} else if (this.materno.charAt(0) != this.curp.charAt(2)) {
+			valido = false;
+		} else if (this.nombre.charAt(0) != this.curp.charAt(3)) {
+			valido = false;
+		} else if (!this.fecNacimiento.substring(2, 8).equals(this.curp.substring(4, 10))) {
+			valido = false;
+		} else if (!paterno.contains(this.curp.substring(13, 14))) {
+			valido = false;
+		} else if (!materno.contains(this.curp.substring(14, 15))) {
+			valido = false;
+		} else if (!nombre.contains(this.curp.substring(15, 16))) {
+			valido = false;
+		}
+		
+	    query = valido ? "SELECT true AS valor FROM DUAL" : "SELECT false AS valor FROM DUAL";
+		String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
 		request.getDatos().put(AppConstantes.QUERY, encoded);
 		return request;
 	}

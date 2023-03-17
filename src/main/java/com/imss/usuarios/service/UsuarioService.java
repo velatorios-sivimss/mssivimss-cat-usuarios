@@ -21,6 +21,8 @@ public interface UsuarioService {
 	
 	Response<?> validaCurp(DatosRequest request, Authentication authentication) throws IOException;
 	
+	Response<?> consistCurp(DatosRequest request, Authentication authentication) throws IOException;
+	
 	Response<?> validaMatricula(DatosRequest request, Authentication authentication) throws IOException;
 
 	Response<?> agregarUsuario(DatosRequest request, Authentication authentication) throws IOException;

@@ -77,7 +77,7 @@ public class Usuario {
 
 		final QueryHelper q = new QueryHelper("INSERT INTO SVT_USUARIOS");
 		q.agregarParametroValues("DES_CURP", "'" + this.curp + "'");
-		q.agregarParametroValues("CVE_MATRICULA", "'" + this.claveUsuario + "'");
+		q.agregarParametroValues("CVE_MATRICULA", "'" + this.claveMatricula + "'");
 		q.agregarParametroValues("NOM_USUARIO", "'" + this.nombre + "'");
 		q.agregarParametroValues("NOM_APELLIDO_PATERNO", "'" + this.paterno + "'");
 		q.agregarParametroValues("NOM_APELLIDO_MATERNO", "'" + this.materno + "'");
@@ -141,7 +141,7 @@ public class Usuario {
 		StringBuilder query = new StringBuilder("SELECT ID_USUARIO AS id, DES_CURP AS curp, CVE_MATRICULA AS matricula, "
 				+ " NOM_USUARIO AS nombre, NOM_APELLIDO_PATERNO AS paterno, NOM_APELLIDO_MATERNO AS materno, "
 				+ " FEC_NACIMIENTO AS fecNacimiento, DES_CORREOE AS correo, ID_OFICINA AS idOficina, ID_DELEGACION AS idDelegacion, "
-				+ " ID_VELATORIO AS idVelatorio, ID_ROL AS rol, CVE_ESTATUS AS estatus, CVE_USUARIO AS usuario FROM SVT_USUARIOS ");
+				+ " ID_VELATORIO AS idVelatorio, ID_ROL AS idRol, CVE_ESTATUS AS estatus, CVE_USUARIO AS usuario FROM SVT_USUARIOS ");
 		if (busqueda.getIdOficina() > 1) {
 			query.append(" WHERE ID_DELEGACION = ").append(busqueda.getIdDelegacion());
 			if (busqueda.getIdOficina() == 3) {
@@ -161,7 +161,7 @@ public class Usuario {
 		StringBuilder query = new StringBuilder("SELECT ID_USUARIO AS id, DES_CURP AS curp, CVE_MATRICULA AS matricula, "
 				+ " NOM_USUARIO AS nombre, NOM_APELLIDO_PATERNO AS paterno, NOM_APELLIDO_MATERNO AS materno, "
 				+ " FEC_NACIMIENTO AS fecNacimiento, DES_CORREOE AS correo, ID_OFICINA AS idOficina, ID_DELEGACION AS idDelegacion, "
-				+ " ID_VELATORIO AS idVelatorio, ID_ROL AS rol, CVE_ESTATUS AS estatus, CVE_USUARIO AS usuario FROM SVT_USUARIOS ");
+				+ " ID_VELATORIO AS idVelatorio, ID_ROL AS idRol, CVE_ESTATUS AS estatus, CVE_USUARIO AS usuario FROM SVT_USUARIOS ");
 		query.append(" WHERE 1 = 1" );
 		if (this.getIdOficina() != null) {
 			query.append(" AND ID_OFICINA = ").append(this.getIdOficina());
@@ -188,7 +188,7 @@ public class Usuario {
 		StringBuilder query = new StringBuilder("SELECT ID_USUARIO AS id, DES_CURP AS curp, CVE_MATRICULA AS matricula, "
 				+ " NOM_USUARIO AS nombre, NOM_APELLIDO_PATERNO AS paterno, NOM_APELLIDO_MATERNO AS materno, "
 				+ " FEC_NACIMIENTO AS fecNacimiento, DES_CORREOE AS correo, ID_OFICINA AS idOficina, ID_DELEGACION AS idDelegacion, "
-				+ " ID_VELATORIO AS idVelatorio, ID_ROL AS rol, CVE_ESTATUS AS estatus, CVE_USUARIO AS usuario FROM SVT_USUARIOS ");
+				+ " ID_VELATORIO AS idVelatorio, ID_ROL AS idRol, CVE_ESTATUS AS estatus, CVE_USUARIO AS usuario FROM SVT_USUARIOS ");
 		query.append(" WHERE ID_USUARIO = " + Integer.parseInt(idUsuario));
 		
 		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes());

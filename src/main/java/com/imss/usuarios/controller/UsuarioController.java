@@ -99,4 +99,18 @@ public class UsuarioController {
       
 	}
 	
+	@PostMapping("/consulta-siap")
+	public Response<?> consultaSiap(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
+		
+		return usuarioService.consultaSiap(request,authentication);
+      
+	}
+	
+	@PostMapping("/consulta-renapo")
+	public Response<?> consultaRenapo(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
+		
+		return usuarioService.consultaRenapo(request,authentication);
+      
+	}
+	
 }

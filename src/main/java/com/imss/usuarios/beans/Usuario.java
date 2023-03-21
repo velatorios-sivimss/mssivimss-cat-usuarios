@@ -130,6 +130,7 @@ public class Usuario {
 		Map<String, Object> parametro = new HashMap<>();
 		String query = "UPDATE SVT_USUARIOS SET CVE_ESTATUS=!CVE_ESTATUS , FEC_BAJA=NOW(), ID_USUARIO_BAJA='"
 				+ this.idUsuarioBaja + "' WHERE ID_USUARIO = " + this.id + ";";
+		
 		String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
 		parametro.put(AppConstantes.QUERY, encoded);
 		request.setDatos(parametro);
@@ -231,7 +232,6 @@ public class Usuario {
 		Boolean valido = true;
 	    this.nombre = this.nombre.replace("JOSE ", "");
 	    this.nombre = this.nombre.replace("MARIA ", "");
-	    System.out.println(this.curp.substring(15, 16));
 
 		if (!this.paterno.substring(0, 2).equals(this.curp.substring(0, 2))) {
 			valido = false;
@@ -255,4 +255,20 @@ public class Usuario {
 		return request;
 	}
 
+	public DatosRequest consultaSiap(DatosRequest request) {
+		String query = "SELECT CVE_ESTATUS AS valor FROM SVC_PARAMETRO_SISTEMA WHERE DES_PARAMETRO = 'Validacion SIAP'";
+		
+		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes());
+		request.getDatos().put(AppConstantes.QUERY, encoded);
+		return request;
+	}
+	
+	public DatosRequest consultaRenapo(DatosRequest request) {
+		String query = "SELECT CVE_ESTATUS AS valor FROM SVC_PARAMETRO_SISTEMA WHERE DES_PARAMETRO = 'Validacion RENAPO'";
+		
+		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes());
+		request.getDatos().put(AppConstantes.QUERY, encoded);
+		return request;
+	}
+	
 }

@@ -221,5 +221,27 @@ public class UsuarioServiceImpl implements UsuarioService {
 		return primerNombre.concat(String.valueOf(caracterEsp[new Random().nextInt(11)])).concat(".").
 				concat(paterno.substring(0, 2)).concat(mes);
 	}
+
+	@Override
+	public Response<?> consultaSiap(DatosRequest request, Authentication authentication) throws IOException {
+		Gson gson = new Gson();
+
+		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
+		UsuarioRequest usuarioRequest = gson.fromJson(datosJson, UsuarioRequest.class);
+		Usuario usuario = new Usuario(usuarioRequest);
+		return providerRestTemplate.consumirServicio(usuario.consultaSiap(request).getDatos(), urlDominioConsulta + "/generico/consulta",
+				authentication);
+	}
+
+	@Override
+	public Response<?> consultaRenapo(DatosRequest request, Authentication authentication) throws IOException {
+		Gson gson = new Gson();
+
+		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
+		UsuarioRequest usuarioRequest = gson.fromJson(datosJson, UsuarioRequest.class);
+		Usuario usuario = new Usuario(usuarioRequest);
+		return providerRestTemplate.consumirServicio(usuario.consultaRenapo(request).getDatos(), urlDominioConsulta + "/generico/consulta",
+				authentication);
+	}
 	
 }

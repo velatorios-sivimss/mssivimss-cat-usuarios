@@ -30,4 +30,9 @@ public interface UsuarioService {
 	Response<?> actualizarUsuario(DatosRequest request, Authentication authentication) throws IOException;
 
 	Response<?> cambiarEstatusUsuario(DatosRequest request, Authentication authentication) throws IOException;
+	
+	Response<?> consultaSiap(DatosRequest request, Authentication authentication) throws IOException;
+	
+	Response<?> consultaRenapo(DatosRequest request, Authentication authentication) throws IOException;
+	
 }

@@ -225,23 +225,42 @@ public class UsuarioServiceImpl implements UsuarioService {
 	@Override
 	public Response<?> consultaSiap(DatosRequest request, Authentication authentication) throws IOException {
 		Gson gson = new Gson();
+		Response<?> response;
 
 		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
 		UsuarioRequest usuarioRequest = gson.fromJson(datosJson, UsuarioRequest.class);
 		Usuario usuario = new Usuario(usuarioRequest);
-		return providerRestTemplate.consumirServicio(usuario.consultaSiap(request).getDatos(), urlDominioConsulta + "/generico/consulta",
+		response =  providerRestTemplate.consumirServicio(usuario.consultaParamSiap(request).getDatos(), urlDominioConsulta + "/generico/consulta",
 				authentication);
+		ArrayList<LinkedHashMap> datosResp = (ArrayList<LinkedHashMap>) response.getDatos();
+		if (datosResp.get(0).get("valor").toString().equals("0")) {
+			System.out.println("No buscar en SIAP");
+		} else {
+			System.out.println("Buscar en SIAP");
+		}
+			
+		
+		return response;
 	}
 
 	@Override
 	public Response<?> consultaRenapo(DatosRequest request, Authentication authentication) throws IOException {
 		Gson gson = new Gson();
+		Response<?> response;
 
 		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
 		UsuarioRequest usuarioRequest = gson.fromJson(datosJson, UsuarioRequest.class);
 		Usuario usuario = new Usuario(usuarioRequest);
-		return providerRestTemplate.consumirServicio(usuario.consultaRenapo(request).getDatos(), urlDominioConsulta + "/generico/consulta",
+		response = providerRestTemplate.consumirServicio(usuario.consultaParamRenapo(request).getDatos(), urlDominioConsulta + "/generico/consulta",
 				authentication);
+		ArrayList<LinkedHashMap> datosResp = (ArrayList<LinkedHashMap>) response.getDatos();
+		if (datosResp.get(0).get("valor").toString().equals("0")) {
+			System.out.println("No buscar en RENAPO");
+		} else {
+			System.out.println("Buscar en RENAPO");
+		}
+		
+		return response;
 	}
 	
 }

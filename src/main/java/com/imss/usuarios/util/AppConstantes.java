@@ -17,6 +17,7 @@ public class AppConstantes {
 	
 	public static final String DATOS= "datos";
 	public static final String QUERY= "query";
+	public static final String VALOR= "valor";
 	public static final String STATUSEXCEPTION = "status";
 	public static final String EXPIREDJWTEXCEPTION = "expired";
 	public static final String MALFORMEDJWTEXCEPTION = "malformed";

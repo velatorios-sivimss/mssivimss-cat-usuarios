@@ -255,21 +255,21 @@ public class Usuario {
 		return request;
 	}
 
-	public DatosRequest consultaSiap(DatosRequest request) {
-		String query = "SELECT IF(CVE_ESTATUS,0,1) AS valor FROM SVC_PARAMETRO_SISTEMA WHERE DES_PARAMETRO = 'Validacion SIAP'";
+	public DatosRequest consultaParamSiap(DatosRequest request) {
+		String query = "SELECT IF(CVE_ESTATUS,1,0) AS valor FROM SVC_PARAMETRO_SISTEMA WHERE DES_PARAMETRO = 'Validacion SIAP'";
 		
 		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes());
 		request.getDatos().put(AppConstantes.QUERY, encoded);
-		// Si valor = 0 validar en SIAP
+		
 		return request;
 	}
 	
-	public DatosRequest consultaRenapo(DatosRequest request) {
-		String query = "SELECT IF(CVE_ESTATUS,0,1) AS valor FROM SVC_PARAMETRO_SISTEMA WHERE DES_PARAMETRO = 'Validacion RENAPO'";
+	public DatosRequest consultaParamRenapo(DatosRequest request) {
+		String query = "SELECT IF(CVE_ESTATUS,1,0) AS valor FROM SVC_PARAMETRO_SISTEMA WHERE DES_PARAMETRO = 'Validacion RENAPO'";
 		
 		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes());
 		request.getDatos().put(AppConstantes.QUERY, encoded);
-		// Si valor = 0 validar en Renapo
+
 		return request;
 	}
 	

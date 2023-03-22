@@ -96,6 +96,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public Response<?> consistCurp(DatosRequest request, Authentication authentication) throws IOException {
 		Gson gson = new Gson();
@@ -106,8 +107,8 @@ public class UsuarioServiceImpl implements UsuarioService {
 		usuario.setNombre(usuarioRequest.getNombre().toUpperCase());
 		usuario.setPaterno(usuarioRequest.getPaterno().toUpperCase());
 		usuario.setMaterno(usuarioRequest.getMaterno().toUpperCase());
-		return providerRestTemplate.consumirServicio(usuario.consistenciaCurp(request).getDatos(), urlDominioConsulta + "/generico/consulta",
-				authentication);
+		
+		return new Response<Object>(false, HttpStatus.OK.value(), "Exito" , ConvertirGenerico.convertInstanceOfObject(usuario.consistenciaCurp(request)) );
 		
 	}
 	

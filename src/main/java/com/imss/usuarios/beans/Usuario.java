@@ -227,7 +227,7 @@ public class Usuario {
 		return request;
 	}
 	
-	public DatosRequest consistenciaCurp(DatosRequest request) {
+	public Boolean consistenciaCurp(DatosRequest request) {
 		String query;
 		Boolean valido = true;
 	    this.nombre = this.nombre.replace("JOSE ", "");
@@ -249,10 +249,9 @@ public class Usuario {
 			valido = false;
 		}
 		
-	    query = valido ? "SELECT true AS valor FROM DUAL" : "SELECT false AS valor FROM DUAL";
-		String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
-		request.getDatos().put(AppConstantes.QUERY, encoded);
-		return request;
+	    
+		
+		return valido;
 	}
 
 	public DatosRequest consultaParamSiap(DatosRequest request) {

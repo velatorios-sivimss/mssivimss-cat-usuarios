@@ -61,6 +61,13 @@ public class Usuario {
 		
 	}
 	
+	public static final String DES_CORREOE = "DES_CORREOE";
+	public static final String ID_OFICINA = "ID_OFICINA";
+	public static final String ID_DELEGACION = "ID_DELEGACION";
+	public static final String ID_VELATORIO = "ID_VELATORIO";
+	public static final String ID_ROL = "ID_ROL";
+	public static final String CVE_ESTATUS = "CVE_ESTATUS";
+	
 	public DatosRequest catalogoRoles() {
 		DatosRequest request = new DatosRequest();
 		Map<String, Object> parametro = new HashMap<>();
@@ -82,15 +89,15 @@ public class Usuario {
 		q.agregarParametroValues("NOM_APELLIDO_PATERNO", "'" + this.paterno + "'");
 		q.agregarParametroValues("NOM_APELLIDO_MATERNO", "'" + this.materno + "'");
 		q.agregarParametroValues("FEC_NACIMIENTO", "'" + this.fecNacimiento + "'");
-		q.agregarParametroValues("DES_CORREOE", "'" + this.correo + "'");
-		q.agregarParametroValues("ID_OFICINA", "" + this.idOficina + "");
-		q.agregarParametroValues("ID_DELEGACION", "" + this.idDelegacion + "");
-		q.agregarParametroValues("ID_VELATORIO", "" + this.idVelatorio + "");
-		q.agregarParametroValues("ID_ROL", "" + this.idRol + "");
-		q.agregarParametroValues("CVE_ESTATUS", "1");
+		q.agregarParametroValues(DES_CORREOE, "'" + this.correo + "'");
+		q.agregarParametroValues(ID_OFICINA, "" + this.idOficina + "");
+		q.agregarParametroValues(ID_DELEGACION, "" + this.idDelegacion + "");
+		q.agregarParametroValues(ID_VELATORIO, "" + this.idVelatorio + "");
+		q.agregarParametroValues(ID_ROL, "" + this.idRol + "");
+		q.agregarParametroValues(CVE_ESTATUS, "1");
 		q.agregarParametroValues("CVE_USUARIO", "'" + this.claveUsuario + "'");
 		q.agregarParametroValues("CVE_CONTRASENIA", "'" + this.password + "'");
-		q.agregarParametroValues("FEC_ALTA", "NOW()");
+		q.agregarParametroValues("FEC_ALTA", "CURRENT_TIMESTAMP()");
 		q.agregarParametroValues("ID_USUARIO_ALTA", "'" + this.idUsuarioAlta + "'");
 		q.agregarParametroValues("FEC_ACTUALIZACION", "NULL");
 		q.agregarParametroValues("FEC_BAJA", "NULL");
@@ -109,14 +116,14 @@ public class Usuario {
 		Map<String, Object> parametro = new HashMap<>();
 
 		final QueryHelper q = new QueryHelper("UPDATE SVT_USUARIOS");
-		q.agregarParametroValues("DES_CORREOE", "'" + this.correo + "'");
-		q.agregarParametroValues("ID_OFICINA", "" + this.idOficina + "");
-		q.agregarParametroValues("ID_DELEGACION", "" + this.idDelegacion + "");
-		q.agregarParametroValues("ID_VELATORIO", "" + this.idVelatorio + "");
-		q.agregarParametroValues("ID_ROL", "" + this.idRol + "");
-		q.agregarParametroValues("CVE_ESTATUS", "" + this.getEstatus() + "");
+		q.agregarParametroValues(DES_CORREOE, "'" + this.correo + "'");
+		q.agregarParametroValues(ID_OFICINA, "" + this.idOficina + "");
+		q.agregarParametroValues(ID_DELEGACION, "" + this.idDelegacion + "");
+		q.agregarParametroValues(ID_VELATORIO, "" + this.idVelatorio + "");
+		q.agregarParametroValues(ID_ROL, "" + this.idRol + "");
+		q.agregarParametroValues(CVE_ESTATUS, "" + this.getEstatus() + "");
 		q.agregarParametroValues("ID_USUARIO_MODIFICA", "'" + this.idUsuarioModifica + "'");
-		q.agregarParametroValues("FEC_ACTUALIZACION", "NOW()");
+		q.agregarParametroValues("FEC_ACTUALIZACION", "CURRENT_TIMESTAMP()");
 		q.addWhere("ID_USUARIO = " + this.id);
 		String query = q.obtenerQueryActualizar();
 		String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
@@ -128,7 +135,7 @@ public class Usuario {
 	public DatosRequest cambiarEstatus() {
 		DatosRequest request = new DatosRequest();
 		Map<String, Object> parametro = new HashMap<>();
-		String query = "UPDATE SVT_USUARIOS SET CVE_ESTATUS=!CVE_ESTATUS , FEC_BAJA=NOW(), ID_USUARIO_BAJA='"
+		String query = "UPDATE SVT_USUARIOS SET CVE_ESTATUS=!CVE_ESTATUS , FEC_BAJA=CURRENT_TIMESTAMP(), ID_USUARIO_BAJA='"
 				+ this.idUsuarioBaja + "' WHERE ID_USUARIO = " + this.id + ";";
 		
 		String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
@@ -186,10 +193,14 @@ public class Usuario {
 
 	public DatosRequest detalleUsuario(DatosRequest request) {
 		String idUsuario = request.getDatos().get("id").toString();
-		StringBuilder query = new StringBuilder("SELECT ID_USUARIO AS id, DES_CURP AS curp, CVE_MATRICULA AS matricula, "
-				+ " NOM_USUARIO AS nombre, NOM_APELLIDO_PATERNO AS paterno, NOM_APELLIDO_MATERNO AS materno, "
-				+ " FEC_NACIMIENTO AS fecNacimiento, DES_CORREOE AS correo, ID_OFICINA AS idOficina, ID_DELEGACION AS idDelegacion, "
-				+ " ID_VELATORIO AS idVelatorio, ID_ROL AS idRol, CVE_ESTATUS AS estatus, CVE_USUARIO AS usuario FROM SVT_USUARIOS ");
+		StringBuilder query = new StringBuilder("SELECT u.ID_USUARIO AS id, u.DES_CURP AS curp, u.CVE_MATRICULA AS matricula, "
+				+ " u.NOM_USUARIO AS nombre, u.NOM_APELLIDO_PATERNO AS paterno, u.NOM_APELLIDO_MATERNO AS materno, "
+				+ " u.FEC_NACIMIENTO AS fecNacimiento, u.DES_CORREOE AS correo, DES_NIVELOFICINA AS oficina, DES_DELEGACION AS delegacion, "
+				+ " NOM_VELATORIO AS velatorio, r.DES_ROL AS rol, u.CVE_ESTATUS AS estatus, u.CVE_USUARIO AS usuario FROM SVT_USUARIOS u ");
+		query.append(" LEFT JOIN svc_rol r USING (ID_ROL) ");
+		query.append(" LEFT JOIN svc_nivel_oficina USING (ID_OFICINA) ");
+		query.append(" LEFT JOIN svc_delegacion d USING (ID_DELEGACION) ");
+		query.append(" LEFT JOIN svc_velatorio v USING (ID_VELATORIO)");
 		query.append(" WHERE ID_USUARIO = " + Integer.parseInt(idUsuario));
 		
 		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes());
@@ -228,7 +239,6 @@ public class Usuario {
 	}
 	
 	public Boolean consistenciaCurp(DatosRequest request) {
-		String query;
 		Boolean valido = true;
 	    this.nombre = this.nombre.replace("JOSE ", "");
 	    this.nombre = this.nombre.replace("MARIA ", "");
@@ -248,8 +258,6 @@ public class Usuario {
 		} else if (!nombre.contains(this.curp.substring(15, 16))) {
 			valido = false;
 		}
-		
-	    
 		
 		return valido;
 	}

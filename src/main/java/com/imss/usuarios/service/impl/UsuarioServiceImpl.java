@@ -255,7 +255,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		response = providerRestTemplate.consumirServicio(usuario.consultaParamRenapo(request).getDatos(), urlDominioConsulta + "/generico/consulta",
 				authentication);
 		ArrayList<LinkedHashMap> datosResp = (ArrayList<LinkedHashMap>) response.getDatos();
-		if (datosResp.get(0).get("valor").toString().equals("0")) {
+		if (datosResp.get(0).get(AppConstantes.VALOR).toString().equals("0")) {
 			System.out.println("No buscar en RENAPO");
 		} else {
 			System.out.println("Buscar en RENAPO");

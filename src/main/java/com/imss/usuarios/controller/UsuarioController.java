@@ -2,7 +2,6 @@ package com.imss.usuarios.controller;
 
 import java.io.IOException;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,57 +16,100 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/")
+@RequestMapping("/usuarios")
 public class UsuarioController {
 
 	private UsuarioService usuarioService;
 	
-	@PostMapping("usuarios/consulta")
+	@PostMapping("/consulta")
 	public Response<?> consultaLista(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
 	
 		return usuarioService.consultarUsuarios(request,authentication);
       
 	}
 	
-	@PostMapping("usuario/buscar")
+	@PostMapping("/roles")
+	public Response<?> catalogoRoles(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
+	
+		return usuarioService.catalogoRoles(request,authentication);
+      
+	}
+	
+	@PostMapping("/buscar")
 	public Response<?> buscar(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
 	
 		return usuarioService.buscarUsuario(request,authentication);
       
 	}
 	
-	@PostMapping("usuario")
-	public Response<?> catalogo(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
+	@PostMapping("/valida-curp")
+	public Response<?> validaCurp(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
 	
-		return usuarioService.catalogoUsuario(request,authentication);
+		return usuarioService.validaCurp(request,authentication);
       
 	}
 	
-	@PostMapping("usuario/detalle")
+	@PostMapping("/consist-curp")
+	public Response<?> consistCurp(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
+	
+		return usuarioService.consistCurp(request,authentication);
+      
+	}
+
+	@PostMapping("/valida-matricula")
+	public Response<?> validaMatricula(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
+	
+		return usuarioService.validaMatricula(request,authentication);
+      
+	}
+	
+	@PostMapping("/detalle")
 	public Response<?> detalle(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
 	
 		return usuarioService.detalleUsuario(request,authentication);
       
 	}
 	
-	@PostMapping("usuario/agregar")
+	@PostMapping("/prbusrpass")
+	public Response<?> pruebausrpass(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
+	
+		return usuarioService.pruebausrpass(request,authentication);
+      
+	}
+	
+	@PostMapping("/agregar")
 	public Response<?> agregar(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
 	
 		return usuarioService.agregarUsuario(request,authentication);
       
 	}
 	
-	@PostMapping("usuario/actualizar")
+	@PostMapping("/actualizar")
 	public Response<?> actualizar(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
 	
 		return usuarioService.actualizarUsuario(request,authentication);
       
 	}
 	
-	@PostMapping("usuario/cambiar-estatus")
+	@PostMapping("/cambiar-estatus")
 	public Response<?> cambiarEstatus(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
 	
 		return usuarioService.cambiarEstatusUsuario(request,authentication);
       
 	}
+	
+	@PostMapping("/consulta-siap")
+	public Response<?> consultaSiap(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
+		
+		return usuarioService.consultaSiap(request,authentication);
+      
+	}
+	
+	@PostMapping("/consulta-renapo")
+	public Response<?> consultaRenapo(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
+		
+		return usuarioService.consultaRenapo(request,authentication);
+      
+	}
+	
 }

@@ -13,13 +13,26 @@ public interface UsuarioService {
 
 	Response<?> buscarUsuario(DatosRequest request, Authentication authentication) throws IOException;
 
+	Response<?> catalogoRoles(DatosRequest request, Authentication authentication) throws IOException;
+	
 	Response<?> detalleUsuario(DatosRequest request, Authentication authentication) throws IOException;
-
-	Response<?> catalogoUsuario(DatosRequest request, Authentication authentication) throws IOException;
+	
+	Response<?> pruebausrpass(DatosRequest request, Authentication authentication) throws IOException;
+	
+	Response<?> validaCurp(DatosRequest request, Authentication authentication) throws IOException;
+	
+	Response<?> consistCurp(DatosRequest request, Authentication authentication) throws IOException;
+	
+	Response<?> validaMatricula(DatosRequest request, Authentication authentication) throws IOException;
 
 	Response<?> agregarUsuario(DatosRequest request, Authentication authentication) throws IOException;
 
 	Response<?> actualizarUsuario(DatosRequest request, Authentication authentication) throws IOException;
 
 	Response<?> cambiarEstatusUsuario(DatosRequest request, Authentication authentication) throws IOException;
+	
+	Response<?> consultaSiap(DatosRequest request, Authentication authentication) throws IOException;
+	
+	Response<?> consultaRenapo(DatosRequest request, Authentication authentication) throws IOException;
+	
 }

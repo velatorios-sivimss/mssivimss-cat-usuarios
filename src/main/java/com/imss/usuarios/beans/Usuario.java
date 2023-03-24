@@ -198,10 +198,10 @@ public class Usuario {
 				+ " u.FEC_NACIMIENTO AS fecNacimiento, u.DES_CORREOE AS correo, DES_NIVELOFICINA AS oficina, DES_DELEGACION AS delegacion, "
 				+ " NOM_VELATORIO AS velatorio, r.DES_ROL AS rol, u.CVE_ESTATUS AS estatus, u.CVE_USUARIO AS usuario FROM SVT_USUARIOS u ");
 		query.append(" LEFT JOIN svc_rol r USING (ID_ROL) ");
-		query.append(" LEFT JOIN svc_nivel_oficina USING (ID_OFICINA) ");
-		query.append(" LEFT JOIN svc_delegacion d USING (ID_DELEGACION) ");
-		query.append(" LEFT JOIN svc_velatorio v USING (ID_VELATORIO)");
-		query.append(" WHERE ID_USUARIO = " + Integer.parseInt(idUsuario));
+		query.append(" LEFT JOIN svc_nivel_oficina o ON o.ID_OFICINA = u.ID_OFICINA ");
+		query.append(" LEFT JOIN svc_delegacion d ON d.ID_DELEGACION = u.ID_DELEGACION ");
+		query.append(" LEFT JOIN svc_velatorio v ON v.ID_VELATORIO = u.ID_VELATORIO " );
+		query.append(" WHERE u.ID_USUARIO = " + Integer.parseInt(idUsuario));
 		
 		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes());
 		request.getDatos().remove("id");

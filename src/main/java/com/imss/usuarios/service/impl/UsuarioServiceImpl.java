@@ -35,9 +35,18 @@ import com.imss.usuarios.util.Response;
 @Service
 public class UsuarioServiceImpl implements UsuarioService {
 
-	@Value("${endpoints.dominio-consulta}")
-	private String urlDominioConsulta;
-
+	@Value("${endpoints.generico-paginado}")
+	private String urlGenericoPaginado;
+	
+	@Value("${endpoints.generico-consulta}")
+	private String urlGenericoConsulta;
+	
+	@Value("${endpoints.generico-crear}")
+	private String urlGenericoCrear;
+	
+	@Value("${endpoints.generico-actualizar}")
+	private String urlGenericoActualizar;
+	
 	@Autowired
 	private ProviderServiceRestTemplate providerRestTemplate;
 
@@ -54,7 +63,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		Usuario usuario = new Usuario();
 		BusquedaDto busqueda = new BusquedaDto(1,1,1,1);
 		
-		return providerRestTemplate.consumirServicio(usuario.obtenerUsuarios(request, busqueda).getDatos(), urlDominioConsulta + "/generico/paginado",
+		return providerRestTemplate.consumirServicio(usuario.obtenerUsuarios(request, busqueda).getDatos(), urlGenericoPaginado,
 				authentication);
 		
 	}
@@ -63,8 +72,8 @@ public class UsuarioServiceImpl implements UsuarioService {
 	public Response<?> catalogoRoles(DatosRequest request, Authentication authentication) throws IOException {
 		Usuario usuario= new Usuario();
 		List<RolResponse> rolResponses;
-		Response<?> response = providerRestTemplate.consumirServicio(usuario.catalogoRoles().getDatos(),
-				urlDominioConsulta + "/generico/consulta", authentication);
+		Response<?> response = providerRestTemplate.consumirServicio(usuario.catalogoRoles().getDatos(), urlGenericoConsulta, 
+				authentication);
 		if (response.getCodigo() == 200) {
 			rolResponses = Arrays.asList(modelMapper.map(response.getDatos(), RolResponse[].class));
 			response.setDatos(ConvertirGenerico.convertInstanceOfObject(rolResponses));
@@ -80,7 +89,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		UsuarioRequest usuarioRequest = gson.fromJson(datosJson, UsuarioRequest.class);
 		Usuario usuario = new Usuario(usuarioRequest);
 		
-		return providerRestTemplate.consumirServicio(usuario.buscarUsuario(request).getDatos(), urlDominioConsulta + "/generico/paginado",
+		return providerRestTemplate.consumirServicio(usuario.buscarUsuario(request).getDatos(), urlGenericoPaginado,
 				authentication);
 	}
 	
@@ -91,7 +100,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
 		UsuarioRequest usuarioRequest = gson.fromJson(datosJson, UsuarioRequest.class);
 		Usuario usuario = new Usuario(usuarioRequest);
-		return providerRestTemplate.consumirServicio(usuario.checaCurp(request).getDatos(), urlDominioConsulta + "/generico/consulta",
+		return providerRestTemplate.consumirServicio(usuario.checaCurp(request).getDatos(), urlGenericoConsulta,
 				authentication);
 		
 	}
@@ -119,7 +128,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
 		UsuarioRequest usuarioRequest = gson.fromJson(datosJson, UsuarioRequest.class);
 		Usuario usuario = new Usuario(usuarioRequest);
-		return providerRestTemplate.consumirServicio(usuario.checaMatricula(request).getDatos(), urlDominioConsulta + "/generico/consulta",
+		return providerRestTemplate.consumirServicio(usuario.checaMatricula(request).getDatos(), urlGenericoConsulta,
 				authentication);
 		
 	}
@@ -127,7 +136,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 	@Override
 	public Response<?> detalleUsuario(DatosRequest request, Authentication authentication) throws IOException {
 		Usuario usuario= new Usuario();
-		return providerRestTemplate.consumirServicio(usuario.detalleUsuario(request).getDatos(), urlDominioConsulta + "/generico/consulta",
+		return providerRestTemplate.consumirServicio(usuario.detalleUsuario(request).getDatos(), urlGenericoConsulta,
 				authentication);
 	}
 	
@@ -135,7 +144,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 	public Response<?> pruebausrpass(DatosRequest request, Authentication authentication) throws IOException {
 		Usuario usuario= new Usuario();
 		// Prueba
-		Response<?> request1 = providerRestTemplate.consumirServicio(usuario.totalUsuarios(request).getDatos(), urlDominioConsulta + "/generico/consulta",
+		Response<?> request1 = providerRestTemplate.consumirServicio(usuario.totalUsuarios(request).getDatos(), urlGenericoConsulta,
 				authentication);
 		ArrayList<LinkedHashMap> datos1 = (ArrayList) request1.getDatos();
 		String nombre = "Pedro Antonio";
@@ -145,7 +154,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		String cveUsuario = generarUsuario(primerNombre, paterno, datos1.get(0).get("total").toString());
 		String contrasena = generaContrasena(primerNombre, paterno);
 		// Fin Prueba 
-		return providerRestTemplate.consumirServicio(datos1.get(0), urlDominioConsulta + "/generico/consulta",
+		return providerRestTemplate.consumirServicio(datos1.get(0), urlGenericoConsulta,
 				authentication);
 	}
 
@@ -162,16 +171,16 @@ public class UsuarioServiceImpl implements UsuarioService {
 		
 		Integer espacio = usuarioRequest.getNombre().indexOf(' ');
 		String primerNombre = (espacio == -1) ? usuarioRequest.getNombre() : usuarioRequest.getNombre().substring(0, espacio);
-		Response<?> request1 = providerRestTemplate.consumirServicio(usuario.totalUsuarios(request).getDatos(), urlDominioConsulta + "/generico/consulta",
+		Response<?> request1 = providerRestTemplate.consumirServicio(usuario.totalUsuarios(request).getDatos(), urlGenericoConsulta,
 				authentication);
 		ArrayList<LinkedHashMap> datos1 = (ArrayList) request1.getDatos();
 		usuario.setClaveUsuario(generarUsuario(primerNombre, usuarioRequest.getPaterno(), datos1.get(0).get("total").toString()));
 		
 		CharSequence contrasena = generaContrasena(primerNombre, usuarioRequest.getPaterno());
 		usuario.setPassword(passwordEncoder.encode(contrasena));
-		usuario.setIdUsuarioAlta(usuarioDto.getId());
+		usuario.setIdUsuarioAlta(usuarioDto.getIdUsuario());
 		
-		return providerRestTemplate.consumirServicio(usuario.insertar().getDatos(), urlDominioConsulta + "/generico/crear",
+		return providerRestTemplate.consumirServicio(usuario.insertar().getDatos(), urlGenericoCrear,
 				authentication);
 	}
 
@@ -187,9 +196,9 @@ public class UsuarioServiceImpl implements UsuarioService {
 			throw new BadRequestException(HttpStatus.BAD_REQUEST, "Informacion incompleta");
 		}
 		Usuario usuario= new Usuario(usuarioRequest);
-		usuario.setIdUsuarioModifica(usuarioDto.getId());
+		usuario.setIdUsuarioModifica(usuarioDto.getIdUsuario());
 		
-		return providerRestTemplate.consumirServicio(usuario.actualizar().getDatos(), urlDominioConsulta + "/generico/actualizar",
+		return providerRestTemplate.consumirServicio(usuario.actualizar().getDatos(), urlGenericoActualizar,
 				authentication);
 	}
 
@@ -205,8 +214,8 @@ public class UsuarioServiceImpl implements UsuarioService {
 			throw new BadRequestException(HttpStatus.BAD_REQUEST, "Informacion incompleta");
 		}
 		Usuario usuario= new Usuario(usuarioRequest);
-		usuario.setIdUsuarioBaja(usuarioDto.getId());
-		return providerRestTemplate.consumirServicio(usuario.cambiarEstatus().getDatos(), urlDominioConsulta + "/generico/actualizar",
+		usuario.setIdUsuarioBaja(usuarioDto.getIdUsuario());
+		return providerRestTemplate.consumirServicio(usuario.cambiarEstatus().getDatos(), urlGenericoActualizar,
 				authentication);
 	}
 	
@@ -231,7 +240,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
 		UsuarioRequest usuarioRequest = gson.fromJson(datosJson, UsuarioRequest.class);
 		Usuario usuario = new Usuario(usuarioRequest);
-		response =  providerRestTemplate.consumirServicio(usuario.consultaParamSiap(request).getDatos(), urlDominioConsulta + "/generico/consulta",
+		response =  providerRestTemplate.consumirServicio(usuario.consultaParamSiap(request).getDatos(), urlGenericoConsulta,
 				authentication);
 		ArrayList<LinkedHashMap> datosResp = (ArrayList<LinkedHashMap>) response.getDatos();
 		if (datosResp.get(0).get("valor").toString().equals("0")) {
@@ -252,7 +261,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
 		UsuarioRequest usuarioRequest = gson.fromJson(datosJson, UsuarioRequest.class);
 		Usuario usuario = new Usuario(usuarioRequest);
-		response = providerRestTemplate.consumirServicio(usuario.consultaParamRenapo(request).getDatos(), urlDominioConsulta + "/generico/consulta",
+		response = providerRestTemplate.consumirServicio(usuario.consultaParamRenapo(request).getDatos(), urlGenericoConsulta,
 				authentication);
 		ArrayList<LinkedHashMap> datosResp = (ArrayList<LinkedHashMap>) response.getDatos();
 		if (datosResp.get(0).get(AppConstantes.VALOR).toString().equals("0")) {

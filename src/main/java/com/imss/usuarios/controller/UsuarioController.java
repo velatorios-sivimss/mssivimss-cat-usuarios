@@ -1,7 +1,11 @@
 package com.imss.usuarios.controller;
 
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,8 +14,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.imss.usuarios.service.UsuarioService;
 import com.imss.usuarios.util.DatosRequest;
+import com.imss.usuarios.util.ProviderServiceRestTemplate;
 import com.imss.usuarios.util.Response;
 
+import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
+import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
@@ -21,95 +30,191 @@ public class UsuarioController {
 
 	private UsuarioService usuarioService;
 	
+	@Autowired
+	private ProviderServiceRestTemplate providerRestTemplate;
+	
+	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@TimeLimiter(name = "msflujo")
 	@PostMapping("/consulta")
-	public Response<?> consultaLista(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
+	public CompletableFuture<?> consultaLista(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
 	
-		return usuarioService.consultarUsuarios(request,authentication);
+		Response<?> response = usuarioService.consultarUsuarios(request,authentication);
+		return CompletableFuture
+				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
       
 	}
 	
-	@PostMapping("/roles")
-	public Response<?> catalogoRoles(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
+	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@TimeLimiter(name = "msflujo")
+    @PostMapping("/roles")
+	public CompletableFuture<?> catalogoRoles(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
 	
-		return usuarioService.catalogoRoles(request,authentication);
+		Response<?> response = usuarioService.catalogoRoles(request,authentication);
+		return CompletableFuture
+				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
       
 	}
 	
+	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@TimeLimiter(name = "msflujo")
 	@PostMapping("/buscar")
-	public Response<?> buscar(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
+	public CompletableFuture<?> buscar(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
 	
-		return usuarioService.buscarUsuario(request,authentication);
+		Response<?> response = usuarioService.buscarUsuario(request,authentication);
+		return CompletableFuture
+				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
       
 	}
 	
+	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@TimeLimiter(name = "msflujo")
 	@PostMapping("/valida-curp")
-	public Response<?> validaCurp(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
+	public CompletableFuture<?> validaCurp(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
 	
-		return usuarioService.validaCurp(request,authentication);
+		Response<?> response = usuarioService.validaCurp(request,authentication);
+		return CompletableFuture
+				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
       
 	}
 	
+	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@TimeLimiter(name = "msflujo")
 	@PostMapping("/consist-curp")
-	public Response<?> consistCurp(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
+	public CompletableFuture<?> consistCurp(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
 	
-		return usuarioService.consistCurp(request,authentication);
+		Response<?> response = usuarioService.consistCurp(request,authentication);
+		return CompletableFuture
+				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
       
 	}
 
-	@PostMapping("/valida-matricula")
-	public Response<?> validaMatricula(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
+	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@TimeLimiter(name = "msflujo")
+    @PostMapping("/valida-matricula")
+	public CompletableFuture<?> validaMatricula(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
 	
-		return usuarioService.validaMatricula(request,authentication);
+		Response<?> response = usuarioService.validaMatricula(request,authentication);
+		return CompletableFuture
+				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
       
 	}
 	
+	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@TimeLimiter(name = "msflujo")
 	@PostMapping("/detalle")
-	public Response<?> detalle(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
+	public CompletableFuture<?> detalle(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
 	
-		return usuarioService.detalleUsuario(request,authentication);
+		Response<?> response = usuarioService.detalleUsuario(request,authentication);
+		return CompletableFuture
+				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
       
 	}
 	
+	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@TimeLimiter(name = "msflujo")
 	@PostMapping("/prbusrpass")
-	public Response<?> pruebausrpass(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
+	public CompletableFuture<?> pruebausrpass(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
 	
-		return usuarioService.pruebausrpass(request,authentication);
-      
+		Response<?> response = usuarioService.pruebausrpass(request,authentication);
+		return CompletableFuture
+				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
+		
 	}
 	
+	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@TimeLimiter(name = "msflujo")
 	@PostMapping("/agregar")
-	public Response<?> agregar(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
+	public CompletableFuture<?> agregar(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
 	
-		return usuarioService.agregarUsuario(request,authentication);
+		Response<?> response =  usuarioService.agregarUsuario(request,authentication);
+		return CompletableFuture
+				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
       
 	}
 	
+	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@TimeLimiter(name = "msflujo")
 	@PostMapping("/actualizar")
-	public Response<?> actualizar(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
+	public CompletableFuture<?> actualizar(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
 	
-		return usuarioService.actualizarUsuario(request,authentication);
-      
-	}
-	
-	@PostMapping("/cambiar-estatus")
-	public Response<?> cambiarEstatus(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
-	
-		return usuarioService.cambiarEstatusUsuario(request,authentication);
-      
-	}
-	
-	@PostMapping("/consulta-siap")
-	public Response<?> consultaSiap(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
+		Response<?> response = usuarioService.actualizarUsuario(request,authentication);
+		return CompletableFuture
+				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 		
-		return usuarioService.consultaSiap(request,authentication);
-      
 	}
 	
-	@PostMapping("/consulta-renapo")
-	public Response<?> consultaRenapo(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
+
+	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@TimeLimiter(name = "msflujo")
+    @PostMapping("/cambiar-estatus")
+	public CompletableFuture<?> cambiarEstatus(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
+	
+		Response<?> response = usuarioService.cambiarEstatusUsuario(request,authentication);
+		return CompletableFuture
+				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
+	}
+	
+	
+	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@TimeLimiter(name = "msflujo")
+    @PostMapping("/consulta-siap")
+	public CompletableFuture<?> consultaSiap(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
 		
-		return usuarioService.consultaRenapo(request,authentication);
-      
+		Response<?> response = usuarioService.consultaSiap(request,authentication);
+		return CompletableFuture
+				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
+		
+	}
+	
+	
+	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@TimeLimiter(name = "msflujo")
+    @PostMapping("/consulta-renapo")
+	public CompletableFuture<?> consultaRenapo(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
+		
+		Response<?> response = usuarioService.consultaRenapo(request,authentication);
+		return CompletableFuture
+				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
+		
+	}
+	
+	/**
+	 * fallbacks generico
+	 * 
+	 * @return respuestas
+	 */
+	private CompletableFuture<?> fallbackGenerico(@RequestBody DatosRequest request, Authentication authentication,
+			CallNotPermittedException e) {
+		Response<?> response = providerRestTemplate.respuestaProvider(e.getMessage());
+		return CompletableFuture
+				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
+	}
+
+	private CompletableFuture<?> fallbackGenerico(@RequestBody DatosRequest request, Authentication authentication,
+			RuntimeException e) {
+		Response<?> response = providerRestTemplate.respuestaProvider(e.getMessage());
+		return CompletableFuture
+				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
+	}
+
+	private CompletableFuture<?> fallbackGenerico(@RequestBody DatosRequest request, Authentication authentication,
+			NumberFormatException e) {
+		Response<?> response = providerRestTemplate.respuestaProvider(e.getMessage());
+		return CompletableFuture
+				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 	}
 	
 }

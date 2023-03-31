@@ -43,3 +43,5 @@ jwt:
   secretkey-usuarios: funcionamuybien
   secretkey-dominios: funcionamuybiendominio
   expiration-milliseconds: 360
+
+formato_fecha: '%d/%m/%Y'

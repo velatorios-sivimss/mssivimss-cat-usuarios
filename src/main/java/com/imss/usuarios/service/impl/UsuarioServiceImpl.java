@@ -120,7 +120,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		usuario.setPaterno(usuarioRequest.getPaterno().toUpperCase());
 		usuario.setMaterno(usuarioRequest.getMaterno().toUpperCase());
 		
-		return new Response<Object>(false, HttpStatus.OK.value(), "Exito" , ConvertirGenerico.convertInstanceOfObject(usuario.consistenciaCurp(request)) );
+		return new Response<Object>(false, HttpStatus.OK.value(), "Exito" , ConvertirGenerico.convertInstanceOfObject(usuario.consistenciaCurp()) );
 		
 	}
 	

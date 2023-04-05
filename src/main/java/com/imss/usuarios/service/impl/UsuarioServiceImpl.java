@@ -61,7 +61,10 @@ public class UsuarioServiceImpl implements UsuarioService {
 	@Override
 	public Response<?> consultarUsuarios(DatosRequest request, Authentication authentication) throws IOException {
 		Usuario usuario = new Usuario();
-		BusquedaDto busqueda = new BusquedaDto(1,1,1,1);
+		Gson gson = new Gson();
+
+		String datosJson = String.valueOf(authentication.getPrincipal());
+		BusquedaDto busqueda = gson.fromJson(datosJson, BusquedaDto.class);
 		
 		return providerRestTemplate.consumirServicio(usuario.obtenerUsuarios(request, busqueda).getDatos(), urlGenericoPaginado,
 				authentication);
@@ -117,7 +120,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		usuario.setPaterno(usuarioRequest.getPaterno().toUpperCase());
 		usuario.setMaterno(usuarioRequest.getMaterno().toUpperCase());
 		
-		return new Response<Object>(false, HttpStatus.OK.value(), "Exito" , ConvertirGenerico.convertInstanceOfObject(usuario.consistenciaCurp(request)) );
+		return new Response<Object>(false, HttpStatus.OK.value(), "Exito" , ConvertirGenerico.convertInstanceOfObject(usuario.consistenciaCurp()) );
 		
 	}
 	

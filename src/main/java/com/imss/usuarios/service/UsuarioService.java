@@ -3,6 +3,7 @@ package com.imss.usuarios.service;
 import java.io.IOException;
 
 import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Service;
 
 import com.imss.usuarios.util.DatosRequest;
 import com.imss.usuarios.util.Response;

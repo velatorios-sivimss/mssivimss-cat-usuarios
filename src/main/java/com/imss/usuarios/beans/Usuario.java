@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.bind.DatatypeConverter;
+import org.springframework.beans.factory.annotation.Value;
 
 import com.imss.usuarios.model.request.UsuarioRequest;
 import com.imss.usuarios.util.AppConstantes;
@@ -41,6 +42,8 @@ public class Usuario {
 	private Integer idUsuarioModifica;
 	private Integer idUsuarioBaja;
 	private Integer estatus;
+	
+	private static final String formatoFecha =  "DATE_FORMAT(FEC_NACIMIENTO,'%d/%m/%Y')";
 
 	public Usuario(UsuarioRequest usuarioRequest) {
 		this.id = usuarioRequest.getId();
@@ -146,10 +149,11 @@ public class Usuario {
 
 	public DatosRequest obtenerUsuarios(DatosRequest request, BusquedaDto busqueda) {
 		
-		StringBuilder query = new StringBuilder("SELECT ID_USUARIO AS id, DES_CURP AS curp, CVE_MATRICULA AS matricula, "
-				+ " NOM_USUARIO AS nombre, NOM_APELLIDO_PATERNO AS paterno, NOM_APELLIDO_MATERNO AS materno, "
-				+ " FEC_NACIMIENTO AS fecNacimiento, DES_CORREOE AS correo, ID_OFICINA AS idOficina, ID_DELEGACION AS idDelegacion, "
-				+ " ID_VELATORIO AS idVelatorio, ID_ROL AS idRol, CVE_ESTATUS AS estatus, CVE_USUARIO AS usuario FROM SVT_USUARIOS ");
+		StringBuilder query = new StringBuilder("SELECT ID_USUARIO AS id, DES_CURP AS curp, CVE_MATRICULA AS matricula, ");
+		query.append(" NOM_USUARIO AS nombre, NOM_APELLIDO_PATERNO AS paterno, NOM_APELLIDO_MATERNO AS materno, ");
+	    query.append(formatoFecha + " AS fecNacimiento, DES_CORREOE AS correo, ID_OFICINA AS idOficina, ");
+		query.append(" ID_DELEGACION AS idDelegacion, ID_VELATORIO AS idVelatorio, ID_ROL AS idRol, CVE_ESTATUS AS estatus, CVE_USUARIO AS usuario ");
+		query.append(" FROM SVT_USUARIOS ");
 		if (busqueda.getIdOficina() > 1) {
 			query.append(" WHERE ID_DELEGACION = ").append(busqueda.getIdDelegacion());
 			if (busqueda.getIdOficina() == 3) {
@@ -166,10 +170,11 @@ public class Usuario {
 
 	public DatosRequest buscarUsuario(DatosRequest request) {
 		
-		StringBuilder query = new StringBuilder("SELECT ID_USUARIO AS id, DES_CURP AS curp, CVE_MATRICULA AS matricula, "
-				+ " NOM_USUARIO AS nombre, NOM_APELLIDO_PATERNO AS paterno, NOM_APELLIDO_MATERNO AS materno, "
-				+ " FEC_NACIMIENTO AS fecNacimiento, DES_CORREOE AS correo, ID_OFICINA AS idOficina, ID_DELEGACION AS idDelegacion, "
-				+ " ID_VELATORIO AS idVelatorio, ID_ROL AS idRol, CVE_ESTATUS AS estatus, CVE_USUARIO AS usuario FROM SVT_USUARIOS ");
+		StringBuilder query = new StringBuilder("SELECT ID_USUARIO AS id, DES_CURP AS curp, CVE_MATRICULA AS matricula, ");
+		query.append(" NOM_USUARIO AS nombre, NOM_APELLIDO_PATERNO AS paterno, NOM_APELLIDO_MATERNO AS materno, ");
+	    query.append(formatoFecha + " AS fecNacimiento, DES_CORREOE AS correo, ID_OFICINA AS idOficina, ");
+		query.append(" ID_DELEGACION AS idDelegacion, ID_VELATORIO AS idVelatorio, ID_ROL AS idRol, CVE_ESTATUS AS estatus, CVE_USUARIO AS usuario ");
+		query.append(" FROM SVT_USUARIOS ");
 		query.append(" WHERE 1 = 1" );
 		if (this.getIdOficina() != null) {
 			query.append(" AND ID_OFICINA = ").append(this.getIdOficina());
@@ -195,7 +200,7 @@ public class Usuario {
 		String idUsuario = request.getDatos().get("id").toString();
 		StringBuilder query = new StringBuilder("SELECT u.ID_USUARIO AS id, u.DES_CURP AS curp, u.CVE_MATRICULA AS matricula, "
 				+ " u.NOM_USUARIO AS nombre, u.NOM_APELLIDO_PATERNO AS paterno, u.NOM_APELLIDO_MATERNO AS materno, "
-				+ " u.FEC_NACIMIENTO AS fecNacimiento, u.DES_CORREOE AS correo, DES_NIVELOFICINA AS oficina, DES_DELEGACION AS delegacion, "
+				+ formatoFecha + " AS fecNacimiento, u.DES_CORREOE AS correo, DES_NIVELOFICINA AS oficina, DES_DELEGACION AS delegacion, "
 				+ " NOM_VELATORIO AS velatorio, r.DES_ROL AS rol, u.CVE_ESTATUS AS estatus, u.CVE_USUARIO AS usuario FROM SVT_USUARIOS u ");
 		query.append(" LEFT JOIN svc_rol r USING (ID_ROL) ");
 		query.append(" LEFT JOIN svc_nivel_oficina o ON o.ID_OFICINA = u.ID_OFICINA ");
@@ -233,29 +238,21 @@ public class Usuario {
 	public DatosRequest totalUsuarios(DatosRequest request) {
 		String query = "SELECT COUNT(*) AS total FROM SVT_USUARIOS";
 		
-		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes());
+		String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
 		request.getDatos().put(AppConstantes.QUERY, encoded);
 		return request;
 	}
 	
-	public Boolean consistenciaCurp(DatosRequest request) {
+	public Boolean consistenciaCurp() {
 		Boolean valido = true;
 	    this.nombre = this.nombre.replace("JOSE ", "");
 	    this.nombre = this.nombre.replace("MARIA ", "");
 
-		if (!this.paterno.substring(0, 2).equals(this.curp.substring(0, 2))) {
+		if (!this.paterno.substring(0, 2).equals(this.curp.substring(0, 2)) || this.materno.charAt(0) != this.curp.charAt(2)) {
 			valido = false;
-		} else if (this.materno.charAt(0) != this.curp.charAt(2)) {
+		} else if (this.nombre.charAt(0) != this.curp.charAt(3) || !this.fecNacimiento.substring(2, 8).equals(this.curp.substring(4, 10))) {
 			valido = false;
-		} else if (this.nombre.charAt(0) != this.curp.charAt(3)) {
-			valido = false;
-		} else if (!this.fecNacimiento.substring(2, 8).equals(this.curp.substring(4, 10))) {
-			valido = false;
-		} else if (!paterno.contains(this.curp.substring(13, 14))) {
-			valido = false;
-		} else if (!materno.contains(this.curp.substring(14, 15))) {
-			valido = false;
-		} else if (!nombre.contains(this.curp.substring(15, 16))) {
+		} else if (!paterno.contains(this.curp.substring(13, 14)) || !materno.contains(this.curp.substring(14, 15)) || !nombre.contains(this.curp.substring(15, 16))) {
 			valido = false;
 		}
 		
@@ -265,7 +262,7 @@ public class Usuario {
 	public DatosRequest consultaParamSiap(DatosRequest request) {
 		String query = "SELECT IF(CVE_ESTATUS,1,0) AS valor FROM SVC_PARAMETRO_SISTEMA WHERE DES_PARAMETRO = 'Validacion SIAP'";
 		
-		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes());
+		String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
 		request.getDatos().put(AppConstantes.QUERY, encoded);
 		
 		return request;
@@ -274,7 +271,7 @@ public class Usuario {
 	public DatosRequest consultaParamRenapo(DatosRequest request) {
 		String query = "SELECT IF(CVE_ESTATUS,1,0) AS valor FROM SVC_PARAMETRO_SISTEMA WHERE DES_PARAMETRO = 'Validacion RENAPO'";
 		
-		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes());
+		String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
 		request.getDatos().put(AppConstantes.QUERY, encoded);
 
 		return request;

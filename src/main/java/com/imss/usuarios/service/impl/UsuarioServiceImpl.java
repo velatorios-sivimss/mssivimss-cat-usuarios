@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import org.modelmapper.ModelMapper;
@@ -47,7 +48,12 @@ public class UsuarioServiceImpl implements UsuarioService {
 	@Value("${endpoints.generico-actualizar}")
 	private String urlGenericoActualizar;
 	
-	@Autowired
+	@Value("${endpoints.generico-reportes}")
+	private String urlReportes;
+	
+	private static final String nombrePdfReportes = "reportes/generales/ReporteCatUsuarios.jrxml"; 
+	
+	@Autowired 
 	private ProviderServiceRestTemplate providerRestTemplate;
 
 	@Autowired
@@ -274,6 +280,16 @@ public class UsuarioServiceImpl implements UsuarioService {
 		}
 		
 		return response;
+	}
+	
+	@Override
+	public Response<?> descargarDocumento(DatosRequest request, Authentication authentication) throws IOException {
+		Gson gson = new Gson();
+		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
+		BusquedaDto reporteDto = gson.fromJson(datosJson, BusquedaDto.class);
+		
+		Map<String, Object> envioDatos = new Usuario().generarReporte(reporteDto, nombrePdfReportes);
+		return providerRestTemplate.consumirServicioReportes(envioDatos, urlReportes, authentication);
 	}
 	
 }

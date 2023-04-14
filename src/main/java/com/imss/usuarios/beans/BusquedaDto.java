@@ -18,5 +18,6 @@ public class BusquedaDto {
 	private Integer idDelegacion;
 	private Integer idVelatorio;
 	private Integer idRol;
+	private String tipoReporte;
 
 }

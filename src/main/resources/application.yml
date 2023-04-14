@@ -37,9 +37,12 @@ endpoints:
    generico-consulta: http://localhost:8090/mssivimss-mod-catalogos/generico/consulta
    generico-crear: http://localhost:8090/mssivimss-mod-catalogos/generico/crear
    generico-actualizar: http://localhost:8090/mssivimss-mod-catalogos/generico/actualizar
+   generico-reportes: http://localhost:8088/mssivimss-reportes-jpr/generales/generar-reporte
    
 
 jwt:
   secretkey-usuarios: funcionamuybien
   secretkey-dominios: funcionamuybiendominio
   expiration-milliseconds: 360
+
+formato_fecha: '%d/%m/%Y'

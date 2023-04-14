@@ -190,6 +190,18 @@ public class UsuarioController {
 		
 	}
 	
+	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@TimeLimiter(name = "msflujo")
+	@PostMapping("/generar-docto")
+	public CompletableFuture<?> generarDocumento(@RequestBody DatosRequest request, Authentication authentication)
+			throws IOException {
+
+		Response<?> response = usuarioService.descargarDocumento(request, authentication);
+		return CompletableFuture
+				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
+	}
+	
 	/**
 	 * fallbacks generico
 	 * 

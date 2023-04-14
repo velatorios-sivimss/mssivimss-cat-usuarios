@@ -277,4 +277,26 @@ public class Usuario {
 		return request;
 	}
 	
+	public Map<String, Object> generarReporte(BusquedaDto reporteDto,String nombrePdfReportes){
+		Map<String, Object> envioDatos = new HashMap<>();
+		StringBuilder condicion = new StringBuilder("");
+		if (reporteDto.getIdOficina() != null) {
+			condicion.append(" AND ID_OFICINA = ").append(reporteDto.getIdOficina());
+		}
+		if (reporteDto.getIdDelegacion() != null) {
+			condicion.append(" AND ID_DELEGACION = ").append(reporteDto.getIdDelegacion());
+		}
+		if (reporteDto.getIdVelatorio() != null) {
+			condicion.append(" AND ID_VELATORIO = ").append(reporteDto.getIdVelatorio());
+		}
+		if (reporteDto.getIdRol() != null) {
+			condicion.append(" AND ID_ROL = ").append(this.getIdRol());
+		}
+		envioDatos.put("condicion", condicion.toString());
+		envioDatos.put("tipoReporte", reporteDto.getTipoReporte());
+		envioDatos.put("rutaNombreReporte", nombrePdfReportes);
+		
+		return envioDatos;
+	}
+	
 }

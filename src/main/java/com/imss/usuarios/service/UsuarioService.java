@@ -35,5 +35,7 @@ public interface UsuarioService {
 	Response<?> consultaSiap(DatosRequest request, Authentication authentication) throws IOException;
 	
 	Response<?> consultaRenapo(DatosRequest request, Authentication authentication) throws IOException;
+
+	Response<?> descargarDocumento(DatosRequest request, Authentication authentication) throws IOException;
 	
 }

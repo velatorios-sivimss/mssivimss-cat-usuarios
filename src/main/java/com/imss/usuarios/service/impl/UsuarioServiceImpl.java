@@ -51,7 +51,9 @@ public class UsuarioServiceImpl implements UsuarioService {
 	@Value("${endpoints.generico-reportes}")
 	private String urlReportes;
 	
-	private static final String nombrePdfReportes = "reportes/generales/ReporteCatUsuarios.jrxml"; 
+	private static final String nombrePdfReportes = "reportes/generales/ReporteCatUsuarios.jrxml";
+	
+	private static final String infoNoEncontrada = "No se encontró información relacionada a tu búsqueda.";
 	
 	@Autowired 
 	private ProviderServiceRestTemplate providerRestTemplate;
@@ -98,8 +100,14 @@ public class UsuarioServiceImpl implements UsuarioService {
 		UsuarioRequest usuarioRequest = gson.fromJson(datosJson, UsuarioRequest.class);
 		Usuario usuario = new Usuario(usuarioRequest);
 		
-		return providerRestTemplate.consumirServicio(usuario.buscarUsuario(request).getDatos(), urlGenericoPaginado,
+		Response<?> response = providerRestTemplate.consumirServicio(usuario.buscarUsuario(request).getDatos(), urlGenericoPaginado,
 				authentication);
+		ArrayList datos1 = (ArrayList) ((LinkedHashMap) response.getDatos()).get("content");
+		if (datos1.isEmpty()) {
+			response.setMensaje(infoNoEncontrada);
+	    }
+		
+		return response;
 	}
 	
 	@Override
@@ -148,25 +156,6 @@ public class UsuarioServiceImpl implements UsuarioService {
 		return providerRestTemplate.consumirServicio(usuario.detalleUsuario(request).getDatos(), urlGenericoConsulta,
 				authentication);
 	}
-	
-	@Override
-	public Response<?> pruebausrpass(DatosRequest request, Authentication authentication) throws IOException {
-		Usuario usuario= new Usuario();
-		// Prueba
-		Response<?> request1 = providerRestTemplate.consumirServicio(usuario.totalUsuarios(request).getDatos(), urlGenericoConsulta,
-				authentication);
-		ArrayList<LinkedHashMap> datos1 = (ArrayList) request1.getDatos();
-		String nombre = "Pedro Antonio";
-		String paterno = "Sanchez";
-		Integer espacio = nombre.indexOf(' ');
-		String primerNombre = (espacio == -1) ? nombre : nombre.substring(0, espacio);
-		String cveUsuario = generarUsuario(primerNombre, paterno, datos1.get(0).get("total").toString());
-		String contrasena = generaContrasena(primerNombre, paterno);
-		// Fin Prueba 
-		return providerRestTemplate.consumirServicio(datos1.get(0), urlGenericoConsulta,
-				authentication);
-	}
-
 
 	@Override
 	public Response<?> agregarUsuario(DatosRequest request, Authentication authentication) throws IOException {

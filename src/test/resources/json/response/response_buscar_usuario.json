@@ -1,0 +1,50 @@
+{
+    "error": false,
+    "codigo": 200,
+    "mensaje": "Exito",
+    "datos": {
+        "content": [
+            {
+                "idRol": 1,
+                "paterno": "SOLIS",
+                "idDelegacion": 1,
+                "idOficina": 1,
+                "nombre": "GERARDO",
+                "materno": "ZARATE",
+                "idVelatorio": 1,
+                "estatus": false,
+                "correo": "gerardo@pm.com",
+                "matricula": "78686878",
+                "fecNacimiento": "11/07/1972",
+                "usuario": "GERAS001",
+                "id": 1,
+                "curp": "SOZG720711HDFLRR08"
+            }
+        ],
+        "pageable": {
+            "sort": {
+                "empty": true,
+                "sorted": false,
+                "unsorted": true
+            },
+            "offset": 0,
+            "pageNumber": 0,
+            "pageSize": 10,
+            "paged": true,
+            "unpaged": false
+        },
+        "last": true,
+        "totalElements": 1,
+        "totalPages": 1,
+        "size": 10,
+        "number": 0,
+        "sort": {
+            "empty": true,
+            "sorted": false,
+            "unsorted": true
+        },
+        "numberOfElements": 1,
+        "first": true,
+        "empty": false
+    }
+}

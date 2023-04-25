@@ -1,0 +1,9 @@
+{
+    "id" : 3,
+	"correo": "correoejemplo@example.com",
+    "idOficina": 1,
+	"idDelegacion": 1,
+    "idVelatorio": 2,
+    "idRol": 1,
+	"estatus" : 1
+}

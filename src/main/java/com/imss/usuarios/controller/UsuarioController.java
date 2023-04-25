@@ -23,7 +23,7 @@ import io.github.resilience4j.retry.annotation.Retry;
 import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 
 @RestController
-@RequestMapping("/usuarios")
+@RequestMapping("/v1/usuarios")
 public class UsuarioController {
 
 	@Autowired
@@ -114,18 +114,6 @@ public class UsuarioController {
 		return CompletableFuture
 				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
       
-	}
-	
-	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
-	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
-	@TimeLimiter(name = "msflujo")
-	@PostMapping("/prbusrpass")
-	public CompletableFuture<?> pruebausrpass(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
-	
-		Response<?> response = usuarioService.pruebausrpass(request,authentication);
-		return CompletableFuture
-				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
-		
 	}
 	
 	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")

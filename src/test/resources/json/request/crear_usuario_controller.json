@@ -1,0 +1,14 @@
+{
+    "curp" : "SOZG720711HDFLRR12",
+	"claveMatricula" : "12345678",
+    "nombre" : "GENARO",
+    "paterno" : "SOTO",
+    "fecNacimiento" : "19790101",
+    "materno" : "ZURITA",
+	"correo": "correoejempl@example.com",
+    "idOficina": 2,
+	"idDelegacion": 2,
+    "idVelatorio": 3,
+    "idRol": 1,
+	"estatus" : 1
+}

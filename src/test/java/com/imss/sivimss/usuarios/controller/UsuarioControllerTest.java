@@ -68,7 +68,7 @@ public class UsuarioControllerTest extends BaseTest {
 	 public void crearUsuarioOK() throws Exception {
 	       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 	       String myToken = jwtTokenProvider.createTokenTest(authentication.getPrincipal().toString());
-	       MockModCatalogosClient.validaCurp(HttpStatusCode.OK_200, JsonUtil.readFromJson("json/request/crear_usuario_mock.json"), JsonUtil.readFromJson("json/response/response_crear_usuario.json"), myToken, mockServer);
+	       MockModCatalogosClient.agregarUsuario(HttpStatusCode.OK_200, JsonUtil.readFromJson("json/request/crear_usuario_mock.json"), JsonUtil.readFromJson("json/response/response_crear_usuario.json"), myToken, mockServer);
 	       this.mockMvc.perform(post("/v1/usuarios/agregar")
 	                    .contentType(MediaType.APPLICATION_JSON)
 	                    .accept(MediaType.APPLICATION_JSON)
@@ -85,7 +85,7 @@ public class UsuarioControllerTest extends BaseTest {
 	 public void actualizarUsuarioOK() throws Exception {
 	       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 	       String myToken = jwtTokenProvider.createTokenTest(authentication.getPrincipal().toString());
-	       MockModCatalogosClient.validaCurp(HttpStatusCode.OK_200, JsonUtil.readFromJson("json/request/actualizar_usuario_mock.json"), JsonUtil.readFromJson("json/response/response_actualizar_usuario.json"), myToken, mockServer);
+	       MockModCatalogosClient.actualizarUsuario(HttpStatusCode.OK_200, JsonUtil.readFromJson("json/request/actualizar_usuario_mock.json"), JsonUtil.readFromJson("json/response/response_actualizar_usuario.json"), myToken, mockServer);
 	       this.mockMvc.perform(post("/v1/usuarios/actualizar")
 	                    .contentType(MediaType.APPLICATION_JSON)
 	                    .accept(MediaType.APPLICATION_JSON)
@@ -102,7 +102,7 @@ public class UsuarioControllerTest extends BaseTest {
 	 public void estatusUsuarioOK() throws Exception {
 	       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 	       String myToken = jwtTokenProvider.createTokenTest(authentication.getPrincipal().toString());
-	       MockModCatalogosClient.validaCurp(HttpStatusCode.OK_200, JsonUtil.readFromJson("json/request/estatus_usuario_mock.json"), JsonUtil.readFromJson("json/response/response_estatus_usuario.json"), myToken, mockServer);
+	       MockModCatalogosClient.estatusUsuario(HttpStatusCode.OK_200, JsonUtil.readFromJson("json/request/estatus_usuario_mock.json"), JsonUtil.readFromJson("json/response/response_estatus_usuario.json"), myToken, mockServer);
 	       this.mockMvc.perform(post("/v1/usuarios/cambiar-estatus")
 	                    .contentType(MediaType.APPLICATION_JSON)
 	                    .accept(MediaType.APPLICATION_JSON)

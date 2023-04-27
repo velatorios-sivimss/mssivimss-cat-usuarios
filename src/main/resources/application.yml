@@ -23,26 +23,26 @@ logging:
     org.hibernate: error
 
 logos:
-  msit_logo_imss: /sintrans_data/LOGOS/logoImss.png
-  msit_logo_sistema: /sintrans_data/LOGOS/logoSistema.png
+  msit_logo_imss: ${msit_LOGO_IMSS}
+  msit_logo_sistema: ${msit_LOGO_SISTEMA}
 
 endpoints:
-   consulta-ooads: http://localhost:8090/dominio/
-   paginado-unidad: http://localhost:8090/dominio/ooad/paginacion
-   dominio-consulta: http://localhost:8090/mssivimss-mod-catalogos
-   generico-paginado: http://localhost:8090/mssivimss-mod-catalogos/generico/paginado
-   generico-consulta: http://localhost:8090/mssivimss-mod-catalogos/generico/consulta
-   generico-crear: http://localhost:8090/mssivimss-mod-catalogos/generico/crear
-   generico-actualizar: http://localhost:8090/mssivimss-mod-catalogos/generico/actualizar
-   generico-reportes: http://localhost:8088/mssivimss-reportes-jpr/generales/generar-reporte
+   consulta-ooads: ${msit_CONSULTA_OOAD}
+   paginado-unidad: ${msit_PAGINADO_UNIDAD}
+   dominio-consulta: ${msit_DOMINIO_CONSULTA}
+   generico-paginado: ${msit_GENERICO_PAGINADO}
+   generico-consulta: ${msit_GENERICO_CONSULTA}
+   generico-crear: ${msit_GENERICO_CREAR}
+   generico-actualizar: ${msit_GENERICO_ACTUALIZAR}
+   generico-reportes: ${msit_GENERICO_REPORTES}
    
 
 jwt:
-  secretkey-usuarios: funcionamuybien
-  secretkey-dominios: funcionamuybiendominio
-  expiration-milliseconds: 360
+  secretkey-usuarios: ${msit_SECRET_KEY}
+  secretkey-dominios: ${msit_SECRET_KEY_DOMINIO}
+  expiration-milliseconds: ${msit_SECRET_KEY_EXPIRATION}
 
-formato_fecha: '%d/%m/%Y'
+formato_fecha: ${msit_formato_fecha}
 
 management:
   endpoints:

@@ -1,7 +1,7 @@
 server:
 
   servlet:
-    contextPath: /ms-usuarios
+    contextPath: /mssivimss-cat-usuarios
     
 spring:
   mvc:
@@ -43,3 +43,5 @@ jwt:
   expiration-milliseconds: 360
 
 formato_fecha: '%d/%m/%Y'
+
+ruta-log: 'C:\Users\gsolis\Documents\logs'

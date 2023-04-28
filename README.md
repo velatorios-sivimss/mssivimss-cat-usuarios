@@ -1,2 +1,2 @@
-# ms-usuarios
-MS de para gestionar usuarios internos de SIVIMSS
+# mssivimss-cat-usuario
+CU_002_GestionarUsuariosSistema_SIVIMSS

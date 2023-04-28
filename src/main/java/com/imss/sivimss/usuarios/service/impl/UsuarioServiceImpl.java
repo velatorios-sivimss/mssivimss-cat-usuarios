@@ -8,6 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.logging.Level;
 
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -30,6 +31,7 @@ import com.imss.sivimss.usuarios.service.UsuarioService;
 import com.imss.sivimss.usuarios.util.AppConstantes;
 import com.imss.sivimss.usuarios.util.ConvertirGenerico;
 import com.imss.sivimss.usuarios.util.DatosRequest;
+import com.imss.sivimss.usuarios.util.LogUtil;
 import com.imss.sivimss.usuarios.util.ProviderServiceRestTemplate;
 import com.imss.sivimss.usuarios.util.Response;
 
@@ -55,6 +57,11 @@ public class UsuarioServiceImpl implements UsuarioService {
 	
 	private static final String infoNoEncontrada = "No se encontró información relacionada a tu búsqueda.";
 	
+	private static final String ALTA = "alta";
+	private static final String BAJA = "baja";
+	private static final String MODIFICACION = "modificacion";
+	private static final String CONSULTA = "consulta";
+	
 	@Autowired 
 	private ProviderServiceRestTemplate providerRestTemplate;
 
@@ -63,6 +70,9 @@ public class UsuarioServiceImpl implements UsuarioService {
 	
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+	
+	@Autowired
+	private LogUtil logUtil;
 
 	private static final Logger log = LoggerFactory.getLogger(UsuarioServiceImpl.class);
 
@@ -107,7 +117,12 @@ public class UsuarioServiceImpl implements UsuarioService {
 			response.setMensaje(infoNoEncontrada);
 	    }
 		
-		return response;
+		try {
+		     return response;
+		} catch (Exception e) {
+			logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), CONSULTA, authentication);
+			return null;
+		}
 	}
 	
 	@Override
@@ -134,7 +149,8 @@ public class UsuarioServiceImpl implements UsuarioService {
 		usuario.setPaterno(usuarioRequest.getPaterno().toUpperCase());
 		usuario.setMaterno(usuarioRequest.getMaterno().toUpperCase());
 		
-		return new Response<Object>(false, HttpStatus.OK.value(), "Exito" , ConvertirGenerico.convertInstanceOfObject(usuario.consistenciaCurp()) );
+	    return new Response<Object>(false, HttpStatus.OK.value(), "Exito" , ConvertirGenerico.convertInstanceOfObject(usuario.consistenciaCurp()) );
+
 		
 	}
 	
@@ -178,8 +194,12 @@ public class UsuarioServiceImpl implements UsuarioService {
 		usuario.setPassword(passwordEncoder.encode(contrasena));
 		usuario.setIdUsuarioAlta(usuarioDto.getIdUsuario());
 		
-		return providerRestTemplate.consumirServicio(usuario.insertar().getDatos(), urlGenericoCrear,
-				authentication);
+		try {
+		    return providerRestTemplate.consumirServicio(usuario.insertar().getDatos(), urlGenericoCrear, authentication);
+		} catch (Exception e) {
+			logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), ALTA, authentication);
+			return null;
+		}
 	}
 
 	@Override
@@ -196,8 +216,12 @@ public class UsuarioServiceImpl implements UsuarioService {
 		Usuario usuario= new Usuario(usuarioRequest);
 		usuario.setIdUsuarioModifica(usuarioDto.getIdUsuario());
 		
-		return providerRestTemplate.consumirServicio(usuario.actualizar().getDatos(), urlGenericoActualizar,
-				authentication);
+		try {
+		    return providerRestTemplate.consumirServicio(usuario.actualizar().getDatos(), urlGenericoActualizar, authentication);
+		} catch (Exception e) {
+			logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), MODIFICACION, authentication);
+			return null;
+		}
 	}
 
 	@Override
@@ -213,8 +237,12 @@ public class UsuarioServiceImpl implements UsuarioService {
 		}
 		Usuario usuario= new Usuario(usuarioRequest);
 		usuario.setIdUsuarioBaja(usuarioDto.getIdUsuario());
-		return providerRestTemplate.consumirServicio(usuario.cambiarEstatus().getDatos(), urlGenericoActualizar,
-				authentication);
+		try {
+		    return providerRestTemplate.consumirServicio(usuario.cambiarEstatus().getDatos(), urlGenericoActualizar, authentication);
+		} catch (Exception e) {
+			logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), BAJA, authentication);
+			return null;
+		}
 	}
 	
 	private String generarUsuario(String primerNombre, String paterno, String consecutivo) {

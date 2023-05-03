@@ -1,7 +1,7 @@
 server:
 
   servlet:
-    contextPath: /mssivimss-cat-usuarios
+    contextPath: /mssivimss-cat-usuarios/v1
     
 spring:
   mvc:

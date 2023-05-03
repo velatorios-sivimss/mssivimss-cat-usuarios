@@ -23,7 +23,7 @@ import io.github.resilience4j.retry.annotation.Retry;
 import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 
 @RestController
-@RequestMapping("/v1/usuarios")
+@RequestMapping("/usuarios")
 public class UsuarioController {
 
 	@Autowired

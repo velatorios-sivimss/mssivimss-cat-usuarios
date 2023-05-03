@@ -51,7 +51,7 @@ public class UsuarioControllerTest extends BaseTest {
 	       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 	       String myToken = jwtTokenProvider.createTokenTest(authentication.getPrincipal().toString());
 	       MockModCatalogosClient.validaCurp(HttpStatusCode.OK_200, JsonUtil.readFromJson("json/request/curp_usuario_mock.json"), JsonUtil.readFromJson("json/response/response_curp_usuario.json"), myToken, mockServer);
-	       this.mockMvc.perform(post("/v1/usuarios/valida-curp")
+	       this.mockMvc.perform(post("/usuarios/valida-curp")
 	                    .contentType(MediaType.APPLICATION_JSON)
 	                    .accept(MediaType.APPLICATION_JSON)
 	                    .header("Authorization","Bearer " + myToken)
@@ -69,7 +69,7 @@ public class UsuarioControllerTest extends BaseTest {
 	       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 	       String myToken = jwtTokenProvider.createTokenTest(authentication.getPrincipal().toString());
 	       MockModCatalogosClient.agregarUsuario(HttpStatusCode.OK_200, JsonUtil.readFromJson("json/request/crear_usuario_mock.json"), JsonUtil.readFromJson("json/response/response_crear_usuario.json"), myToken, mockServer);
-	       this.mockMvc.perform(post("/v1/usuarios/agregar")
+	       this.mockMvc.perform(post("/usuarios/agregar")
 	                    .contentType(MediaType.APPLICATION_JSON)
 	                    .accept(MediaType.APPLICATION_JSON)
 	                    .header("Authorization","Bearer " + myToken)
@@ -86,7 +86,7 @@ public class UsuarioControllerTest extends BaseTest {
 	       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 	       String myToken = jwtTokenProvider.createTokenTest(authentication.getPrincipal().toString());
 	       MockModCatalogosClient.actualizarUsuario(HttpStatusCode.OK_200, JsonUtil.readFromJson("json/request/actualizar_usuario_mock.json"), JsonUtil.readFromJson("json/response/response_actualizar_usuario.json"), myToken, mockServer);
-	       this.mockMvc.perform(post("/v1/usuarios/actualizar")
+	       this.mockMvc.perform(post("/usuarios/actualizar")
 	                    .contentType(MediaType.APPLICATION_JSON)
 	                    .accept(MediaType.APPLICATION_JSON)
 	                    .header("Authorization","Bearer " + myToken)
@@ -103,7 +103,7 @@ public class UsuarioControllerTest extends BaseTest {
 	       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 	       String myToken = jwtTokenProvider.createTokenTest(authentication.getPrincipal().toString());
 	       MockModCatalogosClient.estatusUsuario(HttpStatusCode.OK_200, JsonUtil.readFromJson("json/request/estatus_usuario_mock.json"), JsonUtil.readFromJson("json/response/response_estatus_usuario.json"), myToken, mockServer);
-	       this.mockMvc.perform(post("/v1/usuarios/cambiar-estatus")
+	       this.mockMvc.perform(post("/usuarios/cambiar-estatus")
 	                    .contentType(MediaType.APPLICATION_JSON)
 	                    .accept(MediaType.APPLICATION_JSON)
 	                    .header("Authorization","Bearer " + myToken)
@@ -120,7 +120,7 @@ public class UsuarioControllerTest extends BaseTest {
 	       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 	       String myToken = jwtTokenProvider.createTokenTest(authentication.getPrincipal().toString());
 	       MockModCatalogosClient.buscarUsuario(HttpStatusCode.OK_200, JsonUtil.readFromJson("json/request/buscar_usuario_mock.json"), JsonUtil.readFromJson("json/response/response_buscar_usuario.json"), myToken, mockServer);
-	       this.mockMvc.perform(post("/v1/usuarios/buscar")
+	       this.mockMvc.perform(post("/usuarios/buscar")
 	                    .contentType(MediaType.APPLICATION_JSON)
 	                    .accept(MediaType.APPLICATION_JSON)
 	                    .header("Authorization","Bearer " + myToken)

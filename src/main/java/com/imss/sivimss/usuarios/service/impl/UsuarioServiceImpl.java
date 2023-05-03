@@ -120,7 +120,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		try {
 		     return response;
 		} catch (Exception e) {
-			logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), CONSULTA, authentication);
+			//logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), CONSULTA, authentication);
 			return null;
 		}
 	}
@@ -197,7 +197,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		try {
 		    return providerRestTemplate.consumirServicio(usuario.insertar().getDatos(), urlGenericoCrear, authentication);
 		} catch (Exception e) {
-			logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), ALTA, authentication);
+			//logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), ALTA, authentication);
 			return null;
 		}
 	}
@@ -219,7 +219,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		try {
 		    return providerRestTemplate.consumirServicio(usuario.actualizar().getDatos(), urlGenericoActualizar, authentication);
 		} catch (Exception e) {
-			logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), MODIFICACION, authentication);
+			//logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), MODIFICACION, authentication);
 			return null;
 		}
 	}
@@ -240,7 +240,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		try {
 		    return providerRestTemplate.consumirServicio(usuario.cambiarEstatus().getDatos(), urlGenericoActualizar, authentication);
 		} catch (Exception e) {
-			logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), BAJA, authentication);
+			//logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), BAJA, authentication);
 			return null;
 		}
 	}

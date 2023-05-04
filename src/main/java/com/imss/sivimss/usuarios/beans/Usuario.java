@@ -69,7 +69,7 @@ public class Usuario {
 	public static final String ID_DELEGACION = "ID_DELEGACION";
 	public static final String ID_VELATORIO = "ID_VELATORIO";
 	public static final String ID_ROL = "ID_ROL";
-	public static final String CVE_ESTATUS = "CVE_ESTATUS";
+	public static final String IND_ACTIVO = "IND_ACTIVO";
 	
 	public DatosRequest catalogoRoles() {
 		DatosRequest request = new DatosRequest();
@@ -97,7 +97,7 @@ public class Usuario {
 		q.agregarParametroValues(ID_DELEGACION, "" + this.idDelegacion + "");
 		q.agregarParametroValues(ID_VELATORIO, "" + this.idVelatorio + "");
 		q.agregarParametroValues(ID_ROL, "" + this.idRol + "");
-		q.agregarParametroValues(CVE_ESTATUS, "1");
+		q.agregarParametroValues(IND_ACTIVO, "1");
 		q.agregarParametroValues("CVE_USUARIO", "'" + this.claveUsuario + "'");
 		q.agregarParametroValues("CVE_CONTRASENIA", "'" + this.password + "'");
 		q.agregarParametroValues("FEC_ALTA", "CURRENT_TIMESTAMP()");
@@ -124,7 +124,7 @@ public class Usuario {
 		q.agregarParametroValues(ID_DELEGACION, "" + this.idDelegacion + "");
 		q.agregarParametroValues(ID_VELATORIO, "" + this.idVelatorio + "");
 		q.agregarParametroValues(ID_ROL, "" + this.idRol + "");
-		q.agregarParametroValues(CVE_ESTATUS, "" + this.getEstatus() + "");
+		q.agregarParametroValues(IND_ACTIVO, "" + this.getEstatus() + "");
 		q.agregarParametroValues("ID_USUARIO_MODIFICA", "'" + this.idUsuarioModifica + "'");
 		q.agregarParametroValues("FEC_ACTUALIZACION", "CURRENT_TIMESTAMP()");
 		q.addWhere("ID_USUARIO = " + this.id);
@@ -138,7 +138,7 @@ public class Usuario {
 	public DatosRequest cambiarEstatus() {
 		DatosRequest request = new DatosRequest();
 		Map<String, Object> parametro = new HashMap<>();
-		String query = "UPDATE SVT_USUARIOS SET CVE_ESTATUS=!CVE_ESTATUS , FEC_BAJA=CURRENT_TIMESTAMP(), ID_USUARIO_BAJA='"
+		String query = "UPDATE SVT_USUARIOS SET IND_ACTIVO=!IND_ACTIVO , FEC_BAJA=CURRENT_TIMESTAMP(), ID_USUARIO_BAJA='"
 				+ this.idUsuarioBaja + "' WHERE ID_USUARIO = " + this.id + ";";
 		
 		String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
@@ -152,7 +152,7 @@ public class Usuario {
 		StringBuilder query = new StringBuilder("SELECT ID_USUARIO AS id, DES_CURP AS curp, CVE_MATRICULA AS matricula, ");
 		query.append(" NOM_USUARIO AS nombre, NOM_APELLIDO_PATERNO AS paterno, NOM_APELLIDO_MATERNO AS materno, ");
 	    query.append(formatoFecha + " AS fecNacimiento, DES_CORREOE AS correo, ID_OFICINA AS idOficina, ");
-		query.append(" ID_DELEGACION AS idDelegacion, ID_VELATORIO AS idVelatorio, ID_ROL AS idRol, CVE_ESTATUS AS estatus, CVE_USUARIO AS usuario ");
+		query.append(" ID_DELEGACION AS idDelegacion, ID_VELATORIO AS idVelatorio, ID_ROL AS idRol, IND_ACTIVO AS estatus, CVE_USUARIO AS usuario ");
 		query.append(" FROM SVT_USUARIOS ");
 		if (busqueda.getIdOficina() > 1) {
 			query.append(" WHERE ID_DELEGACION = ").append(busqueda.getIdDelegacion());
@@ -173,7 +173,7 @@ public class Usuario {
 		StringBuilder query = new StringBuilder("SELECT ID_USUARIO AS id, DES_CURP AS curp, CVE_MATRICULA AS matricula, ");
 		query.append(" NOM_USUARIO AS nombre, NOM_APELLIDO_PATERNO AS paterno, NOM_APELLIDO_MATERNO AS materno, ");
 	    query.append(formatoFecha + " AS fecNacimiento, DES_CORREOE AS correo, ID_OFICINA AS idOficina, ");
-		query.append(" ID_DELEGACION AS idDelegacion, ID_VELATORIO AS idVelatorio, ID_ROL AS idRol, CVE_ESTATUS AS estatus, CVE_USUARIO AS usuario ");
+		query.append(" ID_DELEGACION AS idDelegacion, ID_VELATORIO AS idVelatorio, ID_ROL AS idRol, IND_ACTIVO AS estatus, CVE_USUARIO AS usuario ");
 		query.append(" FROM SVT_USUARIOS ");
 		query.append(" WHERE 1 = 1" );
 		if (this.getIdOficina() != null) {
@@ -201,7 +201,7 @@ public class Usuario {
 		StringBuilder query = new StringBuilder("SELECT u.ID_USUARIO AS id, u.DES_CURP AS curp, u.CVE_MATRICULA AS matricula, "
 				+ " u.NOM_USUARIO AS nombre, u.NOM_APELLIDO_PATERNO AS paterno, u.NOM_APELLIDO_MATERNO AS materno, "
 				+ formatoFecha + " AS fecNacimiento, u.DES_CORREOE AS correo, DES_NIVELOFICINA AS oficina, DES_DELEGACION AS delegacion, "
-				+ " NOM_VELATORIO AS velatorio, r.DES_ROL AS rol, u.CVE_ESTATUS AS estatus, u.CVE_USUARIO AS usuario FROM SVT_USUARIOS u ");
+				+ " NOM_VELATORIO AS velatorio, r.DES_ROL AS rol, u.IND_ACTIVO AS estatus, u.CVE_USUARIO AS usuario FROM SVT_USUARIOS u ");
 		query.append(" LEFT JOIN svc_rol r USING (ID_ROL) ");
 		query.append(" LEFT JOIN svc_nivel_oficina o ON o.ID_OFICINA = u.ID_OFICINA ");
 		query.append(" LEFT JOIN svc_delegacion d ON d.ID_DELEGACION = u.ID_DELEGACION ");
@@ -260,7 +260,7 @@ public class Usuario {
 	}
 
 	public DatosRequest consultaParamSiap(DatosRequest request) {
-		String query = "SELECT IF(CVE_ESTATUS,1,0) AS valor FROM SVC_PARAMETRO_SISTEMA WHERE DES_PARAMETRO = 'Validacion SIAP'";
+		String query = "SELECT IF(IND_ACTIVO,1,0) AS valor FROM SVC_PARAMETRO_SISTEMA WHERE DES_PARAMETRO = 'Validacion SIAP'";
 		
 		String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
 		request.getDatos().put(AppConstantes.QUERY, encoded);
@@ -269,7 +269,7 @@ public class Usuario {
 	}
 	
 	public DatosRequest consultaParamRenapo(DatosRequest request) {
-		String query = "SELECT IF(CVE_ESTATUS,1,0) AS valor FROM SVC_PARAMETRO_SISTEMA WHERE DES_PARAMETRO = 'Validacion RENAPO'";
+		String query = "SELECT IF(IND_ACTIVO,1,0) AS valor FROM SVC_PARAMETRO_SISTEMA WHERE DES_PARAMETRO = 'Validacion RENAPO'";
 		
 		String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
 		request.getDatos().put(AppConstantes.QUERY, encoded);

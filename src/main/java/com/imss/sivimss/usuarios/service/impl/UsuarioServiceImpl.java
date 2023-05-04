@@ -310,6 +310,8 @@ public class UsuarioServiceImpl implements UsuarioService {
 		BusquedaDto reporteDto = gson.fromJson(datosJson, BusquedaDto.class);
 		
 		Map<String, Object> envioDatos = new Usuario().generarReporte(reporteDto, nombrePdfReportes);
+		log.info("URL reportes");
+		log.info(urlReportes);
 		return providerRestTemplate.consumirServicioReportes(envioDatos, urlReportes, authentication);
 	}
 	

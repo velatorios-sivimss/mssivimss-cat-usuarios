@@ -215,12 +215,7 @@ public class Usuario {
 	}
 	
 	public DatosRequest checaCurp(DatosRequest request) {
-		String query = null;
-		if (!this.curp.matches("[A-Z]{4}\\d{6}[HM][A-Z]{2}[B-DF-HJ-NP-TV-Z]{3}[A-Z0-9][0-9]")) {
-			query = "SELECT 2 AS valor FROM DUAL";
-	    } else {
-	    	query = "SELECT COUNT(*) AS valor FROM SVT_USUARIOS WHERE DES_CURP = '" + this.curp + "'";
-	    }
+		String query = "SELECT COUNT(*) AS valor FROM SVT_USUARIOS WHERE DES_CURP = '" + this.curp + "'";
 		
 		String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
 		request.getDatos().put(AppConstantes.QUERY, encoded);
@@ -245,8 +240,8 @@ public class Usuario {
 	
 	public Boolean consistenciaCurp() {
 		Boolean valido = true;
-	    this.nombre = this.nombre.replace("JOSE ", "");
-	    this.nombre = this.nombre.replace("MARIA ", "");
+	    this.nombre = this.nombre.toUpperCase().replace("JOSE ", "");
+	    this.nombre = this.nombre.toUpperCase().replace("MARIA ", "");
 
 		if (!this.paterno.substring(0, 2).equals(this.curp.substring(0, 2)) || this.materno.charAt(0) != this.curp.charAt(2)) {
 			valido = false;

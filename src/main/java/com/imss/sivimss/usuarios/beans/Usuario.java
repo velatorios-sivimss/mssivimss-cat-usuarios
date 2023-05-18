@@ -72,7 +72,6 @@ public class Usuario {
 	public static final String IND_ACTIVO = "IND_ACTIVO";
 	
 	public DatosRequest catalogoRoles(DatosRequest request) {
-		//DatosRequest request = new DatosRequest();
 		String idNivel = request.getDatos().get("id").toString();
 		Map<String, Object> parametro = new HashMap<>();
 		String query = "SELECT ID_ROL, DES_ROL FROM SVC_ROL WHERE ID_OFICINA = " + idNivel;

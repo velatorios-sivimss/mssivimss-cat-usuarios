@@ -91,12 +91,8 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
 	public Response<?> catalogoRoles(DatosRequest request, Authentication authentication) throws IOException {
-    	//Gson gson = new Gson();
 		List<RolResponse> rolResponses;
-		//String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
-		//UsuarioRequest usuarioRequest = gson.fromJson(datosJson, UsuarioRequest.class);
 		Usuario usuario = new Usuario();
-		//usuario.setIdOficina(usuarioRequest.getIdOficina());
 		Response<?> response = providerRestTemplate.consumirServicio(usuario.catalogoRoles(request).getDatos(), urlGenericoConsulta, 
 				authentication);
 

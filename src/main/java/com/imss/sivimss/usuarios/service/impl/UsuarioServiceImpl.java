@@ -7,7 +7,7 @@ import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
+import java.security.SecureRandom;
 import java.util.logging.Level;
 
 import org.modelmapper.ModelMapper;
@@ -91,10 +91,11 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
 	public Response<?> catalogoRoles(DatosRequest request, Authentication authentication) throws IOException {
-		Usuario usuario= new Usuario();
 		List<RolResponse> rolResponses;
-		Response<?> response = providerRestTemplate.consumirServicio(usuario.catalogoRoles().getDatos(), urlGenericoConsulta, 
+		Usuario usuario = new Usuario();
+		Response<?> response = providerRestTemplate.consumirServicio(usuario.catalogoRoles(request).getDatos(), urlGenericoConsulta, 
 				authentication);
+
 		if (response.getCodigo() == 200) {
 			rolResponses = Arrays.asList(modelMapper.map(response.getDatos(), RolResponse[].class));
 			response.setDatos(ConvertirGenerico.convertInstanceOfObject(rolResponses));
@@ -254,7 +255,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		char[] caracterEsp = {'#','$','^','+','=','!','*','(',')','@','%','&'};
 		String mes = String.format("%02d", Calendar.getInstance().get(Calendar.MONTH) + 1);
 
-		return primerNombre.concat(String.valueOf(caracterEsp[new Random().nextInt(11)])).concat(".").
+		return primerNombre.concat(String.valueOf(caracterEsp[new SecureRandom().nextInt(11)])).concat(".").
 				concat(paterno.substring(0, 2)).concat(mes);
 	}
 
@@ -310,7 +311,6 @@ public class UsuarioServiceImpl implements UsuarioService {
 		BusquedaDto reporteDto = gson.fromJson(datosJson, BusquedaDto.class);
 		
 		Map<String, Object> envioDatos = new Usuario().generarReporte(reporteDto, nombrePdfReportes);
-		log.info("URL reportes");
 		log.info(urlReportes);
 		return providerRestTemplate.consumirServicioReportes(envioDatos, urlReportes, authentication);
 	}

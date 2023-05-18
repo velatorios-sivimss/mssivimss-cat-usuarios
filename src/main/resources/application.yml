@@ -35,6 +35,7 @@ endpoints:
    generico-crear: ${msit_GENERICO_CREAR}
    generico-actualizar: ${msit_GENERICO_ACTUALIZAR}
    generico-reportes: ${msit_GENERICO_REPORTES}
+
    
 
 jwt:

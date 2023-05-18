@@ -91,10 +91,15 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
 	public Response<?> catalogoRoles(DatosRequest request, Authentication authentication) throws IOException {
-		Usuario usuario= new Usuario();
+    	//Gson gson = new Gson();
 		List<RolResponse> rolResponses;
-		Response<?> response = providerRestTemplate.consumirServicio(usuario.catalogoRoles().getDatos(), urlGenericoConsulta, 
+		//String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
+		//UsuarioRequest usuarioRequest = gson.fromJson(datosJson, UsuarioRequest.class);
+		Usuario usuario = new Usuario();
+		//usuario.setIdOficina(usuarioRequest.getIdOficina());
+		Response<?> response = providerRestTemplate.consumirServicio(usuario.catalogoRoles(request).getDatos(), urlGenericoConsulta, 
 				authentication);
+
 		if (response.getCodigo() == 200) {
 			rolResponses = Arrays.asList(modelMapper.map(response.getDatos(), RolResponse[].class));
 			response.setDatos(ConvertirGenerico.convertInstanceOfObject(rolResponses));
@@ -310,7 +315,6 @@ public class UsuarioServiceImpl implements UsuarioService {
 		BusquedaDto reporteDto = gson.fromJson(datosJson, BusquedaDto.class);
 		
 		Map<String, Object> envioDatos = new Usuario().generarReporte(reporteDto, nombrePdfReportes);
-		log.info("URL reportes");
 		log.info(urlReportes);
 		return providerRestTemplate.consumirServicioReportes(envioDatos, urlReportes, authentication);
 	}

@@ -74,7 +74,7 @@ public class Usuario {
 	public DatosRequest catalogoRoles(DatosRequest request) {
 		String idNivel = request.getDatos().get("id").toString();
 		Map<String, Object> parametro = new HashMap<>();
-		String query = "SELECT ID_ROL, DES_ROL FROM SVC_ROL WHERE ID_OFICINA = " + idNivel;
+		String query = "SELECT ID_ROL, DES_ROL FROM SVC_ROL WHERE ID_OFICINA = " + idNivel + " AND IND_ACTIVO = 1";
 		String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
 		parametro.put(AppConstantes.QUERY, encoded);
 		request.setDatos(parametro);

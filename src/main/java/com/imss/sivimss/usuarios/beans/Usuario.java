@@ -151,9 +151,9 @@ public class Usuario {
 		
 		StringBuilder query = new StringBuilder("SELECT ID_USUARIO AS id, DES_CURP AS curp, CVE_MATRICULA AS matricula, ");
 		query.append(" NOM_USUARIO AS nombre, NOM_APELLIDO_PATERNO AS paterno, NOM_APELLIDO_MATERNO AS materno, ");
-	    query.append(formatoFecha + " AS fecNacimiento, DES_CORREOE AS correo, ID_OFICINA AS idOficina, ");
+	    query.append(formatoFecha + " AS fecNacimiento, DES_CORREOE AS correo, u.ID_OFICINA AS idOficina, of.DES_NIVELOFICINA AS desOficina, ");
 		query.append(" ID_DELEGACION AS idDelegacion, ID_VELATORIO AS idVelatorio, ID_ROL AS idRol, IND_ACTIVO AS estatus, CVE_USUARIO AS usuario ");
-		query.append(" FROM SVT_USUARIOS ");
+		query.append(" FROM SVT_USUARIOS u JOIN SVC_NIVEL_OFICINA of ON u.ID_OFICINA = of.ID_OFICINA ");
 		if (busqueda.getIdOficina() > 1) {
 			query.append(" WHERE ID_DELEGACION = ").append(busqueda.getIdDelegacion());
 			if (busqueda.getIdOficina() == 3) {
@@ -172,12 +172,12 @@ public class Usuario {
 		
 		StringBuilder query = new StringBuilder("SELECT ID_USUARIO AS id, DES_CURP AS curp, CVE_MATRICULA AS matricula, ");
 		query.append(" NOM_USUARIO AS nombre, NOM_APELLIDO_PATERNO AS paterno, NOM_APELLIDO_MATERNO AS materno, ");
-	    query.append(formatoFecha + " AS fecNacimiento, DES_CORREOE AS correo, ID_OFICINA AS idOficina, ");
+	    query.append(formatoFecha + " AS fecNacimiento, DES_CORREOE AS correo, u.ID_OFICINA AS idOficina, of.DES_NIVELOFICINA AS desOficina, ");
 		query.append(" ID_DELEGACION AS idDelegacion, ID_VELATORIO AS idVelatorio, ID_ROL AS idRol, IND_ACTIVO AS estatus, CVE_USUARIO AS usuario ");
-		query.append(" FROM SVT_USUARIOS ");
+		query.append(" FROM SVT_USUARIOS u JOIN SVC_NIVEL_OFICINA of ON u.ID_OFICINA = of.ID_OFICINA ");
 		query.append(" WHERE 1 = 1" );
 		if (this.getIdOficina() != null) {
-			query.append(" AND ID_OFICINA = ").append(this.getIdOficina());
+			query.append(" AND u.ID_OFICINA = ").append(this.getIdOficina());
 		}
 		if (this.getIdDelegacion() != null) {
 			query.append(" AND ID_DELEGACION = ").append(this.getIdDelegacion());
@@ -201,7 +201,7 @@ public class Usuario {
 		StringBuilder query = new StringBuilder("SELECT u.ID_USUARIO AS id, u.DES_CURP AS curp, u.CVE_MATRICULA AS matricula, "
 				+ " u.NOM_USUARIO AS nombre, u.NOM_APELLIDO_PATERNO AS paterno, u.NOM_APELLIDO_MATERNO AS materno, "
 				+ formatoFecha + " AS fecNacimiento, u.DES_CORREOE AS correo, DES_NIVELOFICINA AS oficina, DES_DELEGACION AS delegacion, "
-				+ " NOM_VELATORIO AS velatorio, r.DES_ROL AS rol, u.IND_ACTIVO AS estatus, u.CVE_USUARIO AS usuario FROM SVT_USUARIOS u ");
+				+ " DES_VELATORIO AS velatorio, r.DES_ROL AS rol, u.IND_ACTIVO AS estatus, u.CVE_USUARIO AS usuario FROM SVT_USUARIOS u ");
 		query.append(" LEFT JOIN SVC_ROL r USING (ID_ROL) ");
 		query.append(" LEFT JOIN SVC_NIVEL_OFICINA o ON o.ID_OFICINA = u.ID_OFICINA ");
 		query.append(" LEFT JOIN SVC_DELEGACION d ON d.ID_DELEGACION = u.ID_DELEGACION ");

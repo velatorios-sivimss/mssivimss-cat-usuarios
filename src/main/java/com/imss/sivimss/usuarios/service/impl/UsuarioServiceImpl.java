@@ -55,7 +55,9 @@ public class UsuarioServiceImpl implements UsuarioService {
 	
 	private static final String nombrePdfReportes = "reportes/generales/ReporteCatUsuarios.jrxml";
 	
-	private static final String infoNoEncontrada = "No se encontró información relacionada a tu búsqueda.";
+	private static final String INFONOENCONTRADA = "45";
+	
+	private static final String CURPOMATDUPLICADA = "31";
 	
 	private static final String ALTA = "alta";
 	private static final String BAJA = "baja";
@@ -115,7 +117,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 				authentication);
 		ArrayList datos1 = (ArrayList) ((LinkedHashMap) response.getDatos()).get("content");
 		if (datos1.isEmpty()) {
-			response.setMensaje(infoNoEncontrada);
+			response.setMensaje(INFONOENCONTRADA);
 	    }
 		
 		try {
@@ -133,9 +135,13 @@ public class UsuarioServiceImpl implements UsuarioService {
 		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
 		UsuarioRequest usuarioRequest = gson.fromJson(datosJson, UsuarioRequest.class);
 		Usuario usuario = new Usuario(usuarioRequest);
-		return providerRestTemplate.consumirServicio(usuario.checaCurp(request).getDatos(), urlGenericoConsulta,
+		Response<?> response = providerRestTemplate.consumirServicio(usuario.checaCurp(request).getDatos(), urlGenericoConsulta,
 				authentication);
+		if (!response.getDatos().toString().contains("0")) {
+			response.setMensaje(CURPOMATDUPLICADA);
+		}
 		
+		return response;		
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -162,9 +168,13 @@ public class UsuarioServiceImpl implements UsuarioService {
 		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
 		UsuarioRequest usuarioRequest = gson.fromJson(datosJson, UsuarioRequest.class);
 		Usuario usuario = new Usuario(usuarioRequest);
-		return providerRestTemplate.consumirServicio(usuario.checaMatricula(request).getDatos(), urlGenericoConsulta,
+		Response<?> response = providerRestTemplate.consumirServicio(usuario.checaMatricula(request).getDatos(), urlGenericoConsulta,
 				authentication);
+		if (!response.getDatos().toString().contains("0")) {
+			response.setMensaje(CURPOMATDUPLICADA);
+		}
 		
+		return response;
 	}
 
 	@Override

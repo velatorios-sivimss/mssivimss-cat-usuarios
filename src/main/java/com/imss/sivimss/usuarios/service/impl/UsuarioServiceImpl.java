@@ -21,9 +21,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
-import com.imss.sivimss.usuarios.beans.BusquedaDto;
 import com.imss.sivimss.usuarios.beans.Usuario;
 import com.imss.sivimss.usuarios.exception.BadRequestException;
+import com.imss.sivimss.usuarios.model.request.BusquedaDto;
 import com.imss.sivimss.usuarios.model.request.UsuarioDto;
 import com.imss.sivimss.usuarios.model.request.UsuarioRequest;
 import com.imss.sivimss.usuarios.model.response.RolResponse;
@@ -321,7 +321,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		BusquedaDto reporteDto = gson.fromJson(datosJson, BusquedaDto.class);
 		
 		Map<String, Object> envioDatos = new Usuario().generarReporte(reporteDto, nombrePdfReportes);
-		log.info(urlReportes);
+
 		return providerRestTemplate.consumirServicioReportes(envioDatos, urlReportes, authentication);
 	}
 	

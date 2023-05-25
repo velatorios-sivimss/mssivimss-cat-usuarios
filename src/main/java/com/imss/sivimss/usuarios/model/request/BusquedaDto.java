@@ -1,4 +1,4 @@
-package com.imss.sivimss.usuarios.beans;
+package com.imss.sivimss.usuarios.model.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

@@ -1,11 +1,13 @@
 package com.imss.sivimss.usuarios.beans;
 
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.bind.DatatypeConverter;
 import org.springframework.beans.factory.annotation.Value;
 
+import com.imss.sivimss.usuarios.model.request.BusquedaDto;
 import com.imss.sivimss.usuarios.model.request.UsuarioRequest;
 import com.imss.sivimss.usuarios.util.AppConstantes;
 import com.imss.sivimss.usuarios.util.DatosRequest;
@@ -71,17 +73,17 @@ public class Usuario {
 	public static final String ID_ROL = "ID_ROL";
 	public static final String IND_ACTIVO = "IND_ACTIVO";
 	
-	public DatosRequest catalogoRoles(DatosRequest request) {
+	public DatosRequest catalogoRoles(DatosRequest request) throws UnsupportedEncodingException {
 		String idNivel = request.getDatos().get("id").toString();
 		Map<String, Object> parametro = new HashMap<>();
 		String query = "SELECT ID_ROL, DES_ROL FROM SVC_ROL WHERE ID_OFICINA = " + idNivel + " AND IND_ACTIVO = 1";
-		String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
+		String encoded = DatatypeConverter.printBase64Binary(query.getBytes("UTF-8"));
 		parametro.put(AppConstantes.QUERY, encoded);
 		request.setDatos(parametro);
 		return request;
 	}
 
-	public DatosRequest insertar() {
+	public DatosRequest insertar() throws UnsupportedEncodingException {
 		DatosRequest request = new DatosRequest();
 		Map<String, Object> parametro = new HashMap<>();
 
@@ -107,14 +109,14 @@ public class Usuario {
 		q.agregarParametroValues("ID_USUARIO_MODIFICA", "NULL");
 		q.agregarParametroValues("ID_USUARIO_BAJA", "NULL");
 		String query = q.obtenerQueryInsertar();
-		String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
+		String encoded = DatatypeConverter.printBase64Binary(query.getBytes("UTF-8"));
 		parametro.put(AppConstantes.QUERY, encoded);
 		request.setDatos(parametro);
 
 		return request;
 	}
 
-	public DatosRequest actualizar() {
+	public DatosRequest actualizar() throws UnsupportedEncodingException {
 		DatosRequest request = new DatosRequest();
 		Map<String, Object> parametro = new HashMap<>();
 
@@ -129,25 +131,25 @@ public class Usuario {
 		q.agregarParametroValues("FEC_ACTUALIZACION", "CURRENT_TIMESTAMP()");
 		q.addWhere("ID_USUARIO = " + this.id);
 		String query = q.obtenerQueryActualizar();
-		String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
+		String encoded = DatatypeConverter.printBase64Binary(query.getBytes("UTF-8"));
 		parametro.put(AppConstantes.QUERY, encoded);
 		request.setDatos(parametro);
 		return request;
 	}
 
-	public DatosRequest cambiarEstatus() {
+	public DatosRequest cambiarEstatus() throws UnsupportedEncodingException {
 		DatosRequest request = new DatosRequest();
 		Map<String, Object> parametro = new HashMap<>();
 		String query = "UPDATE SVT_USUARIOS SET IND_ACTIVO=!IND_ACTIVO , FEC_BAJA=CURRENT_TIMESTAMP(), ID_USUARIO_BAJA='"
 				+ this.idUsuarioBaja + "' WHERE ID_USUARIO = " + this.id + ";";
 		
-		String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
+		String encoded = DatatypeConverter.printBase64Binary(query.getBytes("UTF-8"));
 		parametro.put(AppConstantes.QUERY, encoded);
 		request.setDatos(parametro);
 		return request;
 	}
 
-	public DatosRequest obtenerUsuarios(DatosRequest request, BusquedaDto busqueda) {
+	public DatosRequest obtenerUsuarios(DatosRequest request, BusquedaDto busqueda) throws UnsupportedEncodingException {
 		
 		StringBuilder query = new StringBuilder("SELECT ID_USUARIO AS id, DES_CURP AS curp, CVE_MATRICULA AS matricula, ");
 		query.append(" NOM_USUARIO AS nombre, NOM_APELLIDO_PATERNO AS paterno, NOM_APELLIDO_MATERNO AS materno, ");
@@ -163,13 +165,13 @@ public class Usuario {
 		}
         query.append(" ORDER BY ID_USUARIO DESC");
         
-		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes());
+		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes("UTF-8"));
 		request.getDatos().put(AppConstantes.QUERY, encoded);
 
 		return request;
 	}
 
-	public DatosRequest buscarUsuario(DatosRequest request) {
+	public DatosRequest buscarUsuario(DatosRequest request) throws UnsupportedEncodingException {
 		
 		StringBuilder query = new StringBuilder("SELECT ID_USUARIO AS id, DES_CURP AS curp, CVE_MATRICULA AS matricula, ");
 		query.append(" NOM_USUARIO AS nombre, NOM_APELLIDO_PATERNO AS paterno, NOM_APELLIDO_MATERNO AS materno, ");
@@ -193,24 +195,24 @@ public class Usuario {
 		
 		query.append(" ORDER BY ID_USUARIO DESC");
 		
-		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes());
+		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes("UTF-8"));
 		request.getDatos().put(AppConstantes.QUERY, encoded);
 		return request;
 	}
 
-	public DatosRequest detalleUsuario(DatosRequest request) {
+	public DatosRequest detalleUsuario(DatosRequest request) throws UnsupportedEncodingException {
 		String idUsuario = request.getDatos().get("id").toString();
 		StringBuilder query = new StringBuilder("SELECT u.ID_USUARIO AS id, u.DES_CURP AS curp, u.CVE_MATRICULA AS matricula, "
 				+ " u.NOM_USUARIO AS nombre, u.NOM_APELLIDO_PATERNO AS paterno, u.NOM_APELLIDO_MATERNO AS materno, "
 				+ formatoFecha + " AS fecNacimiento, u.DES_CORREOE AS correo, DES_NIVELOFICINA AS oficina, DES_DELEGACION AS delegacion, "
-				+ " NOM_VELATORIO AS velatorio, r.DES_ROL AS rol, u.IND_ACTIVO AS estatus, u.CVE_USUARIO AS usuario FROM SVT_USUARIOS u ");
+				+ " DES_VELATORIO AS velatorio, r.DES_ROL AS rol, u.IND_ACTIVO AS estatus, u.CVE_USUARIO AS usuario FROM SVT_USUARIOS u ");
 		query.append(" LEFT JOIN SVC_ROL r USING (ID_ROL) ");
 		query.append(" LEFT JOIN SVC_NIVEL_OFICINA o ON o.ID_OFICINA = u.ID_OFICINA ");
 		query.append(" LEFT JOIN SVC_DELEGACION d ON d.ID_DELEGACION = u.ID_DELEGACION ");
 		query.append(" LEFT JOIN SVC_VELATORIO v ON v.ID_VELATORIO = u.ID_VELATORIO " );
 		query.append(" WHERE u.ID_USUARIO = " + Integer.parseInt(idUsuario));
 		
-		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes());
+		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes("UTF-8"));
 		request.getDatos().remove("id");
 		request.getDatos().put(AppConstantes.QUERY, encoded);
 		return request;

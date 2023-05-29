@@ -45,8 +45,6 @@ jwt:
 
 formato_fecha: ${msit_formato_fecha}
 
-ruta-log: 'C:\Users\gsolis\Documents\logs'
-
 management:
   endpoints:
     web:

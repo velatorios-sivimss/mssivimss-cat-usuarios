@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -185,6 +186,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 				authentication);
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Response<?> agregarUsuario(DatosRequest request, Authentication authentication) throws IOException {
 		Gson gson = new Gson();
@@ -203,11 +205,20 @@ public class UsuarioServiceImpl implements UsuarioService {
 		usuario.setClaveUsuario(generarUsuario(primerNombre, usuarioRequest.getPaterno(), datos1.get(0).get("total").toString()));
 		
 		CharSequence contrasena = generaContrasena(primerNombre, usuarioRequest.getPaterno());
+		usuario.setSinEncode(contrasena.toString());
 		usuario.setPassword(passwordEncoder.encode(contrasena));
 		usuario.setIdUsuarioAlta(usuarioDto.getIdUsuario());
 		
 		try {
-		    return providerRestTemplate.consumirServicio(usuario.insertar().getDatos(), urlGenericoCrear, authentication);
+		    Response<?> request2 = providerRestTemplate.consumirServicio(usuario.insertar().getDatos(), urlGenericoCrear, authentication);
+		    LinkedHashMap mapaDatos = new LinkedHashMap();
+		    ArrayList<LinkedHashMap> datos = new ArrayList<LinkedHashMap>();
+		    mapaDatos.put("id", request2.getDatos());
+		    mapaDatos.put("usuario", usuario.getClaveUsuario());
+		    mapaDatos.put("contrasenia", usuario.getSinEncode());
+		    datos.add(mapaDatos);
+		    request2.setDatos(datos,0);
+		    return request2;
 		} catch (Exception e) {
 			log.error(e.getMessage());
 			//logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), ALTA, authentication);

@@ -39,6 +39,7 @@ public class Usuario {
 	private Integer idVelatorio;
 	private Integer idRol;
 	private String claveUsuario;
+	private String sinEncode;
 	private String password;
 	private Integer idUsuarioAlta;
 	private Integer idUsuarioModifica;
@@ -111,7 +112,7 @@ public class Usuario {
 		String query = q.obtenerQueryInsertar();
 		String encoded = DatatypeConverter.printBase64Binary(query.getBytes("UTF-8"));
 		parametro.put(AppConstantes.QUERY, encoded);
-		request.setDatos(parametro);
+	    request.setDatos(parametro);
 
 		return request;
 	}

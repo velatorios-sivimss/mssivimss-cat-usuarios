@@ -120,18 +120,23 @@ public class Usuario {
 	public DatosRequest actualizar() throws UnsupportedEncodingException {
 		DatosRequest request = new DatosRequest();
 		Map<String, Object> parametro = new HashMap<>();
-
-		final QueryHelper q = new QueryHelper("UPDATE SVT_USUARIOS");
-		q.agregarParametroValues(DES_CORREOE, "'" + this.correo + "'");
-		q.agregarParametroValues(ID_OFICINA, "" + this.idOficina + "");
-		q.agregarParametroValues(ID_DELEGACION, "" + this.idDelegacion + "");
-		q.agregarParametroValues(ID_VELATORIO, "" + this.idVelatorio + "");
-		q.agregarParametroValues(ID_ROL, "" + this.idRol + "");
-		q.agregarParametroValues(IND_ACTIVO, "" + this.getEstatus() + "");
-		q.agregarParametroValues("ID_USUARIO_MODIFICA", "'" + this.idUsuarioModifica + "'");
-		q.agregarParametroValues("FEC_ACTUALIZACION", "CURRENT_TIMESTAMP()");
-		q.addWhere("ID_USUARIO = " + this.id);
-		String query = q.obtenerQueryActualizar();
+		
+		this.setEstatus(this.getEstatus()==null?1:this.getEstatus());
+		String query =" UPDATE SVT_USUARIOS SET DES_CORREOE = '" + this.correo + "', ID_OFICINA = " + this.idOficina + ", " +
+				"ID_DELEGACION = " + this.idDelegacion + ", ID_VELATORIO = " + this.idVelatorio + ", ID_ROL = " + this.getIdRol() + ", IND_ACTIVO = " + 
+				this.getEstatus() + ", " + 	"ID_USUARIO_MODIFICA = " + this.idUsuarioModifica + ", FEC_ACTUALIZACION = CURRENT_TIMESTAMP() \n" +
+				"WHERE ID_USUARIO = " + this.id;
+		//final QueryHelper q = new QueryHelper("UPDATE SVT_USUARIOS ");
+		//q.agregarParametroValues(DES_CORREOE, "'" + this.correo + "'");
+		//q.agregarParametroValues(ID_OFICINA, "" + this.idOficina + "");
+		//q.agregarParametroValues(ID_DELEGACION, "" + this.idDelegacion + "");
+		//q.agregarParametroValues(ID_VELATORIO, "" + this.idVelatorio + "");
+		//q.agregarParametroValues(ID_ROL, "" + this.idRol + "");
+		//q.agregarParametroValues(IND_ACTIVO, "" + this.getEstatus() + "");
+		//q.agregarParametroValues("ID_USUARIO_MODIFICA", "'" + this.idUsuarioModifica + "'");
+		//q.agregarParametroValues(, "FEC_ACTUALIZACION", "CURRENT_TIMESTAMP()");
+		//q.addWhere("ID_USUARIO = " + this.id);
+		//String query = q.obtenerQueryActualizar();
 		String encoded = DatatypeConverter.printBase64Binary(query.getBytes("UTF-8"));
 		parametro.put(AppConstantes.QUERY, encoded);
 		request.setDatos(parametro);

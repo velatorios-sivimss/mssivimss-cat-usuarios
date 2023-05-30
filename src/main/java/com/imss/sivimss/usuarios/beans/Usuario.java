@@ -159,7 +159,7 @@ public class Usuario {
 				query.append(" AND ID_VELATORIO = ").append(busqueda.getIdVelatorio());
 			}
 		}
-        query.append(" ORDER BY ID_USUARIO DESC");
+        //query.append(" ORDER BY ID_USUARIO DESC");
         
 		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes("UTF-8"));
 		request.getDatos().put(AppConstantes.QUERY, encoded);
@@ -189,7 +189,7 @@ public class Usuario {
 			query.append(" AND ID_ROL = ").append(this.getIdRol());
 		}
 		
-		query.append(" ORDER BY ID_USUARIO DESC");
+		//query.append(" ORDER BY ID_USUARIO DESC");
 		
 		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes("UTF-8"));
 		request.getDatos().put(AppConstantes.QUERY, encoded);

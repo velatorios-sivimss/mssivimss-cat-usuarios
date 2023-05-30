@@ -279,9 +279,10 @@ public class UsuarioServiceImpl implements UsuarioService {
 	private String generaContrasena(String primerNombre, String paterno) {
 		char[] caracterEsp = {'#','$','^','+','=','!','*','(',')','@','%','&'};
 		String mes = String.format("%02d", Calendar.getInstance().get(Calendar.MONTH) + 1);
-
+		String formato = paterno.toUpperCase().charAt(0) + paterno.substring(1, paterno.length()).toLowerCase();
+		
 		return primerNombre.concat(String.valueOf(caracterEsp[new SecureRandom().nextInt(11)])).concat(".").
-				concat(paterno.substring(0, 2)).concat(mes);
+				concat(formato.substring(0, 2)).concat(mes);
 	}
 
 	@Override

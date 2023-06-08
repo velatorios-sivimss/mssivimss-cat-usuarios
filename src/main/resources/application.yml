@@ -66,4 +66,6 @@ resilience4j.timelimiter:
       msflujo:
         timeout-duration: ${msit_TIEMPO_DURACION}
 
+
 ruta-log: ${msit_RUTA_LOG}
+

@@ -39,17 +39,16 @@ import com.imss.sivimss.usuarios.util.Response;
 @Service
 public class UsuarioServiceImpl implements UsuarioService {
 
-	@Value("${endpoints.generico-paginado}")
-	private String urlGenericoPaginado;
+	@Value("${endpoints.dominio}")
+	private String urlDominioGenerico;
 	
-	@Value("${endpoints.generico-consulta}")
-	private String urlGenericoConsulta;
+	private static final String PAGINADO = "paginado";
 	
-	@Value("${endpoints.generico-crear}")
-	private String urlGenericoCrear;
+	private static final String CONSULTA = "consulta";
 	
-	@Value("${endpoints.generico-actualizar}")
-	private String urlGenericoActualizar;
+	private static final String CREAR = "crear";
+	
+	private static final String ACTUALIZAR = "actualizar";
 	
 	@Value("${endpoints.generico-reportes}")
 	private String urlReportes;
@@ -63,7 +62,6 @@ public class UsuarioServiceImpl implements UsuarioService {
 	private static final String ALTA = "alta";
 	private static final String BAJA = "baja";
 	private static final String MODIFICACION = "modificacion";
-	private static final String CONSULTA = "consulta";
 	
 	@Autowired 
 	private ProviderServiceRestTemplate providerRestTemplate;
@@ -87,7 +85,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		String datosJson = String.valueOf(authentication.getPrincipal());
 		BusquedaDto busqueda = gson.fromJson(datosJson, BusquedaDto.class);
 		
-		return providerRestTemplate.consumirServicio(usuario.obtenerUsuarios(request, busqueda).getDatos(), urlGenericoPaginado,
+		return providerRestTemplate.consumirServicio(usuario.obtenerUsuarios(request, busqueda).getDatos(), urlDominioGenerico + PAGINADO,
 				authentication);
 		
 	}
@@ -96,7 +94,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 	public Response<?> catalogoRoles(DatosRequest request, Authentication authentication) throws IOException {
 		List<RolResponse> rolResponses;
 		Usuario usuario = new Usuario();
-		Response<?> response = providerRestTemplate.consumirServicio(usuario.catalogoRoles(request).getDatos(), urlGenericoConsulta, 
+		Response<?> response = providerRestTemplate.consumirServicio(usuario.catalogoRoles(request).getDatos(), urlDominioGenerico + CONSULTA, 
 				authentication);
 
 		if (response.getCodigo() == 200) {
@@ -114,7 +112,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		UsuarioRequest usuarioRequest = gson.fromJson(datosJson, UsuarioRequest.class);
 		Usuario usuario = new Usuario(usuarioRequest);
 		
-		Response<?> response = providerRestTemplate.consumirServicio(usuario.buscarUsuario(request).getDatos(), urlGenericoPaginado,
+		Response<?> response = providerRestTemplate.consumirServicio(usuario.buscarUsuario(request).getDatos(), urlDominioGenerico + PAGINADO,
 				authentication);
 		ArrayList datos1 = (ArrayList) ((LinkedHashMap) response.getDatos()).get("content");
 		if (datos1.isEmpty()) {
@@ -125,7 +123,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		     return response;
 		} catch (Exception e) {
 			log.error(e.getMessage());
-			//logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), CONSULTA, authentication);
+			logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), CONSULTA, authentication);
 			return null;
 		}
 	}
@@ -137,7 +135,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
 		UsuarioRequest usuarioRequest = gson.fromJson(datosJson, UsuarioRequest.class);
 		Usuario usuario = new Usuario(usuarioRequest);
-		Response<?> response = providerRestTemplate.consumirServicio(usuario.checaCurp(request).getDatos(), urlGenericoConsulta,
+		Response<?> response = providerRestTemplate.consumirServicio(usuario.checaCurp(request).getDatos(), urlDominioGenerico + CONSULTA,
 				authentication);
 		if (!response.getDatos().toString().contains("0")) {
 			response.setMensaje(CURPOMATDUPLICADA);
@@ -170,7 +168,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
 		UsuarioRequest usuarioRequest = gson.fromJson(datosJson, UsuarioRequest.class);
 		Usuario usuario = new Usuario(usuarioRequest);
-		Response<?> response = providerRestTemplate.consumirServicio(usuario.checaMatricula(request).getDatos(), urlGenericoConsulta,
+		Response<?> response = providerRestTemplate.consumirServicio(usuario.checaMatricula(request).getDatos(), urlDominioGenerico + CONSULTA,
 				authentication);
 		if (!response.getDatos().toString().contains("0")) {
 			response.setMensaje(CURPOMATDUPLICADA);
@@ -182,7 +180,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 	@Override
 	public Response<?> detalleUsuario(DatosRequest request, Authentication authentication) throws IOException {
 		Usuario usuario= new Usuario();
-		return providerRestTemplate.consumirServicio(usuario.detalleUsuario(request).getDatos(), urlGenericoConsulta,
+		return providerRestTemplate.consumirServicio(usuario.detalleUsuario(request).getDatos(), urlDominioGenerico + CONSULTA,
 				authentication);
 	}
 
@@ -199,7 +197,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		
 		Integer espacio = usuarioRequest.getNombre().indexOf(' ');
 		String primerNombre = (espacio == -1) ? usuarioRequest.getNombre() : usuarioRequest.getNombre().substring(0, espacio);
-		Response<?> request1 = providerRestTemplate.consumirServicio(usuario.totalUsuarios(request).getDatos(), urlGenericoConsulta,
+		Response<?> request1 = providerRestTemplate.consumirServicio(usuario.totalUsuarios(request).getDatos(), urlDominioGenerico + CONSULTA,
 				authentication);
 		ArrayList<LinkedHashMap> datos1 = (ArrayList) request1.getDatos();
 		usuario.setClaveUsuario(generarUsuario(primerNombre, usuarioRequest.getPaterno(), datos1.get(0).get("total").toString()));
@@ -210,7 +208,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		usuario.setIdUsuarioAlta(usuarioDto.getIdUsuario());
 		
 		try {
-		    Response<?> request2 = providerRestTemplate.consumirServicio(usuario.insertar().getDatos(), urlGenericoCrear, authentication);
+		    Response<?> request2 = providerRestTemplate.consumirServicio(usuario.insertar().getDatos(), urlDominioGenerico + CREAR, authentication);
 		    LinkedHashMap mapaDatos = new LinkedHashMap();
 		    ArrayList<LinkedHashMap> datos = new ArrayList<LinkedHashMap>();
 		    mapaDatos.put("id", request2.getDatos());
@@ -221,7 +219,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		    return request2;
 		} catch (Exception e) {
 			log.error(e.getMessage());
-			//logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), ALTA, authentication);
+			logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), ALTA, authentication);
 			return null;
 		}
 	}
@@ -241,10 +239,10 @@ public class UsuarioServiceImpl implements UsuarioService {
 		usuario.setIdUsuarioModifica(usuarioDto.getIdUsuario());
 		
 		try {
-		    return providerRestTemplate.consumirServicio(usuario.actualizar().getDatos(), urlGenericoActualizar, authentication);
+		    return providerRestTemplate.consumirServicio(usuario.actualizar().getDatos(), urlDominioGenerico + ACTUALIZAR, authentication);
 		} catch (Exception e) {
 			log.error(e.getMessage());
-			//logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), MODIFICACION, authentication);
+			logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), MODIFICACION, authentication);
 			return null;
 		}
 	}
@@ -263,10 +261,10 @@ public class UsuarioServiceImpl implements UsuarioService {
 		Usuario usuario= new Usuario(usuarioRequest);
 		usuario.setIdUsuarioBaja(usuarioDto.getIdUsuario());
 		try {
-		    return providerRestTemplate.consumirServicio(usuario.cambiarEstatus().getDatos(), urlGenericoActualizar, authentication);
+		    return providerRestTemplate.consumirServicio(usuario.cambiarEstatus().getDatos(), urlDominioGenerico + ACTUALIZAR, authentication);
 		} catch (Exception e) {
 			log.error(e.getMessage());
-			//logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), BAJA, authentication);
+			logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), BAJA, authentication);
 			return null;
 		}
 	}
@@ -293,7 +291,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
 		UsuarioRequest usuarioRequest = gson.fromJson(datosJson, UsuarioRequest.class);
 		Usuario usuario = new Usuario(usuarioRequest);
-		response =  providerRestTemplate.consumirServicio(usuario.consultaParamSiap(request).getDatos(), urlGenericoConsulta,
+		response =  providerRestTemplate.consumirServicio(usuario.consultaParamSiap(request).getDatos(), urlDominioGenerico + CONSULTA,
 				authentication);
 		ArrayList<LinkedHashMap> datosResp = (ArrayList<LinkedHashMap>) response.getDatos();
 		if (datosResp.isEmpty()) {
@@ -315,7 +313,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
 		UsuarioRequest usuarioRequest = gson.fromJson(datosJson, UsuarioRequest.class);
 		Usuario usuario = new Usuario(usuarioRequest);
-		response = providerRestTemplate.consumirServicio(usuario.consultaParamRenapo(request).getDatos(), urlGenericoConsulta,
+		response = providerRestTemplate.consumirServicio(usuario.consultaParamRenapo(request).getDatos(), urlDominioGenerico + CONSULTA,
 				authentication);
 		ArrayList<LinkedHashMap> datosResp = (ArrayList<LinkedHashMap>) response.getDatos();
 		if (datosResp.isEmpty()) {

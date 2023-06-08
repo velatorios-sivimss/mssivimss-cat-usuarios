@@ -14,8 +14,11 @@ import java.util.Date;
 
 @Component
 public class LogUtil {
-    //@Value("${ruta-log}")
-    //private String rutaLog;
+    @Value("${ruta-log}")
+    private String rutaLog;
+    
+    @Value("$(spring.application.name)")
+    private String nombreApp;
 
     private String formatoFechaLog = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss").format(new Date());
 
@@ -23,10 +26,10 @@ public class LogUtil {
 
 
     public void crearArchivoLog(String tipoLog, String origen, String clasePath, String mensaje, String tiempoEjecucion, Authentication authentication) throws IOException {
-        /*try {
+        try {
             Gson json = new Gson();
             UsuarioDto usuarioDto = json.fromJson((String) authentication.getPrincipal(), UsuarioDto.class);
-            File archivo = new File(rutaLog + "cat-usuarios" + new SimpleDateFormat("ddMMyyyy").format(new Date()) + ".log");
+            File archivo = new File(rutaLog + nombreApp + "_" + new SimpleDateFormat("ddMMyyyy").format(new Date()) + ".log");
             FileWriter escribirArchivo = new FileWriter(archivo, true);
             if (archivo.exists()) {
                 escribirArchivo.write("" + formatoFechaLog + " --- [" + tipoLog + "] " + origen + " " + clasePath + " : " + mensaje + " , Usuario: " + usuarioDto.getCveUsuario() + " - " + tiempoEjecucion);
@@ -41,12 +44,12 @@ public class LogUtil {
         } catch (Exception e) {
             log.error("No se puede escribir el log.");
             log.error(e.getMessage());
-        }*/
+        }
 
     }
 
     public void crearArchivoLogDTO(String tipoLog, String origen, String clasePath, String mensaje, String tiempoEjecucion, UsuarioDto usuarioDto) throws IOException {
-        /*try {
+        try {
             File archivo = new File(rutaLog + new SimpleDateFormat("ddMMyyyy").format(new Date()) + ".log");
             FileWriter escribirArchivo = new FileWriter(archivo, true);
             if (archivo.exists()) {
@@ -62,7 +65,7 @@ public class LogUtil {
         } catch (Exception e) {
             log.error("No se puede escribir el log.");
             log.error(e.getMessage());
-        } */
+        } 
 
     }
 

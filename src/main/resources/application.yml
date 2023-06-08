@@ -1,9 +1,11 @@
 server:
   port: 8080
   servlet:
-    contextPath: /mssivimss-cat-usuarios/v1
+    contextPath: /${spring.application.name}/v1
     
 spring:
+  application:
+    name: mssivimss-cat-usuarios
   mvc:
     pathmatch:
       matching-strategy: ANT_PATH_MATCHER
@@ -25,8 +27,6 @@ logging:
 endpoints:
    dominio: ${msit_GENERICO}
    generico-reportes: ${msit_GENERICO_REPORTES}
-
-   
 
 jwt:
   secretkey-usuarios: ${msit_SECRET_KEY}

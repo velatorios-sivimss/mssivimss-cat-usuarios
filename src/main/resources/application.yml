@@ -22,18 +22,8 @@ logging:
     org.springframework.web: info
     org.hibernate: error
 
-logos:
-  msit_logo_imss: ${msit_LOGO_IMSS}
-  msit_logo_sistema: ${msit_LOGO_SISTEMA}
-
 endpoints:
-   consulta-ooads: ${msit_CONSULTA_OOAD}
-   paginado-unidad: ${msit_PAGINADO_UNIDAD}
-   dominio-consulta: ${msit_DOMINIO_CONSULTA}
-   generico-paginado: ${msit_GENERICO_PAGINADO}
-   generico-consulta: ${msit_GENERICO_CONSULTA}
-   generico-crear: ${msit_GENERICO_CREAR}
-   generico-actualizar: ${msit_GENERICO_ACTUALIZAR}
+   dominio: ${msit_GENERICO}
    generico-reportes: ${msit_GENERICO_REPORTES}
 
    
@@ -76,4 +66,4 @@ resilience4j.timelimiter:
       msflujo:
         timeout-duration: ${msit_TIEMPO_DURACION}
 
-ruta-log: ${msit_ruta_log}      
+ruta-log: ${msit_RUTA_LOG}

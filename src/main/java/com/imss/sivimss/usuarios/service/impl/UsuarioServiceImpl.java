@@ -42,13 +42,13 @@ public class UsuarioServiceImpl implements UsuarioService {
 	@Value("${endpoints.dominio}")
 	private String urlDominioGenerico;
 	
-	private static final String PAGINADO = "paginado";
+	private static final String PAGINADO = "/paginado";
 	
-	private static final String CONSULTA = "consulta";
+	private static final String CONSULTA = "/consulta";
 	
-	private static final String CREAR = "crear";
+	private static final String CREAR = "/crear";
 	
-	private static final String ACTUALIZAR = "actualizar";
+	private static final String ACTUALIZAR = "/actualizar";
 	
 	@Value("${endpoints.generico-reportes}")
 	private String urlReportes;

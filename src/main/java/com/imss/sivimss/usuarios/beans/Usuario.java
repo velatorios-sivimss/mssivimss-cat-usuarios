@@ -33,6 +33,7 @@ public class Usuario {
 	private String paterno;
 	private String materno;
 	private String fecNacimiento;
+	private Integer idEdoNacimiento;
 	private String correo;
 	private Integer idOficina;
 	private Integer idDelegacion;
@@ -103,6 +104,7 @@ public class Usuario {
 		q.agregarParametroValues(IND_ACTIVO, "1");
 		q.agregarParametroValues("CVE_USUARIO", "'" + this.claveUsuario + "'");
 		q.agregarParametroValues("CVE_CONTRASENIA", "'" + this.password + "'");
+		q.agregarParametroValues("ID_ESTADO_NACIMIENTO", "" + this.idEdoNacimiento + "");
 		q.agregarParametroValues("FEC_ALTA", "CURRENT_TIMESTAMP()");
 		q.agregarParametroValues("ID_USUARIO_ALTA", "'" + this.idUsuarioAlta + "'");
 		q.agregarParametroValues("FEC_ACTUALIZACION", "NULL");
@@ -149,7 +151,7 @@ public class Usuario {
 		
 		StringBuilder query = new StringBuilder("SELECT ID_USUARIO AS id, DES_CURP AS curp, CVE_MATRICULA AS matricula, ");
 		query.append(" NOM_USUARIO AS nombre, NOM_APELLIDO_PATERNO AS paterno, NOM_APELLIDO_MATERNO AS materno, ");
-	    query.append(formatoFecha + " AS fecNacimiento, DES_CORREOE AS correo, u.ID_OFICINA AS idOficina, of.DES_NIVELOFICINA AS desOficina, ");
+	    query.append(formatoFecha + " AS fecNacimiento, ID_ESTADO_NACIMIENTO AS idEdoNacimiento, DES_CORREOE AS correo, u.ID_OFICINA AS idOficina, of.DES_NIVELOFICINA AS desOficina, ");
 		query.append(" ID_DELEGACION AS idDelegacion, ID_VELATORIO AS idVelatorio, u.ID_ROL AS idRol, r.DES_ROL AS desRol, u.IND_ACTIVO AS estatus, CVE_USUARIO AS usuario ");
 		query.append(" FROM SVT_USUARIOS u JOIN SVC_NIVEL_OFICINA of ON (u.ID_OFICINA = of.ID_OFICINA) ");
 		query.append(" LEFT JOIN SVC_ROL r USING (ID_ROL) ");
@@ -171,7 +173,7 @@ public class Usuario {
 		
 		StringBuilder query = new StringBuilder("SELECT ID_USUARIO AS id, DES_CURP AS curp, CVE_MATRICULA AS matricula, ");
 		query.append(" NOM_USUARIO AS nombre, NOM_APELLIDO_PATERNO AS paterno, NOM_APELLIDO_MATERNO AS materno, ");
-	    query.append(formatoFecha + " AS fecNacimiento, DES_CORREOE AS correo, u.ID_OFICINA AS idOficina, of.DES_NIVELOFICINA AS desOficina, ");
+	    query.append(formatoFecha + " AS fecNacimiento, ID_ESTADO_NACIMIENTO AS idEdoNacimiento, DES_CORREOE AS correo, u.ID_OFICINA AS idOficina, of.DES_NIVELOFICINA AS desOficina, ");
 		query.append(" ID_DELEGACION AS idDelegacion, ID_VELATORIO AS idVelatorio, u.ID_ROL AS idRol, r.DES_ROL AS desRol, u.IND_ACTIVO AS estatus, CVE_USUARIO AS usuario ");
 		query.append(" FROM SVT_USUARIOS u JOIN SVC_NIVEL_OFICINA of ON (u.ID_OFICINA = of.ID_OFICINA) ");
 		query.append(" LEFT JOIN SVC_ROL r USING (ID_ROL) ");
@@ -200,12 +202,14 @@ public class Usuario {
 		String idUsuario = request.getDatos().get("id").toString();
 		StringBuilder query = new StringBuilder("SELECT u.ID_USUARIO AS id, u.DES_CURP AS curp, u.CVE_MATRICULA AS matricula, "
 				+ " u.NOM_USUARIO AS nombre, u.NOM_APELLIDO_PATERNO AS paterno, u.NOM_APELLIDO_MATERNO AS materno, "
-				+ formatoFecha + " AS fecNacimiento, u.DES_CORREOE AS correo, DES_NIVELOFICINA AS oficina, DES_DELEGACION AS delegacion, "
-				+ " DES_VELATORIO AS velatorio, r.DES_ROL AS rol, u.IND_ACTIVO AS estatus, u.CVE_USUARIO AS usuario FROM SVT_USUARIOS u ");
+				+ formatoFecha + " AS fecNacimiento, e.DES_ESTADO AS desEdoNacimiento, u.DES_CORREOE AS correo, DES_NIVELOFICINA AS oficina, DES_DELEGACION AS delegacion, "
+				+ " DES_VELATORIO AS velatorio, r.DES_ROL AS rol, u.IND_ACTIVO AS estatus, u.CVE_USUARIO AS usuario, "
+				+ " 'XXXXXXXXXXXXX' AS contrasenia FROM SVT_USUARIOS u ");
 		query.append(" LEFT JOIN SVC_ROL r USING (ID_ROL) ");
 		query.append(" LEFT JOIN SVC_NIVEL_OFICINA o ON o.ID_OFICINA = u.ID_OFICINA ");
 		query.append(" LEFT JOIN SVC_DELEGACION d ON d.ID_DELEGACION = u.ID_DELEGACION ");
 		query.append(" LEFT JOIN SVC_VELATORIO v ON v.ID_VELATORIO = u.ID_VELATORIO " );
+		query.append(" LEFT JOIN SVC_ESTADO e ON e.ID_ESTADO = u.ID_ESTADO_NACIMIENTO ");
 		query.append(" WHERE u.ID_USUARIO = " + Integer.parseInt(idUsuario));
 		
 		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes("UTF-8"));

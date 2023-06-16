@@ -202,8 +202,9 @@ public class Usuario {
 		String idUsuario = request.getDatos().get("id").toString();
 		StringBuilder query = new StringBuilder("SELECT u.ID_USUARIO AS id, u.DES_CURP AS curp, u.CVE_MATRICULA AS matricula, "
 				+ " u.NOM_USUARIO AS nombre, u.NOM_APELLIDO_PATERNO AS paterno, u.NOM_APELLIDO_MATERNO AS materno, "
-				+ formatoFecha + " AS fecNacimiento, e.DES_ESTADO AS desEdoNacimiento, u.DES_CORREOE AS correo, DES_NIVELOFICINA AS oficina, DES_DELEGACION AS delegacion, "
-				+ " DES_VELATORIO AS velatorio, r.DES_ROL AS rol, u.IND_ACTIVO AS estatus, u.CVE_USUARIO AS usuario, "
+				+ formatoFecha + " AS fecNacimiento, u.ID_ESTADO_NACIMIENTO AS idEdoNacimiento, e.DES_ESTADO AS desEdoNacimiento, u.DES_CORREOE AS correo, "
+				+ "u.ID_OFICINA AS idOficina, DES_NIVELOFICINA AS oficina, u.ID_DELEGACION AS idDelegacion, DES_DELEGACION AS delegacion, "
+				+ " u.ID_VELATORIO AS idVelatorio, DES_VELATORIO AS velatorio, u.ID_ROL AS idRol, r.DES_ROL AS rol, u.IND_ACTIVO AS estatus, u.CVE_USUARIO AS usuario, "
 				+ " 'XXXXXXXXXXXXX' AS contrasenia FROM SVT_USUARIOS u ");
 		query.append(" LEFT JOIN SVC_ROL r USING (ID_ROL) ");
 		query.append(" LEFT JOIN SVC_NIVEL_OFICINA o ON o.ID_OFICINA = u.ID_OFICINA ");

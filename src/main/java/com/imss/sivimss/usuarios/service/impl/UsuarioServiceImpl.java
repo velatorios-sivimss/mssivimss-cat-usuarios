@@ -179,7 +179,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
 	@Override
 	public Response<?> detalleUsuario(DatosRequest request, Authentication authentication) throws IOException {
-		Usuario usuario= new Usuario();
+		Usuario usuario = new Usuario();
 		return providerRestTemplate.consumirServicio(usuario.detalleUsuario(request).getDatos(), urlDominioGenerico + CONSULTA,
 				authentication);
 	}

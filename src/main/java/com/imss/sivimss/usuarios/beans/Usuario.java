@@ -65,7 +65,7 @@ public class Usuario {
 		this.claveUsuario = usuarioRequest.getClaveUsuario();
 		this.password = usuarioRequest.getPassword();
 		this.estatus = usuarioRequest.getEstatus();
-		
+		this.idEdoNacimiento = usuarioRequest.getIdEdoNacimiento(); 
 	}
 	
 	public static final String DES_CORREOE = "DES_CORREOE";

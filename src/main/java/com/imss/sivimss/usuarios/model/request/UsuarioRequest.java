@@ -31,5 +31,6 @@ public class UsuarioRequest {
 	private String claveUsuario;
 	private String password;
 	private Integer estatus;
+	private Integer idEdoNacimiento;
 	
 }

@@ -91,7 +91,7 @@ public class Usuario {
 
 		final QueryHelper q = new QueryHelper("INSERT INTO SVT_USUARIOS");
 		q.agregarParametroValues("DES_CURP", "'" + this.curp + "'");
-		q.agregarParametroValues("CVE_MATRICULA", "'" + this.claveMatricula + "'");
+ 	    q.agregarParametroValues("CVE_MATRICULA", setValor(this.claveMatricula));
 		q.agregarParametroValues("NOM_USUARIO", "'" + this.nombre + "'");
 		q.agregarParametroValues("NOM_APELLIDO_PATERNO", "'" + this.paterno + "'");
 		q.agregarParametroValues("NOM_APELLIDO_MATERNO", "'" + this.materno + "'");
@@ -298,5 +298,13 @@ public class Usuario {
 		
 		return envioDatos;
 	}
+	
+	private String setValor(String valor) {
+        if (valor == null || valor.equals("")) {
+            return "NULL";
+        } else {
+            return "'" + valor + "'";
+        }
+    }
 	
 }

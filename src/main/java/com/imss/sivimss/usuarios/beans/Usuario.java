@@ -90,7 +90,7 @@ public class Usuario {
 		Map<String, Object> parametro = new HashMap<>();
 
 		final QueryHelper q = new QueryHelper("INSERT INTO SVT_USUARIOS");
-		q.agregarParametroValues("DES_CURP", "'" + this.curp + "'");
+		q.agregarParametroValues("CVE_CURP", "'" + this.curp + "'");
  	    q.agregarParametroValues("CVE_MATRICULA", setValor(this.claveMatricula));
 		q.agregarParametroValues("NOM_USUARIO", "'" + this.nombre + "'");
 		q.agregarParametroValues("NOM_APELLIDO_PATERNO", "'" + this.paterno + "'");
@@ -149,7 +149,7 @@ public class Usuario {
 
 	public DatosRequest obtenerUsuarios(DatosRequest request, BusquedaDto busqueda) throws UnsupportedEncodingException {
 		
-		StringBuilder query = new StringBuilder("SELECT ID_USUARIO AS id, DES_CURP AS curp, CVE_MATRICULA AS matricula, ");
+		StringBuilder query = new StringBuilder("SELECT ID_USUARIO AS id, CVE_CURP AS curp, CVE_MATRICULA AS matricula, ");
 		query.append(" NOM_USUARIO AS nombre, NOM_APELLIDO_PATERNO AS paterno, NOM_APELLIDO_MATERNO AS materno, ");
 	    query.append(formatoFecha + " AS fecNacimiento, ID_ESTADO_NACIMIENTO AS idEdoNacimiento, DES_CORREOE AS correo, u.ID_OFICINA AS idOficina, of.DES_NIVELOFICINA AS desOficina, ");
 		query.append(" ID_DELEGACION AS idDelegacion, ID_VELATORIO AS idVelatorio, u.ID_ROL AS idRol, r.DES_ROL AS desRol, u.IND_ACTIVO AS estatus, CVE_USUARIO AS usuario ");
@@ -171,7 +171,7 @@ public class Usuario {
 
 	public DatosRequest buscarUsuario(DatosRequest request) throws UnsupportedEncodingException {
 		
-		StringBuilder query = new StringBuilder("SELECT ID_USUARIO AS id, DES_CURP AS curp, CVE_MATRICULA AS matricula, ");
+		StringBuilder query = new StringBuilder("SELECT ID_USUARIO AS id, CVE_CURP AS curp, CVE_MATRICULA AS matricula, ");
 		query.append(" NOM_USUARIO AS nombre, NOM_APELLIDO_PATERNO AS paterno, NOM_APELLIDO_MATERNO AS materno, ");
 	    query.append(formatoFecha + " AS fecNacimiento, ID_ESTADO_NACIMIENTO AS idEdoNacimiento, DES_CORREOE AS correo, u.ID_OFICINA AS idOficina, of.DES_NIVELOFICINA AS desOficina, ");
 		query.append(" ID_DELEGACION AS idDelegacion, ID_VELATORIO AS idVelatorio, u.ID_ROL AS idRol, r.DES_ROL AS desRol, u.IND_ACTIVO AS estatus, CVE_USUARIO AS usuario ");
@@ -200,7 +200,7 @@ public class Usuario {
 
 	public DatosRequest detalleUsuario(DatosRequest request) throws UnsupportedEncodingException {
 		String idUsuario = request.getDatos().get("id").toString();
-		StringBuilder query = new StringBuilder("SELECT u.ID_USUARIO AS id, u.DES_CURP AS curp, u.CVE_MATRICULA AS matricula, "
+		StringBuilder query = new StringBuilder("SELECT u.ID_USUARIO AS id, u.CVE_CURP AS curp, u.CVE_MATRICULA AS matricula, "
 				+ " u.NOM_USUARIO AS nombre, u.NOM_APELLIDO_PATERNO AS paterno, u.NOM_APELLIDO_MATERNO AS materno, "
 				+ formatoFecha + " AS fecNacimiento, u.ID_ESTADO_NACIMIENTO AS idEdoNacimiento, e.DES_ESTADO AS desEdoNacimiento, u.DES_CORREOE AS correo, "
 				+ "u.ID_OFICINA AS idOficina, DES_NIVELOFICINA AS oficina, u.ID_DELEGACION AS idDelegacion, DES_DELEGACION AS delegacion, "
@@ -220,7 +220,7 @@ public class Usuario {
 	}
 	
 	public DatosRequest checaCurp(DatosRequest request) {
-		String query = "SELECT COUNT(*) AS valor FROM SVT_USUARIOS WHERE DES_CURP = '" + this.curp + "'";
+		String query = "SELECT COUNT(*) AS valor FROM SVT_USUARIOS WHERE CVE_CURP = '" + this.curp + "'";
 		
 		String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
 		request.getDatos().put(AppConstantes.QUERY, encoded);

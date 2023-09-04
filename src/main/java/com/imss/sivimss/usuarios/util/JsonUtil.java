@@ -9,8 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ResourceUtils;
 
-import com.imss.sivimss.usuarios.util.JsonUtil;
-
 public class JsonUtil {
 	private static Logger LOG = LoggerFactory.getLogger(JsonUtil.class);
     private JsonUtil() {

@@ -4,8 +4,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.util.ResourceUtils;
 
-import com.imss.sivimss.usuarios.util.JsonUtil;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;

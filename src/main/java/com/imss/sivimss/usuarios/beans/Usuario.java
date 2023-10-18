@@ -1,11 +1,14 @@
 package com.imss.sivimss.usuarios.beans;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.bind.DatatypeConverter;
-import org.springframework.beans.factory.annotation.Value;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.imss.sivimss.usuarios.model.request.BusquedaDto;
 import com.imss.sivimss.usuarios.model.request.UsuarioRequest;
@@ -48,6 +51,7 @@ public class Usuario {
 	private Integer estatus;
 	
 	private static final String formatoFecha =  "DATE_FORMAT(FEC_NACIMIENTO,'%d/%m/%Y')";
+	private static final Logger log = LoggerFactory.getLogger(Usuario.class);
 
 	public Usuario(UsuarioRequest usuarioRequest) {
 		this.id = usuarioRequest.getId();
@@ -68,24 +72,25 @@ public class Usuario {
 		this.idEdoNacimiento = usuarioRequest.getIdEdoNacimiento(); 
 	}
 	
-	public static final String DES_CORREOE = "DES_CORREOE";
+	public static final String DES_CORREOE = "REF_CORREOE";
 	public static final String ID_OFICINA = "ID_OFICINA";
 	public static final String ID_DELEGACION = "ID_DELEGACION";
 	public static final String ID_VELATORIO = "ID_VELATORIO";
 	public static final String ID_ROL = "ID_ROL";
 	public static final String IND_ACTIVO = "IND_ACTIVO";
 	
-	public DatosRequest catalogoRoles(DatosRequest request) throws UnsupportedEncodingException {
+	public DatosRequest catalogoRoles(DatosRequest request) {
 		String idNivel = request.getDatos().get("id").toString();
 		Map<String, Object> parametro = new HashMap<>();
 		String query = "SELECT ID_ROL, DES_ROL FROM SVC_ROL WHERE ID_OFICINA = " + idNivel + " AND IND_ACTIVO = 1";
-		String encoded = DatatypeConverter.printBase64Binary(query.getBytes("UTF-8"));
+		log.info(query);
+		String encoded = DatatypeConverter.printBase64Binary(query.getBytes(StandardCharsets.UTF_8));
 		parametro.put(AppConstantes.QUERY, encoded);
 		request.setDatos(parametro);
 		return request;
 	}
 
-	public DatosRequest insertar() throws UnsupportedEncodingException {
+	public DatosRequest insertar() {
 		DatosRequest request = new DatosRequest();
 		Map<String, Object> parametro = new HashMap<>();
 
@@ -112,7 +117,8 @@ public class Usuario {
 		q.agregarParametroValues("ID_USUARIO_MODIFICA", "NULL");
 		q.agregarParametroValues("ID_USUARIO_BAJA", "NULL");
 		String query = q.obtenerQueryInsertar();
-		String encoded = DatatypeConverter.printBase64Binary(query.getBytes("UTF-8"));
+		log.info(query);
+		String encoded = DatatypeConverter.printBase64Binary(query.getBytes(StandardCharsets.UTF_8));
 		parametro.put(AppConstantes.QUERY, encoded);
 	    request.setDatos(parametro);
 
@@ -124,24 +130,26 @@ public class Usuario {
 		Map<String, Object> parametro = new HashMap<>();
 		
 		this.setEstatus(this.getEstatus()==null?1:this.getEstatus());
-		String query =" UPDATE SVT_USUARIOS SET DES_CORREOE = '" + this.correo + "', ID_OFICINA = " + this.idOficina + ", " +
+		String query =" UPDATE SVT_USUARIOS SET " + DES_CORREOE + " = '" + this.correo + "', ID_OFICINA = " + this.idOficina + ", " +
 				"ID_DELEGACION = " + this.idDelegacion + ", ID_VELATORIO = " + this.idVelatorio + ", ID_ROL = " + this.getIdRol() + ", IND_ACTIVO = " + 
-				this.getEstatus() + ", " + 	"ID_USUARIO_MODIFICA = " + this.idUsuarioModifica + ", FEC_ACTUALIZACION = CURRENT_TIMESTAMP() \n" +
-				"WHERE ID_USUARIO = " + this.id;
+				this.getEstatus() + ", " + 	"ID_USUARIO_MODIFICA = " + this.idUsuarioModifica + ", FEC_ACTUALIZACION = CURRENT_TIMESTAMP() " +
+				" WHERE ID_USUARIO = " + this.id;
 
-		String encoded = DatatypeConverter.printBase64Binary(query.getBytes("UTF-8"));
+		log.info(query);
+		String encoded = DatatypeConverter.printBase64Binary(query.getBytes(StandardCharsets.UTF_8));
 		parametro.put(AppConstantes.QUERY, encoded);
 		request.setDatos(parametro);
 		return request;
 	}
 
-	public DatosRequest cambiarEstatus() throws UnsupportedEncodingException {
+	public DatosRequest cambiarEstatus() {
 		DatosRequest request = new DatosRequest();
 		Map<String, Object> parametro = new HashMap<>();
 		String query = "UPDATE SVT_USUARIOS SET IND_ACTIVO=!IND_ACTIVO , FEC_BAJA=CURRENT_TIMESTAMP(), ID_USUARIO_BAJA='"
 				+ this.idUsuarioBaja + "' WHERE ID_USUARIO = " + this.id + ";";
-		
-		String encoded = DatatypeConverter.printBase64Binary(query.getBytes("UTF-8"));
+
+		log.info(query);
+		String encoded = DatatypeConverter.printBase64Binary(query.getBytes(StandardCharsets.UTF_8));
 		parametro.put(AppConstantes.QUERY, encoded);
 		request.setDatos(parametro);
 		return request;
@@ -151,7 +159,7 @@ public class Usuario {
 		
 		StringBuilder query = new StringBuilder("SELECT ID_USUARIO AS id, CVE_CURP AS curp, CVE_MATRICULA AS matricula, ");
 		query.append(" NOM_USUARIO AS nombre, NOM_APELLIDO_PATERNO AS paterno, NOM_APELLIDO_MATERNO AS materno, ");
-	    query.append(formatoFecha + " AS fecNacimiento, ID_ESTADO_NACIMIENTO AS idEdoNacimiento, DES_CORREOE AS correo, u.ID_OFICINA AS idOficina, of.DES_NIVELOFICINA AS desOficina, ");
+	    query.append(formatoFecha + " AS fecNacimiento, ID_ESTADO_NACIMIENTO AS idEdoNacimiento, " + DES_CORREOE + " AS correo, u.ID_OFICINA AS idOficina, of.DES_NIVELOFICINA AS desOficina, ");
 		query.append(" ID_DELEGACION AS idDelegacion, ID_VELATORIO AS idVelatorio, u.ID_ROL AS idRol, r.DES_ROL AS desRol, u.IND_ACTIVO AS estatus, CVE_USUARIO AS usuario ");
 		query.append(" FROM SVT_USUARIOS u JOIN SVC_NIVEL_OFICINA of ON (u.ID_OFICINA = of.ID_OFICINA) ");
 		query.append(" LEFT JOIN SVC_ROL r USING (ID_ROL) ");
@@ -162,8 +170,9 @@ public class Usuario {
 			}
 		}
         //query.append(" ORDER BY ID_USUARIO DESC");
-        
-		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes("UTF-8"));
+
+		log.info(query.toString());
+		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes(StandardCharsets.UTF_8));
 		request.getDatos().put(AppConstantes.QUERY, encoded);
 
 		return request;
@@ -173,7 +182,7 @@ public class Usuario {
 		
 		StringBuilder query = new StringBuilder("SELECT ID_USUARIO AS id, CVE_CURP AS curp, CVE_MATRICULA AS matricula, ");
 		query.append(" NOM_USUARIO AS nombre, NOM_APELLIDO_PATERNO AS paterno, NOM_APELLIDO_MATERNO AS materno, ");
-	    query.append(formatoFecha + " AS fecNacimiento, ID_ESTADO_NACIMIENTO AS idEdoNacimiento, DES_CORREOE AS correo, u.ID_OFICINA AS idOficina, of.DES_NIVELOFICINA AS desOficina, ");
+	    query.append(formatoFecha + " AS fecNacimiento, ID_ESTADO_NACIMIENTO AS idEdoNacimiento, " + DES_CORREOE + " AS correo, u.ID_OFICINA AS idOficina, of.DES_NIVELOFICINA AS desOficina, ");
 		query.append(" ID_DELEGACION AS idDelegacion, ID_VELATORIO AS idVelatorio, u.ID_ROL AS idRol, r.DES_ROL AS desRol, u.IND_ACTIVO AS estatus, CVE_USUARIO AS usuario ");
 		query.append(" FROM SVT_USUARIOS u JOIN SVC_NIVEL_OFICINA of ON (u.ID_OFICINA = of.ID_OFICINA) ");
 		query.append(" LEFT JOIN SVC_ROL r USING (ID_ROL) ");
@@ -192,17 +201,18 @@ public class Usuario {
 		}
 		
 		//query.append(" ORDER BY ID_USUARIO DESC");
-		
-		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes("UTF-8"));
+
+		log.info(query.toString());
+		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes(StandardCharsets.UTF_8));
 		request.getDatos().put(AppConstantes.QUERY, encoded);
 		return request;
 	}
 
-	public DatosRequest detalleUsuario(DatosRequest request) throws UnsupportedEncodingException {
+	public DatosRequest detalleUsuario(DatosRequest request) {
 		String idUsuario = request.getDatos().get("id").toString();
 		StringBuilder query = new StringBuilder("SELECT u.ID_USUARIO AS id, u.CVE_CURP AS curp, u.CVE_MATRICULA AS matricula, "
 				+ " u.NOM_USUARIO AS nombre, u.NOM_APELLIDO_PATERNO AS paterno, u.NOM_APELLIDO_MATERNO AS materno, "
-				+ formatoFecha + " AS fecNacimiento, u.ID_ESTADO_NACIMIENTO AS idEdoNacimiento, e.DES_ESTADO AS desEdoNacimiento, u.DES_CORREOE AS correo, "
+				+ formatoFecha + " AS fecNacimiento, u.ID_ESTADO_NACIMIENTO AS idEdoNacimiento, e.DES_ESTADO AS desEdoNacimiento, u." + DES_CORREOE + " AS correo, "
 				+ "u.ID_OFICINA AS idOficina, DES_NIVELOFICINA AS oficina, u.ID_DELEGACION AS idDelegacion, DES_DELEGACION AS delegacion, "
 				+ " u.ID_VELATORIO AS idVelatorio, DES_VELATORIO AS velatorio, u.ID_ROL AS idRol, r.DES_ROL AS rol, u.IND_ACTIVO AS estatus, u.CVE_USUARIO AS usuario, "
 				+ " 'XXXXXXXXXXXXX' AS contrasenia FROM SVT_USUARIOS u ");
@@ -212,8 +222,9 @@ public class Usuario {
 		query.append(" LEFT JOIN SVC_VELATORIO v ON v.ID_VELATORIO = u.ID_VELATORIO " );
 		query.append(" LEFT JOIN SVC_ESTADO e ON e.ID_ESTADO = u.ID_ESTADO_NACIMIENTO ");
 		query.append(" WHERE u.ID_USUARIO = " + Integer.parseInt(idUsuario));
-		
-		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes("UTF-8"));
+
+		log.info(query.toString());
+		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes(StandardCharsets.UTF_8));
 		request.getDatos().remove("id");
 		request.getDatos().put(AppConstantes.QUERY, encoded);
 		return request;
@@ -221,7 +232,8 @@ public class Usuario {
 	
 	public DatosRequest checaCurp(DatosRequest request) {
 		String query = "SELECT COUNT(*) AS valor FROM SVT_USUARIOS WHERE CVE_CURP = '" + this.curp + "'";
-		
+
+		log.info(query);
 		String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
 		request.getDatos().put(AppConstantes.QUERY, encoded);
 		return request;
@@ -229,15 +241,17 @@ public class Usuario {
 	
 	public DatosRequest checaMatricula(DatosRequest request) {
 		String query = "SELECT COUNT(*) AS valor FROM SVT_USUARIOS WHERE CVE_MATRICULA = " + this.claveMatricula;
-		
-		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes());
+
+		log.info(query.toString());
+		String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
 		request.getDatos().put(AppConstantes.QUERY, encoded);
 		return request;
 	}
 	
 	public DatosRequest totalUsuarios(DatosRequest request) {
 		String query = "SELECT COUNT(*) AS total FROM SVT_USUARIOS";
-		
+
+		log.info(query);
 		String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
 		request.getDatos().put(AppConstantes.QUERY, encoded);
 		return request;
@@ -261,7 +275,8 @@ public class Usuario {
 
 	public DatosRequest consultaParamSiap(DatosRequest request) {
 		String query = "SELECT IF(IND_ACTIVO,1,0) AS valor FROM SVC_PARAMETRO_SISTEMA WHERE DES_PARAMETRO = 'Validacion SIAP'";
-		
+
+		log.info(query);
 		String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
 		request.getDatos().put(AppConstantes.QUERY, encoded);
 		
@@ -270,7 +285,8 @@ public class Usuario {
 	
 	public DatosRequest consultaParamRenapo(DatosRequest request) {
 		String query = "SELECT IF(IND_ACTIVO,1,0) AS valor FROM SVC_PARAMETRO_SISTEMA WHERE DES_PARAMETRO = 'Validacion RENAPO'";
-		
+
+		log.info(query);
 		String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
 		request.getDatos().put(AppConstantes.QUERY, encoded);
 

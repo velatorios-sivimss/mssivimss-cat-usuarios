@@ -15,7 +15,7 @@ public final class BadRequestExceptionTest {
         BadRequestException badRequestException = ((BadRequestException) createInstance("com.imss.sivimss.usuarios.exception.BadRequestException"));
         setField(badRequestException, "com.imss.sivimss.usuarios.exception.BadRequestException", "codigo", null);
 
-        HttpStatus actual = badRequestException.getEstado();
+        HttpStatus actual = badRequestException.getCodigo();
 
         assertNull(actual);
     }

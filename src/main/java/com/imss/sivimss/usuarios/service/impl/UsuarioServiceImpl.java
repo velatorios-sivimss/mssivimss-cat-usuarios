@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +52,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 	@Value("${endpoints.generico-reportes}")
 	private String urlReportes;
 	
-	private static final String nombrePdfReportes = "reportes/generales/ReporteCatUsuarios.jrxml";
+	private static final String NOMBRE_PDF_REPORTES = "reportes/generales/ReporteCatUsuarios.jrxml";
 	
 	private static final String INFONOENCONTRADA = "45";
 	
@@ -78,7 +77,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 	private static final Logger log = LoggerFactory.getLogger(UsuarioServiceImpl.class);
 
 	@Override
-	public Response<?> consultarUsuarios(DatosRequest request, Authentication authentication) throws IOException {
+	public Response<Object> consultarUsuarios(DatosRequest request, Authentication authentication) throws IOException {
 		Usuario usuario = new Usuario();
 		Gson gson = new Gson();
 
@@ -91,10 +90,10 @@ public class UsuarioServiceImpl implements UsuarioService {
 	}
 
     @Override
-	public Response<?> catalogoRoles(DatosRequest request, Authentication authentication) throws IOException {
+	public Response<Object> catalogoRoles(DatosRequest request, Authentication authentication) throws IOException {
 		List<RolResponse> rolResponses;
 		Usuario usuario = new Usuario();
-		Response<?> response = providerRestTemplate.consumirServicio(usuario.catalogoRoles(request).getDatos(), urlDominioGenerico + CONSULTA, 
+		Response<Object> response = providerRestTemplate.consumirServicio(usuario.catalogoRoles(request).getDatos(), urlDominioGenerico + CONSULTA, 
 				authentication);
 
 		if (response.getCodigo() == 200) {
@@ -105,16 +104,16 @@ public class UsuarioServiceImpl implements UsuarioService {
 	}
 	
 	@Override
-	public Response<?> buscarUsuario(DatosRequest request, Authentication authentication) throws IOException {
+	public Response<Object> buscarUsuario(DatosRequest request, Authentication authentication) throws IOException {
 		Gson gson = new Gson();
 
 		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
 		UsuarioRequest usuarioRequest = gson.fromJson(datosJson, UsuarioRequest.class);
 		Usuario usuario = new Usuario(usuarioRequest);
 		
-		Response<?> response = providerRestTemplate.consumirServicio(usuario.buscarUsuario(request).getDatos(), urlDominioGenerico + PAGINADO,
+		Response<Object> response = providerRestTemplate.consumirServicio(usuario.buscarUsuario(request).getDatos(), urlDominioGenerico + PAGINADO,
 				authentication);
-		ArrayList datos1 = (ArrayList) ((LinkedHashMap) response.getDatos()).get("content");
+		ArrayList<?> datos1 = (ArrayList) ((LinkedHashMap) response.getDatos()).get("content");
 		if (datos1.isEmpty()) {
 			response.setMensaje(INFONOENCONTRADA);
 	    }
@@ -129,13 +128,13 @@ public class UsuarioServiceImpl implements UsuarioService {
 	}
 	
 	@Override
-	public Response<?> validaCurp(DatosRequest request, Authentication authentication) throws IOException {
+	public Response<Object> validaCurp(DatosRequest request, Authentication authentication) throws IOException {
 		Gson gson = new Gson();
 
 		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
 		UsuarioRequest usuarioRequest = gson.fromJson(datosJson, UsuarioRequest.class);
 		Usuario usuario = new Usuario(usuarioRequest);
-		Response<?> response = providerRestTemplate.consumirServicio(usuario.checaCurp(request).getDatos(), urlDominioGenerico + CONSULTA,
+		Response<Object> response = providerRestTemplate.consumirServicio(usuario.checaCurp(request).getDatos(), urlDominioGenerico + CONSULTA,
 				authentication);
 		if (!response.getDatos().toString().contains("0")) {
 			response.setMensaje(CURPOMATDUPLICADA);
@@ -144,9 +143,8 @@ public class UsuarioServiceImpl implements UsuarioService {
 		return response;		
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
-	public Response<?> consistCurp(DatosRequest request, Authentication authentication) throws IOException {
+	public Response<Object> consistCurp(DatosRequest request, Authentication authentication) throws IOException {
 		Gson gson = new Gson();
 
 		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
@@ -155,20 +153,21 @@ public class UsuarioServiceImpl implements UsuarioService {
 		usuario.setNombre(usuarioRequest.getNombre().toUpperCase());
 		usuario.setPaterno(usuarioRequest.getPaterno().toUpperCase());
 		usuario.setMaterno(usuarioRequest.getMaterno().toUpperCase());
+		usuario.setCurp(usuarioRequest.getCurp().toUpperCase());
 		
-	    return new Response<Object>(false, HttpStatus.OK.value(), "Exito" , ConvertirGenerico.convertInstanceOfObject(usuario.consistenciaCurp()) );
+	    return new Response<>(false, HttpStatus.OK.value(), "Exito" , ConvertirGenerico.convertInstanceOfObject(usuario.consistenciaCurp()) );
 
 		
 	}
 	
 	@Override
-	public Response<?> validaMatricula(DatosRequest request, Authentication authentication) throws IOException {
+	public Response<Object> validaMatricula(DatosRequest request, Authentication authentication) throws IOException {
 		Gson gson = new Gson();
 
 		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
 		UsuarioRequest usuarioRequest = gson.fromJson(datosJson, UsuarioRequest.class);
 		Usuario usuario = new Usuario(usuarioRequest);
-		Response<?> response = providerRestTemplate.consumirServicio(usuario.checaMatricula(request).getDatos(), urlDominioGenerico + CONSULTA,
+		Response<Object> response = providerRestTemplate.consumirServicio(usuario.checaMatricula(request).getDatos(), urlDominioGenerico + CONSULTA,
 				authentication);
 		if (!response.getDatos().toString().contains("0")) {
 			response.setMensaje(CURPOMATDUPLICADA);
@@ -178,7 +177,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 	}
 
 	@Override
-	public Response<?> detalleUsuario(DatosRequest request, Authentication authentication) throws IOException {
+	public Response<Object> detalleUsuario(DatosRequest request, Authentication authentication) throws IOException {
 		Usuario usuario = new Usuario();
 		return providerRestTemplate.consumirServicio(usuario.detalleUsuario(request).getDatos(), urlDominioGenerico + CONSULTA,
 				authentication);
@@ -186,7 +185,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Response<?> agregarUsuario(DatosRequest request, Authentication authentication) throws IOException {
+	public Response<Object> agregarUsuario(DatosRequest request, Authentication authentication) throws IOException {
 		Gson gson = new Gson();
 
 		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
@@ -197,7 +196,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		
 		Integer espacio = usuarioRequest.getNombre().indexOf(' ');
 		String primerNombre = (espacio == -1) ? usuarioRequest.getNombre() : usuarioRequest.getNombre().substring(0, espacio);
-		Response<?> request1 = providerRestTemplate.consumirServicio(usuario.totalUsuarios(request).getDatos(), urlDominioGenerico + CONSULTA,
+		Response<Object> request1 = providerRestTemplate.consumirServicio(usuario.totalUsuarios(request).getDatos(), urlDominioGenerico + CONSULTA,
 				authentication);
 		ArrayList<LinkedHashMap> datos1 = (ArrayList) request1.getDatos();
 		usuario.setClaveUsuario(generarUsuario(primerNombre, usuarioRequest.getPaterno(), datos1.get(0).get("total").toString()));
@@ -208,14 +207,14 @@ public class UsuarioServiceImpl implements UsuarioService {
 		usuario.setIdUsuarioAlta(usuarioDto.getIdUsuario());
 		
 		try {
-		    Response<?> request2 = providerRestTemplate.consumirServicio(usuario.insertar().getDatos(), urlDominioGenerico + CREAR, authentication);
+		    Response<Object> request2 = providerRestTemplate.consumirServicio(usuario.insertar().getDatos(), urlDominioGenerico + CREAR, authentication);
 		    LinkedHashMap mapaDatos = new LinkedHashMap();
-		    ArrayList<LinkedHashMap> datos = new ArrayList<LinkedHashMap>();
+		    ArrayList<LinkedHashMap> datos = new ArrayList<>();
 		    mapaDatos.put("id", request2.getDatos());
 		    mapaDatos.put("usuario", usuario.getClaveUsuario());
 		    mapaDatos.put("contrasenia", usuario.getSinEncode());
 		    datos.add(mapaDatos);
-		    request2.setDatos(datos,0);
+		    request2.setDatos(datos);
 		    return request2;
 		} catch (Exception e) {
 			log.error(e.getMessage());
@@ -225,7 +224,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 	}
 
 	@Override
-	public Response<?> actualizarUsuario(DatosRequest request, Authentication authentication) throws IOException {
+	public Response<Object> actualizarUsuario(DatosRequest request, Authentication authentication) throws IOException {
 		Gson gson = new Gson();
 
 		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
@@ -248,7 +247,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 	}
 
 	@Override
-	public Response<?> cambiarEstatusUsuario(DatosRequest request, Authentication authentication) throws IOException {
+	public Response<Object> cambiarEstatusUsuario(DatosRequest request, Authentication authentication) throws IOException {
 		Gson gson = new Gson();
 
 		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
@@ -284,9 +283,9 @@ public class UsuarioServiceImpl implements UsuarioService {
 	}
 
 	@Override
-	public Response<?> consultaSiap(DatosRequest request, Authentication authentication) throws IOException {
+	public Response<Object> consultaSiap(DatosRequest request, Authentication authentication) throws IOException {
 		Gson gson = new Gson();
-		Response<?> response;
+		Response<Object> response;
 
 		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
 		UsuarioRequest usuarioRequest = gson.fromJson(datosJson, UsuarioRequest.class);
@@ -306,9 +305,9 @@ public class UsuarioServiceImpl implements UsuarioService {
 	}
 
 	@Override
-	public Response<?> consultaRenapo(DatosRequest request, Authentication authentication) throws IOException {
+	public Response<Object> consultaRenapo(DatosRequest request, Authentication authentication) throws IOException {
 		Gson gson = new Gson();
-		Response<?> response;
+		Response<Object> response;
 
 		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
 		UsuarioRequest usuarioRequest = gson.fromJson(datosJson, UsuarioRequest.class);
@@ -329,12 +328,12 @@ public class UsuarioServiceImpl implements UsuarioService {
 	}
 	
 	@Override
-	public Response<?> descargarDocumento(DatosRequest request, Authentication authentication) throws IOException {
+	public Response<Object> descargarDocumento(DatosRequest request, Authentication authentication) throws IOException {
 		Gson gson = new Gson();
 		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
 		BusquedaDto reporteDto = gson.fromJson(datosJson, BusquedaDto.class);
 		
-		Map<String, Object> envioDatos = new Usuario().generarReporte(reporteDto, nombrePdfReportes);
+		Map<String, Object> envioDatos = new Usuario().generarReporte(reporteDto, NOMBRE_PDF_REPORTES);
 
 		return providerRestTemplate.consumirServicioReportes(envioDatos, urlReportes, authentication);
 	}

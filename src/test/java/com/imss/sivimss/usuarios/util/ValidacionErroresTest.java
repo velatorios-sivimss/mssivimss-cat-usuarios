@@ -30,7 +30,7 @@ public final class ValidacionErroresTest {
 
         Map<String, String> datos=new HashMap<>();
         datos.put("nombre","vacio");
-        ValidacionErrores errores=new ValidacionErrores(datos, new Date());
+        ValidacionErrores errores=new ValidacionErrores(datos);
         assertTrue(errores.isError());
     }
 }

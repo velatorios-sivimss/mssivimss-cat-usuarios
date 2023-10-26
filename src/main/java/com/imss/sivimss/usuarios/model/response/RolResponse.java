@@ -20,9 +20,9 @@ import lombok.ToString;
 public class RolResponse {
 	
 	@JsonProperty(value = "id")
-	private Integer ID_ROL;
+	private Integer idRol;
 	
 	@JsonProperty(value = "nombre")
-	private String DES_ROL;
+	private String desRol;
 	
 }

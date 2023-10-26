@@ -50,9 +50,13 @@ public class Usuario {
 	private Integer idUsuarioBaja;
 	private Integer estatus;
 	
-	private static final String formatoFecha =  "DATE_FORMAT(FEC_NACIMIENTO,'%d/%m/%Y')";
+	private static final String FORMATO_FECHA =  "DATE_FORMAT(FEC_NACIMIENTO,'%d/%m/%Y')";
 	private static final Logger log = LoggerFactory.getLogger(Usuario.class);
-
+	private static final String LEFT_JOIN = " LEFT JOIN ";
+	private static final String SVC_ROL_R = " SVC_ROL r ";
+	private static final String USING_ID_ROL = " USING (ID_ROL) ";
+	private static final String AND_ID_VELATORIO = " AND ID_VELATORIO = ";
+	
 	public Usuario(UsuarioRequest usuarioRequest) {
 		this.id = usuarioRequest.getId();
 		this.curp = usuarioRequest.getCurp();
@@ -155,24 +159,23 @@ public class Usuario {
 		return request;
 	}
 
-	public DatosRequest obtenerUsuarios(DatosRequest request, BusquedaDto busqueda) throws UnsupportedEncodingException {
+	public DatosRequest obtenerUsuarios(DatosRequest request, BusquedaDto busqueda) {
 		
 		StringBuilder query = new StringBuilder("SELECT ID_USUARIO AS id, CVE_CURP AS curp, CVE_MATRICULA AS matricula, ");
 		query.append(" NOM_USUARIO AS nombre, NOM_APELLIDO_PATERNO AS paterno, NOM_APELLIDO_MATERNO AS materno, ");
-	    query.append(formatoFecha + " AS fecNacimiento, ID_ESTADO_NACIMIENTO AS idEdoNacimiento, " + DES_CORREOE + " AS correo, u.ID_OFICINA AS idOficina, of.DES_NIVELOFICINA AS desOficina, ");
+	    query.append(FORMATO_FECHA + " AS fecNacimiento, ID_ESTADO_NACIMIENTO AS idEdoNacimiento, " + DES_CORREOE + " AS correo, u.ID_OFICINA AS idOficina, of.DES_NIVELOFICINA AS desOficina, ");
 		query.append(" ID_DELEGACION AS idDelegacion, ID_VELATORIO AS idVelatorio, u.ID_ROL AS idRol, r.DES_ROL AS desRol, u.IND_ACTIVO AS estatus, CVE_USUARIO AS usuario ");
 		query.append(" FROM SVT_USUARIOS u JOIN SVC_NIVEL_OFICINA of ON (u.ID_OFICINA = of.ID_OFICINA) ");
-		query.append(" LEFT JOIN SVC_ROL r USING (ID_ROL) ");
+		query.append(LEFT_JOIN + SVC_ROL_R + USING_ID_ROL);
 		if (busqueda.getIdOficina() > 1) {
 			query.append(" WHERE ID_DELEGACION = ").append(busqueda.getIdDelegacion());
 			if (busqueda.getIdOficina() == 3) {
-				query.append(" AND ID_VELATORIO = ").append(busqueda.getIdVelatorio());
+				query.append(AND_ID_VELATORIO).append(busqueda.getIdVelatorio());
 			}
 		}
-        //query.append(" ORDER BY ID_USUARIO DESC");
-
-		log.info(query.toString());
-		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes(StandardCharsets.UTF_8));
+		String str = query.toString();
+		log.info(str);
+		String encoded = DatatypeConverter.printBase64Binary(str.getBytes(StandardCharsets.UTF_8));
 		request.getDatos().put(AppConstantes.QUERY, encoded);
 
 		return request;
@@ -182,10 +185,10 @@ public class Usuario {
 		
 		StringBuilder query = new StringBuilder("SELECT ID_USUARIO AS id, CVE_CURP AS curp, CVE_MATRICULA AS matricula, ");
 		query.append(" NOM_USUARIO AS nombre, NOM_APELLIDO_PATERNO AS paterno, NOM_APELLIDO_MATERNO AS materno, ");
-	    query.append(formatoFecha + " AS fecNacimiento, ID_ESTADO_NACIMIENTO AS idEdoNacimiento, " + DES_CORREOE + " AS correo, u.ID_OFICINA AS idOficina, of.DES_NIVELOFICINA AS desOficina, ");
+	    query.append(FORMATO_FECHA + " AS fecNacimiento, ID_ESTADO_NACIMIENTO AS idEdoNacimiento, " + DES_CORREOE + " AS correo, u.ID_OFICINA AS idOficina, of.DES_NIVELOFICINA AS desOficina, ");
 		query.append(" ID_DELEGACION AS idDelegacion, ID_VELATORIO AS idVelatorio, u.ID_ROL AS idRol, r.DES_ROL AS desRol, u.IND_ACTIVO AS estatus, CVE_USUARIO AS usuario ");
 		query.append(" FROM SVT_USUARIOS u JOIN SVC_NIVEL_OFICINA of ON (u.ID_OFICINA = of.ID_OFICINA) ");
-		query.append(" LEFT JOIN SVC_ROL r USING (ID_ROL) ");
+		query.append(LEFT_JOIN + SVC_ROL_R + USING_ID_ROL);
 		query.append(" WHERE 1 = 1" );
 		if (this.getIdOficina() != null) {
 			query.append(" AND u.ID_OFICINA = ").append(this.getIdOficina());
@@ -194,15 +197,14 @@ public class Usuario {
 			query.append(" AND ID_DELEGACION = ").append(this.getIdDelegacion());
 		}
 		if (this.getIdVelatorio() != null) {
-			query.append(" AND ID_VELATORIO = ").append(this.getIdVelatorio());
+			query.append(AND_ID_VELATORIO).append(this.getIdVelatorio());
 		}
 		if (this.getIdRol() != null) {
 			query.append(" AND ID_ROL = ").append(this.getIdRol());
 		}
-		
-		//query.append(" ORDER BY ID_USUARIO DESC");
 
-		log.info(query.toString());
+		String str = query.toString();
+		log.info(str);
 		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes(StandardCharsets.UTF_8));
 		request.getDatos().put(AppConstantes.QUERY, encoded);
 		return request;
@@ -212,18 +214,19 @@ public class Usuario {
 		String idUsuario = request.getDatos().get("id").toString();
 		StringBuilder query = new StringBuilder("SELECT u.ID_USUARIO AS id, u.CVE_CURP AS curp, u.CVE_MATRICULA AS matricula, "
 				+ " u.NOM_USUARIO AS nombre, u.NOM_APELLIDO_PATERNO AS paterno, u.NOM_APELLIDO_MATERNO AS materno, "
-				+ formatoFecha + " AS fecNacimiento, u.ID_ESTADO_NACIMIENTO AS idEdoNacimiento, e.DES_ESTADO AS desEdoNacimiento, u." + DES_CORREOE + " AS correo, "
+				+ FORMATO_FECHA + " AS fecNacimiento, u.ID_ESTADO_NACIMIENTO AS idEdoNacimiento, e.DES_ESTADO AS desEdoNacimiento, u." + DES_CORREOE + " AS correo, "
 				+ "u.ID_OFICINA AS idOficina, DES_NIVELOFICINA AS oficina, u.ID_DELEGACION AS idDelegacion, DES_DELEGACION AS delegacion, "
 				+ " u.ID_VELATORIO AS idVelatorio, DES_VELATORIO AS velatorio, u.ID_ROL AS idRol, r.DES_ROL AS rol, u.IND_ACTIVO AS estatus, u.CVE_USUARIO AS usuario, "
 				+ " 'XXXXXXXXXXXXX' AS contrasenia FROM SVT_USUARIOS u ");
-		query.append(" LEFT JOIN SVC_ROL r USING (ID_ROL) ");
-		query.append(" LEFT JOIN SVC_NIVEL_OFICINA o ON o.ID_OFICINA = u.ID_OFICINA ");
-		query.append(" LEFT JOIN SVC_DELEGACION d ON d.ID_DELEGACION = u.ID_DELEGACION ");
-		query.append(" LEFT JOIN SVC_VELATORIO v ON v.ID_VELATORIO = u.ID_VELATORIO " );
-		query.append(" LEFT JOIN SVC_ESTADO e ON e.ID_ESTADO = u.ID_ESTADO_NACIMIENTO ");
+		query.append(LEFT_JOIN + SVC_ROL_R + USING_ID_ROL);
+		query.append(LEFT_JOIN + " SVC_NIVEL_OFICINA o ON o.ID_OFICINA = u.ID_OFICINA ");
+		query.append(LEFT_JOIN + " SVC_DELEGACION d ON d.ID_DELEGACION = u.ID_DELEGACION ");
+		query.append(LEFT_JOIN + " SVC_VELATORIO v ON v.ID_VELATORIO = u.ID_VELATORIO " );
+		query.append(LEFT_JOIN + " SVC_ESTADO e ON e.ID_ESTADO = u.ID_ESTADO_NACIMIENTO ");
 		query.append(" WHERE u.ID_USUARIO = " + Integer.parseInt(idUsuario));
 
-		log.info(query.toString());
+		String str = query.toString();
+		log.info(str);
 		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes(StandardCharsets.UTF_8));
 		request.getDatos().remove("id");
 		request.getDatos().put(AppConstantes.QUERY, encoded);
@@ -242,7 +245,7 @@ public class Usuario {
 	public DatosRequest checaMatricula(DatosRequest request) {
 		String query = "SELECT COUNT(*) AS valor FROM SVT_USUARIOS WHERE CVE_MATRICULA = " + this.claveMatricula;
 
-		log.info(query.toString());
+		log.info(query);
 		String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
 		request.getDatos().put(AppConstantes.QUERY, encoded);
 		return request;
@@ -258,19 +261,16 @@ public class Usuario {
 	}
 	
 	public Boolean consistenciaCurp() {
-		Boolean valido = true;
 	    this.nombre = this.nombre.toUpperCase().replace("JOSE ", "");
 	    this.nombre = this.nombre.toUpperCase().replace("MARIA ", "");
 
-		if (!this.paterno.substring(0, 2).equals(this.curp.substring(0, 2)) || this.materno.charAt(0) != this.curp.charAt(2)) {
-			valido = false;
-		} else if (this.nombre.charAt(0) != this.curp.charAt(3) || !this.fecNacimiento.substring(2, 8).equals(this.curp.substring(4, 10))) {
-			valido = false;
-		} else if (!paterno.contains(this.curp.substring(13, 14)) || !materno.contains(this.curp.substring(14, 15)) || !nombre.contains(this.curp.substring(15, 16))) {
-			valido = false;
+		if( (!this.paterno.substring(0, 2).equals(this.curp.substring(0, 2)) || this.materno.charAt(0) != this.curp.charAt(2)) 
+				|| (this.nombre.charAt(0) != this.curp.charAt(3) || !this.fecNacimiento.substring(2, 8).equals(this.curp.substring(4, 10)))
+			|| (!paterno.contains(this.curp.substring(13, 14)) || !materno.contains(this.curp.substring(14, 15)) || !nombre.contains(this.curp.substring(15, 16)))) {
+			return false;
 		}
 		
-		return valido;
+		return true;
 	}
 
 	public DatosRequest consultaParamSiap(DatosRequest request) {
@@ -303,11 +303,12 @@ public class Usuario {
 			condicion.append(" AND ID_DELEGACION = ").append(reporteDto.getIdDelegacion());
 		}
 		if (reporteDto.getIdVelatorio() != null) {
-			condicion.append(" AND ID_VELATORIO = ").append(reporteDto.getIdVelatorio());
+			condicion.append(AND_ID_VELATORIO).append(reporteDto.getIdVelatorio());
 		}
 		if (reporteDto.getIdRol() != null) {
 			condicion.append(" AND ID_ROL = ").append(this.getIdRol());
 		}
+		log.info(condicion.toString());
 		envioDatos.put("condicion", condicion.toString());
 		envioDatos.put("tipoReporte", reporteDto.getTipoReporte());
 		envioDatos.put("rutaNombreReporte", nombrePdfReportes);

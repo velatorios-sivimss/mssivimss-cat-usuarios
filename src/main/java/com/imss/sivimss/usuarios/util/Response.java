@@ -1,9 +1,6 @@
 package com.imss.sivimss.usuarios.util;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -45,9 +42,5 @@ public class Response<T> implements Serializable {
 		this.datos = datos;
 	}
 
-	@SuppressWarnings("rawtypes")
-	public void setDatos(ArrayList<LinkedHashMap> datos2, Integer valor) {
-		this.datos = (T) datos2;
-	}
 
 }

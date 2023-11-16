@@ -38,7 +38,7 @@ public class UsuarioController {
 	@PostMapping("/consulta")
 	public CompletableFuture<Object> consultaLista(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
 	
-		Response<Object> response = usuarioService.consultarUsuarios(request,authentication);
+		Response<Object> response = usuarioService.consUsuarios(request,authentication);
 		return CompletableFuture
 				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
       
@@ -62,7 +62,7 @@ public class UsuarioController {
 	@PostMapping("/buscar")
 	public CompletableFuture<Object> buscar(@RequestBody DatosRequest request,Authentication authentication) throws IOException {
 	
-		Response<Object> response = usuarioService.buscarUsuario(request,authentication);
+		Response<Object> response = usuarioService.buscarUsuarios(request,authentication);
 		return CompletableFuture
 				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
       

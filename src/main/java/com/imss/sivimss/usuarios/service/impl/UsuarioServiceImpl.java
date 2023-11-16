@@ -2,7 +2,6 @@ package com.imss.sivimss.usuarios.service.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -10,7 +9,8 @@ import java.util.Map;
 import java.security.SecureRandom;
 import java.util.logging.Level;
 
-import org.modelmapper.ModelMapper;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,11 +22,14 @@ import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
 import com.imss.sivimss.usuarios.beans.Usuario;
-import com.imss.sivimss.usuarios.exception.BadRequestException;
+import com.imss.sivimss.usuarios.configuration.MyBatisConfig;
+import com.imss.sivimss.usuarios.configuration.mapper.PersonaMapper;
+import com.imss.sivimss.usuarios.configuration.mapper.UsuarioMapper;
 import com.imss.sivimss.usuarios.model.request.BusquedaDto;
 import com.imss.sivimss.usuarios.model.request.UsuarioDto;
 import com.imss.sivimss.usuarios.model.request.UsuarioRequest;
-import com.imss.sivimss.usuarios.model.response.RolResponse;
+import com.imss.sivimss.usuarios.model.entity.UsuarioEntity;
+import com.imss.sivimss.usuarios.model.entity.PersonaEntity;
 import com.imss.sivimss.usuarios.service.UsuarioService;
 import com.imss.sivimss.usuarios.util.AppConstantes;
 import com.imss.sivimss.usuarios.util.ConvertirGenerico;
@@ -40,37 +43,26 @@ public class UsuarioServiceImpl implements UsuarioService {
 
 	@Value("${endpoints.dominio}")
 	private String urlDominioGenerico;
-	
+
 	private static final String PAGINADO = "/paginado";
-	
+
 	private static final String CONSULTA = "/consulta";
-	
-	private static final String CREAR = "/crear";
-	
-	private static final String ACTUALIZAR = "/actualizar";
-	
+
+
 	@Value("${endpoints.generico-reportes}")
 	private String urlReportes;
-	
+
 	private static final String NOMBRE_PDF_REPORTES = "reportes/generales/ReporteCatUsuarios.jrxml";
-	
+
 	private static final String INFONOENCONTRADA = "45";
-	
-	private static final String CURPOMATDUPLICADA = "31";
-	
-	private static final String ALTA = "alta";
-	private static final String BAJA = "baja";
-	private static final String MODIFICACION = "modificacion";
-	
-	@Autowired 
+
+
+	@Autowired
 	private ProviderServiceRestTemplate providerRestTemplate;
 
 	@Autowired
-	private ModelMapper modelMapper;
-	
-	@Autowired
 	private PasswordEncoder passwordEncoder;
-	
+
 	@Autowired
 	private LogUtil logUtil;
 
@@ -83,66 +75,37 @@ public class UsuarioServiceImpl implements UsuarioService {
 
 		String datosJson = String.valueOf(authentication.getPrincipal());
 		BusquedaDto busqueda = gson.fromJson(datosJson, BusquedaDto.class);
-		
-		return providerRestTemplate.consumirServicio(usuario.obtenerUsuarios(request, busqueda).getDatos(), urlDominioGenerico + PAGINADO,
-				authentication);
-		
+
+		return providerRestTemplate.consumirServicio(usuario.obtenerUsuarios(request, busqueda).getDatos(),
+				urlDominioGenerico + PAGINADO, authentication);
+
 	}
 
-    @Override
-	public Response<Object> catalogoRoles(DatosRequest request, Authentication authentication) throws IOException {
-		List<RolResponse> rolResponses;
-		Usuario usuario = new Usuario();
-		Response<Object> response = providerRestTemplate.consumirServicio(usuario.catalogoRoles(request).getDatos(), urlDominioGenerico + CONSULTA, 
-				authentication);
-
-		if (response.getCodigo() == 200) {
-			rolResponses = Arrays.asList(modelMapper.map(response.getDatos(), RolResponse[].class));
-			response.setDatos(ConvertirGenerico.convertInstanceOfObject(rolResponses));
-		}
-		return response;
-	}
-	
-	@Override
+	@SuppressWarnings("rawtypes")
 	public Response<Object> buscarUsuario(DatosRequest request, Authentication authentication) throws IOException {
 		Gson gson = new Gson();
 
 		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
 		UsuarioRequest usuarioRequest = gson.fromJson(datosJson, UsuarioRequest.class);
 		Usuario usuario = new Usuario(usuarioRequest);
-		
-		Response<Object> response = providerRestTemplate.consumirServicio(usuario.buscarUsuario(request).getDatos(), urlDominioGenerico + PAGINADO,
-				authentication);
+
+		Response<Object> response = providerRestTemplate.consumirServicio(usuario.buscarUsuario(request).getDatos(),
+				urlDominioGenerico + PAGINADO, authentication);
 		ArrayList<?> datos1 = (ArrayList) ((LinkedHashMap) response.getDatos()).get("content");
 		if (datos1.isEmpty()) {
 			response.setMensaje(INFONOENCONTRADA);
-	    }
-		
+		}
+
 		try {
-		     return response;
+			return response;
 		} catch (Exception e) {
 			log.error(e.getMessage());
-			logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), CONSULTA, authentication);
+			logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(),
+					this.getClass().getPackage().toString(), e.getMessage(), CONSULTA, authentication);
 			return null;
 		}
 	}
-	
-	@Override
-	public Response<Object> validaCurp(DatosRequest request, Authentication authentication) throws IOException {
-		Gson gson = new Gson();
 
-		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
-		UsuarioRequest usuarioRequest = gson.fromJson(datosJson, UsuarioRequest.class);
-		Usuario usuario = new Usuario(usuarioRequest);
-		Response<Object> response = providerRestTemplate.consumirServicio(usuario.checaCurp(request).getDatos(), urlDominioGenerico + CONSULTA,
-				authentication);
-		if (!response.getDatos().toString().contains("0")) {
-			response.setMensaje(CURPOMATDUPLICADA);
-		}
-		
-		return response;		
-	}
-	
 	@Override
 	public Response<Object> consistCurp(DatosRequest request, Authentication authentication) throws IOException {
 		Gson gson = new Gson();
@@ -154,133 +117,14 @@ public class UsuarioServiceImpl implements UsuarioService {
 		usuario.setPaterno(usuarioRequest.getPaterno().toUpperCase());
 		usuario.setMaterno(usuarioRequest.getMaterno().toUpperCase());
 		usuario.setCurp(usuarioRequest.getCurp().toUpperCase());
-		
-	    return new Response<>(false, HttpStatus.OK.value(), "Exito" , ConvertirGenerico.convertInstanceOfObject(usuario.consistenciaCurp()) );
 
-		
-	}
-	
-	@Override
-	public Response<Object> validaMatricula(DatosRequest request, Authentication authentication) throws IOException {
-		Gson gson = new Gson();
+		return new Response<>(false, HttpStatus.OK.value(), "Exito",
+				ConvertirGenerico.convertInstanceOfObject(usuario.consistenciaCurp()));
 
-		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
-		UsuarioRequest usuarioRequest = gson.fromJson(datosJson, UsuarioRequest.class);
-		Usuario usuario = new Usuario(usuarioRequest);
-		Response<Object> response = providerRestTemplate.consumirServicio(usuario.checaMatricula(request).getDatos(), urlDominioGenerico + CONSULTA,
-				authentication);
-		if (!response.getDatos().toString().contains("0")) {
-			response.setMensaje(CURPOMATDUPLICADA);
-		}
-		
-		return response;
 	}
 
-	@Override
-	public Response<Object> detalleUsuario(DatosRequest request, Authentication authentication) throws IOException {
-		Usuario usuario = new Usuario();
-		return providerRestTemplate.consumirServicio(usuario.detalleUsuario(request).getDatos(), urlDominioGenerico + CONSULTA,
-				authentication);
-	}
 
-	@SuppressWarnings("rawtypes")
-	@Override
-	public Response<Object> agregarUsuario(DatosRequest request, Authentication authentication) throws IOException {
-		Gson gson = new Gson();
 
-		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
-		UsuarioDto usuarioDto = gson.fromJson((String) authentication.getPrincipal(), UsuarioDto.class);
-
-		UsuarioRequest usuarioRequest = gson.fromJson(datosJson, UsuarioRequest.class);
-		Usuario usuario = new Usuario(usuarioRequest);
-		
-		Integer espacio = usuarioRequest.getNombre().indexOf(' ');
-		String primerNombre = (espacio == -1) ? usuarioRequest.getNombre() : usuarioRequest.getNombre().substring(0, espacio);
-		Response<Object> request1 = providerRestTemplate.consumirServicio(usuario.totalUsuarios(request).getDatos(), urlDominioGenerico + CONSULTA,
-				authentication);
-		ArrayList<LinkedHashMap> datos1 = (ArrayList) request1.getDatos();
-		usuario.setClaveUsuario(generarUsuario(primerNombre, usuarioRequest.getPaterno(), datos1.get(0).get("total").toString()));
-		
-		CharSequence contrasena = generaContrasena(primerNombre, usuarioRequest.getPaterno());
-		usuario.setSinEncode(contrasena.toString());
-		usuario.setPassword(passwordEncoder.encode(contrasena));
-		usuario.setIdUsuarioAlta(usuarioDto.getIdUsuario());
-		
-		try {
-		    Response<Object> request2 = providerRestTemplate.consumirServicio(usuario.insertar().getDatos(), urlDominioGenerico + CREAR, authentication);
-		    LinkedHashMap mapaDatos = new LinkedHashMap();
-		    ArrayList<LinkedHashMap> datos = new ArrayList<>();
-		    mapaDatos.put("id", request2.getDatos());
-		    mapaDatos.put("usuario", usuario.getClaveUsuario());
-		    mapaDatos.put("contrasenia", usuario.getSinEncode());
-		    datos.add(mapaDatos);
-		    request2.setDatos(datos);
-		    return request2;
-		} catch (Exception e) {
-			log.error(e.getMessage());
-			logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), ALTA, authentication);
-			return null;
-		}
-	}
-
-	@Override
-	public Response<Object> actualizarUsuario(DatosRequest request, Authentication authentication) throws IOException {
-		Gson gson = new Gson();
-
-		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
-		UsuarioDto usuarioDto = gson.fromJson((String) authentication.getPrincipal(), UsuarioDto.class);
-
-		UsuarioRequest usuarioRequest = gson.fromJson(datosJson, UsuarioRequest.class);
-		if (usuarioRequest.getId() == null) {
-			throw new BadRequestException(HttpStatus.BAD_REQUEST, "Informacion incompleta");
-		}
-		Usuario usuario= new Usuario(usuarioRequest);
-		usuario.setIdUsuarioModifica(usuarioDto.getIdUsuario());
-		
-		try {
-		    return providerRestTemplate.consumirServicio(usuario.actualizar().getDatos(), urlDominioGenerico + ACTUALIZAR, authentication);
-		} catch (Exception e) {
-			log.error(e.getMessage());
-			logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), MODIFICACION, authentication);
-			return null;
-		}
-	}
-
-	@Override
-	public Response<Object> cambiarEstatusUsuario(DatosRequest request, Authentication authentication) throws IOException {
-		Gson gson = new Gson();
-
-		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
-		UsuarioDto usuarioDto = gson.fromJson((String) authentication.getPrincipal(), UsuarioDto.class);
-
-		UsuarioRequest usuarioRequest = gson.fromJson(datosJson, UsuarioRequest.class);
-		if (usuarioRequest.getId() == null) {
-			throw new BadRequestException(HttpStatus.BAD_REQUEST, "Informacion incompleta");
-		}
-		Usuario usuario= new Usuario(usuarioRequest);
-		usuario.setIdUsuarioBaja(usuarioDto.getIdUsuario());
-		try {
-		    return providerRestTemplate.consumirServicio(usuario.cambiarEstatus().getDatos(), urlDominioGenerico + ACTUALIZAR, authentication);
-		} catch (Exception e) {
-			log.error(e.getMessage());
-			logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), BAJA, authentication);
-			return null;
-		}
-	}
-	
-	private String generarUsuario(String primerNombre, String paterno, String consecutivo) {
-		
-		return primerNombre.concat(paterno.substring(0, 1)).concat(String.format("%03d", Integer.parseInt(consecutivo) + 1));
-	}
-
-	private String generaContrasena(String primerNombre, String paterno) {
-		char[] caracterEsp = {'#','$','^','+','=','!','*','(',')','@','%','&'};
-		String mes = String.format("%02d", Calendar.getInstance().get(Calendar.MONTH) + 1);
-		String formato = paterno.toUpperCase().charAt(0) + paterno.substring(1, paterno.length()).toLowerCase();
-		
-		return primerNombre.concat(String.valueOf(caracterEsp[new SecureRandom().nextInt(11)])).concat(".").
-				concat(formato.substring(0, 2)).concat(mes);
-	}
 
 	@Override
 	public Response<Object> consultaSiap(DatosRequest request, Authentication authentication) throws IOException {
@@ -290,8 +134,8 @@ public class UsuarioServiceImpl implements UsuarioService {
 		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
 		UsuarioRequest usuarioRequest = gson.fromJson(datosJson, UsuarioRequest.class);
 		Usuario usuario = new Usuario(usuarioRequest);
-		response =  providerRestTemplate.consumirServicio(usuario.consultaParamSiap(request).getDatos(), urlDominioGenerico + CONSULTA,
-				authentication);
+		response = providerRestTemplate.consumirServicio(usuario.consultaParamSiap(request).getDatos(),
+				urlDominioGenerico + CONSULTA, authentication);
 		ArrayList<LinkedHashMap> datosResp = (ArrayList<LinkedHashMap>) response.getDatos();
 		if (datosResp.isEmpty()) {
 			log.error("No se encuentra parámetro");
@@ -300,10 +144,11 @@ public class UsuarioServiceImpl implements UsuarioService {
 		} else {
 			log.info("Buscar en SIAP");
 		}
-			
+
 		return response;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Response<Object> consultaRenapo(DatosRequest request, Authentication authentication) throws IOException {
 		Gson gson = new Gson();
@@ -312,30 +157,301 @@ public class UsuarioServiceImpl implements UsuarioService {
 		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
 		UsuarioRequest usuarioRequest = gson.fromJson(datosJson, UsuarioRequest.class);
 		Usuario usuario = new Usuario(usuarioRequest);
-		response = providerRestTemplate.consumirServicio(usuario.consultaParamRenapo(request).getDatos(), urlDominioGenerico + CONSULTA,
-				authentication);
+		response = providerRestTemplate.consumirServicio(usuario.consultaParamRenapo(request).getDatos(),
+				urlDominioGenerico + CONSULTA, authentication);
 		ArrayList<LinkedHashMap> datosResp = (ArrayList<LinkedHashMap>) response.getDatos();
 		if (datosResp.isEmpty()) {
 			log.error("No se encuentra parámetro");
-		} else
-		if (datosResp.get(0).get(AppConstantes.VALOR).toString().equals("0")) {
+		} else if (datosResp.get(0).get(AppConstantes.VALOR).toString().equals("0")) {
 			log.info("No buscar en RENAPO");
 		} else {
 			log.info("Buscar en RENAPO");
 		}
-		
+
 		return response;
 	}
-	
+
 	@Override
 	public Response<Object> descargarDocumento(DatosRequest request, Authentication authentication) throws IOException {
 		Gson gson = new Gson();
 		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
 		BusquedaDto reporteDto = gson.fromJson(datosJson, BusquedaDto.class);
-		
+
 		Map<String, Object> envioDatos = new Usuario().generarReporte(reporteDto, NOMBRE_PDF_REPORTES);
 
 		return providerRestTemplate.consumirServicioReportes(envioDatos, urlReportes, authentication);
 	}
+
+	/*
+	 * *********************** ***********************
+	 *************************/
+	@Override
+	public Response<Object> consUsuarios(DatosRequest request, Authentication authentication) throws IOException {
+		List<Map<String, Object>> resp = null;
+		SqlSessionFactory sqlSessionFactory = MyBatisConfig.buildqlSessionFactory();
+		try (SqlSession session = sqlSessionFactory.openSession()) {
+			UsuarioMapper usuarioMapper = session.getMapper(UsuarioMapper.class);
+			try {
+				resp = usuarioMapper.consultaUsuarios();
+			} catch (Exception e) {
+				e.printStackTrace();
+				session.rollback();
+			}
+		}
+		return new Response<>(false, HttpStatus.OK.value(), AppConstantes.EXITO, resp);
+
+	}
+
+	@Override
+	public Response<Object> buscarUsuarios(DatosRequest request, Authentication authentication) throws IOException {
+
+		String where = crearWhere(request);
+		List<Map<String, Object>> resp = null;
+
+		SqlSessionFactory sqlSessionFactory = MyBatisConfig.buildqlSessionFactory();
+		try (SqlSession session = sqlSessionFactory.openSession()) {
+			UsuarioMapper usuarioMapper = session.getMapper(UsuarioMapper.class);
+			try {
+				resp = usuarioMapper.buscarUsuarios(where);
+			} catch (Exception e) {
+				e.printStackTrace();
+				session.rollback();
+			}
+		}
+		return new Response<>(false, HttpStatus.OK.value(), AppConstantes.EXITO, resp);
+	}
+
+	@Override
+	public Response<Object> detalleUsuario(DatosRequest request, Authentication authentication) throws IOException {
+
+		String where = " WHERE su.ID_USUARIO = " + request.getDatos().get("id").toString();
+		List<Map<String, Object>> resp = null;
+		SqlSessionFactory sqlSessionFactory = MyBatisConfig.buildqlSessionFactory();
+		try (SqlSession session = sqlSessionFactory.openSession()) {
+			UsuarioMapper usuarioMapper = session.getMapper(UsuarioMapper.class);
+			try {
+				resp = usuarioMapper.detalleUsuario(where);
+			} catch (Exception e) {
+				e.printStackTrace();
+				session.rollback();
+			}
+		}
+		return new Response<>(false, HttpStatus.OK.value(), AppConstantes.EXITO, resp);
+	}
+
+	@Override
+	public Response<Object> validaCurp(DatosRequest request, Authentication authentication) throws IOException {
+		Gson gson = new Gson();
+		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
+		UsuarioRequest usuarioRequest = gson.fromJson(datosJson, UsuarioRequest.class);
+		List<Map<String, Object>> resp = null;
+		SqlSessionFactory sqlSessionFactory = MyBatisConfig.buildqlSessionFactory();
+		try (SqlSession session = sqlSessionFactory.openSession()) {
+			UsuarioMapper usuarioMapper = session.getMapper(UsuarioMapper.class);
+			try {
+				resp = usuarioMapper.validaCurp(usuarioRequest.getCurp());
+			} catch (Exception e) {
+				e.printStackTrace();
+				session.rollback();
+			}
+		}
+		return new Response<>(false, HttpStatus.OK.value(), AppConstantes.EXITO, resp);
+	}
+
+	@Override
+	public Response<Object> validaMatricula(DatosRequest request, Authentication authentication) throws IOException {
+		Gson gson = new Gson();
+		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
+		UsuarioRequest usuarioRequest = gson.fromJson(datosJson, UsuarioRequest.class);
+		List<Map<String, Object>> resp = null;
+		SqlSessionFactory sqlSessionFactory = MyBatisConfig.buildqlSessionFactory();
+		try (SqlSession session = sqlSessionFactory.openSession()) {
+			UsuarioMapper usuarioMapper = session.getMapper(UsuarioMapper.class);
+			try {
+				resp = usuarioMapper.validaMatricula(usuarioRequest.getClaveMatricula());
+			} catch (Exception e) {
+				e.printStackTrace();
+				session.rollback();
+			}
+		}
+		return new Response<>(false, HttpStatus.OK.value(), AppConstantes.EXITO, resp);
+	}
+
+	@Override
+	public Response<Object> catalogoRoles(DatosRequest request, Authentication authentication) throws IOException {
+		List<Map<String, Object>> resp = null;
+		SqlSessionFactory sqlSessionFactory = MyBatisConfig.buildqlSessionFactory();
+		try (SqlSession session = sqlSessionFactory.openSession()) {
+			UsuarioMapper usuarioMapper = session.getMapper(UsuarioMapper.class);
+			try {
+				resp = usuarioMapper.catalogoRoles(request.getDatos().get("id").toString());
+			} catch (Exception e) {
+				e.printStackTrace();
+				session.rollback();
+			}
+		}
+		return new Response<>(false, HttpStatus.OK.value(), AppConstantes.EXITO, resp);
+	}
+
+	@Override
+	public Response<Object> agregarUsuario(DatosRequest request, Authentication authentication) throws IOException {
+		Gson gson = new Gson();
+		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
+		UsuarioDto usuarioDto = gson.fromJson((String) authentication.getPrincipal(), UsuarioDto.class);
+		UsuarioRequest usuarioRequest = gson.fromJson(datosJson, UsuarioRequest.class);
+		UsuarioEntity usu = new UsuarioEntity();
+		PersonaEntity per = new PersonaEntity();
+
+		Integer espacio = usuarioRequest.getNombre().indexOf(' ');
+		String primerNombre = (espacio == -1) ? usuarioRequest.getNombre() : usuarioRequest.getNombre().substring(0, espacio);
+		CharSequence contrasena = generaContrasena(primerNombre, usuarioRequest.getPaterno());
+		
+		per.setCveRFC(usuarioRequest.getRfc());
+		per.setCveCURP(usuarioRequest.getCurp());
+		per.setCveNSS(usuarioRequest.getNss());
+		per.setNombre(usuarioRequest.getNombre());
+		per.setPaterno(usuarioRequest.getPaterno());
+		per.setMaterno(usuarioRequest.getMaterno());
+		per.setNumSexo(usuarioRequest.getNumsexo());
+		per.setDesOtroSexo(usuarioRequest.getDesOtroSexo());
+		per.setFecNac(usuarioRequest.getFecNac());
+		per.setIdPais(usuarioRequest.getIdPais());
+		per.setIdEstado(usuarioRequest.getIdEstado());
+		per.setDesTelefono(usuarioRequest.getDesTelefono());
+		per.setDesTelefonoFijo(usuarioRequest.getDesTelefonoFijo());
+		per.setCorreo(usuarioRequest.getCorreo());
+		per.setTipPersona(usuarioRequest.getTipPersona());
+		per.setNumINE(usuarioRequest.getNumINE());
+
+		usu.setMatricula(usuarioRequest.getClaveMatricula());
+		usu.setIdOficina(usuarioRequest.getIdOficina());
+		usu.setIdDelegacion(usuarioRequest.getIdDelegacion());
+		usu.setIdVelatorio(usuarioRequest.getIdVelatorio());
+		
+		usu.setIdRol(usuarioRequest.getIdRol());
+		usu.setCveUsuario(usuarioRequest.getCveUsuario() == null ? "" : usuarioRequest.getCveUsuario());
+		usu.setCveContrasenia(usuarioRequest.getCveContasenia() == null ? "" : usuarioRequest.getCveContasenia());
+		usu.setIndContratante(1);
+		usu.setIndActivo(1);
+		usu.setIdUsuarioAlta(usuarioDto.getIdUsuario() == null ? 0 : usuarioDto.getIdUsuario());
+		usu.setCveContrasenia(passwordEncoder.encode(contrasena));
+		int resp = 0;
+		SqlSessionFactory sqlSessionFactory = MyBatisConfig.buildqlSessionFactory();
+		try (SqlSession session = sqlSessionFactory.openSession()) {
+			PersonaMapper personaMapper = session.getMapper(PersonaMapper.class);
+			UsuarioMapper usuarioMapper = session.getMapper(UsuarioMapper.class);
+			try {
+				usu.setCveUsuario(generarUsuario(primerNombre, usuarioRequest.getPaterno(), usuarioMapper.obtenerTotalUsuarios()));
+				personaMapper.agregarPersona(per);
+				usu.setIdPersona(per.getIdPersona());
+				usuarioMapper.agregarNuevoUsuario(usu);
+				resp = usu.getIdUsuario();
+				session.commit();
+			} catch (Exception e) {
+				e.printStackTrace();
+				session.rollback();
+			}
+		}
+
+		return new Response<>(false, HttpStatus.OK.value(), AppConstantes.EXITO, resp);
+	}
+
+	@Override
+	public Response<Object> actualizarUsuario(DatosRequest request, Authentication authentication) throws IOException {
+		Gson gson = new Gson();
+		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
+		UsuarioDto usuarioDto = gson.fromJson((String) authentication.getPrincipal(), UsuarioDto.class);
+		UsuarioRequest usuarioRequest = gson.fromJson(datosJson, UsuarioRequest.class);
+		UsuarioEntity usu = new UsuarioEntity();
+		PersonaEntity per = new PersonaEntity();
+
+		per.setCorreo(usuarioRequest.getCorreo());
+		per.setIdUsuarioModifica(usuarioDto.getIdUsuario() == null ? 0 : usuarioDto.getIdUsuario());
+		
+		usu.setIdUsuario(usuarioRequest.getId());
+		usu.setMatricula(usuarioRequest.getClaveMatricula());
+		usu.setIdOficina(usuarioRequest.getIdOficina());
+		usu.setIdDelegacion(usuarioRequest.getIdDelegacion());
+		usu.setIdVelatorio(usuarioRequest.getIdVelatorio());
+		
+		usu.setIdRol(usuarioRequest.getIdRol());
+		usu.setCveUsuario(usuarioRequest.getCveUsuario() == null ? "" : usuarioRequest.getCveUsuario());
+		usu.setCveContrasenia(usuarioRequest.getCveContasenia() == null ? "" : usuarioRequest.getCveContasenia());
+		usu.setIndContratante(1);
+		usu.setIndActivo(usuarioRequest.getEstatus());
+		usu.setIdUsuarioMidifica(usuarioDto.getIdUsuario() == null ? 0 : usuarioDto.getIdUsuario());
+		int resp = 0;
+		SqlSessionFactory sqlSessionFactory = MyBatisConfig.buildqlSessionFactory();
+		try (SqlSession session = sqlSessionFactory.openSession()) {
+			PersonaMapper personaMapper = session.getMapper(PersonaMapper.class);
+			UsuarioMapper usuarioMapper = session.getMapper(UsuarioMapper.class);
+			try {
+				usuarioMapper.actualizarUsuario(usu);
+				per.setIdPersona(usuarioMapper.obtenerIdPersona(usu.getIdUsuario()));
+				personaMapper.actualizarPersona(per);
+				resp = usu.getIdUsuario();
+				session.commit();
+			} catch (Exception e) {
+				e.printStackTrace();
+				session.rollback();
+			}
+		}
+
+		return new Response<>(false, HttpStatus.OK.value(), AppConstantes.EXITO, resp);
+	}
+
+	@Override
+	public Response<Object> cambiarEstatusUsuario(DatosRequest request, Authentication authentication) throws IOException {
+		Gson gson = new Gson();
+		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
+		UsuarioDto usuarioDto = gson.fromJson((String) authentication.getPrincipal(), UsuarioDto.class);
+		UsuarioRequest usuarioRequest = gson.fromJson(datosJson, UsuarioRequest.class);
+		int resp = 0;
+		UsuarioEntity usu = new UsuarioEntity();
+		usu.setIdUsuario(usuarioRequest.getId());
+		usu.setIdUsuarioMidifica(usuarioDto.getIdUsuario() == null ? 0 : usuarioDto.getIdUsuario());
+		SqlSessionFactory sqlSessionFactory = MyBatisConfig.buildqlSessionFactory();
+		try (SqlSession session = sqlSessionFactory.openSession()) {
+			UsuarioMapper usuarioMapper = session.getMapper(UsuarioMapper.class);
+			try {
+				resp =usuarioMapper.actualizarEstatusUsuario(usu);
+				session.commit();
+			} catch (Exception e) {
+				e.printStackTrace();
+				session.rollback();
+			}
+		}
+
+		return new Response<>(false, HttpStatus.OK.value(), AppConstantes.EXITO, resp);
+	}
 	
+
+	private String generaContrasena(String primerNombre, String paterno) {
+		char[] caracterEsp = { '#', '$', '^', '+', '=', '!', '*', '(', ')', '@', '%', '&' };
+		String mes = String.format("%02d", Calendar.getInstance().get(Calendar.MONTH) + 1);
+		String formato = paterno.toUpperCase().charAt(0) + paterno.substring(1, paterno.length()).toLowerCase();
+
+		return primerNombre.concat(String.valueOf(caracterEsp[new SecureRandom().nextInt(11)])).concat(".")
+				.concat(formato.substring(0, 2)).concat(mes);
+	}
+
+	private String generarUsuario(String primerNombre, String paterno, Integer consecutivo) {
+		return primerNombre.concat(paterno.substring(0, 1)).concat(String.format("%03d", consecutivo + 1));
+	}
+	private String crearWhere(DatosRequest request) {
+		Gson gson = new Gson();
+		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
+		UsuarioRequest usuarioRequest = gson.fromJson(datosJson, UsuarioRequest.class);
+		String where = " WHERE 1 = 1 ";
+		if (usuarioRequest.getIdOficina() != null)
+			where = where + " AND su.ID_OFICINA = " + usuarioRequest.getIdOficina();
+		if (usuarioRequest.getIdDelegacion() != null)
+			where = where + " AND su.ID_DELEGACION = " + usuarioRequest.getIdDelegacion();
+		if (usuarioRequest.getIdVelatorio() != null)
+			where = where + " AND su.ID_VELATORIO =" + usuarioRequest.getIdVelatorio();
+		if (usuarioRequest.getIdRol() != null)
+			where = where + " AND su.ID_ROL = " + usuarioRequest.getIdRol();
+		return where;
+	}
+
 }

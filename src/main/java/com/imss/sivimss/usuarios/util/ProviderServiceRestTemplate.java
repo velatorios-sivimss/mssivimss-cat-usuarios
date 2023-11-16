@@ -27,7 +27,7 @@ public class ProviderServiceRestTemplate {
 	private static final Logger log = LoggerFactory.getLogger(ProviderServiceRestTemplate.class);
 
 	public Response<Object> consumirServicio(Map<String, Object> dato, String url, Authentication authentication) {
-			Response<Object> respuestaGenerado =  (Response<Object>) restTemplateUtil.sendPostRequestByteArrayToken(url,
+			Response<Object> respuestaGenerado =  restTemplateUtil.sendPostRequestByteArrayToken(url,
 					new EnviarDatosRequest(dato), jwtTokenProvider.createToken((String) authentication.getPrincipal()),
 					Response.class);
 			return validarResponse(respuestaGenerado);

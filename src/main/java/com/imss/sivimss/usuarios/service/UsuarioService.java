@@ -11,7 +11,6 @@ public interface UsuarioService {
 
 	Response<Object> consultarUsuarios(DatosRequest request, Authentication authentication) throws IOException;
 
-	Response<Object> buscarUsuario(DatosRequest request, Authentication authentication) throws IOException;
 
 	Response<Object> catalogoRoles(DatosRequest request, Authentication authentication) throws IOException;
 	
@@ -23,8 +22,6 @@ public interface UsuarioService {
 	
 	Response<Object> validaMatricula(DatosRequest request, Authentication authentication) throws IOException;
 
-	Response<Object> agregarUsuario(DatosRequest request, Authentication authentication) throws IOException;
-
 	Response<Object> actualizarUsuario(DatosRequest request, Authentication authentication) throws IOException;
 
 	Response<Object> cambiarEstatusUsuario(DatosRequest request, Authentication authentication) throws IOException;
@@ -34,5 +31,10 @@ public interface UsuarioService {
 	Response<Object> consultaRenapo(DatosRequest request, Authentication authentication) throws IOException;
 
 	Response<Object> descargarDocumento(DatosRequest request, Authentication authentication) throws IOException;
+	
+	Response<Object> consUsuarios(DatosRequest request, Authentication authentication) throws IOException;
+	Response<Object> buscarUsuarios(DatosRequest request, Authentication authentication) throws IOException;
+	Response<Object> agregarUsuario(DatosRequest request, Authentication authentication) throws IOException;
+	
 	
 }

@@ -35,6 +35,7 @@ public class AppConstantes {
 
 	public static final String CIRCUITBREAKER = "El servicio no responde, no permite más llamadas.";
 	public static final String OCURRIO_ERROR_GENERICO = "187";
+	public static final String EXITO = "Exito";
 	
 	private AppConstantes() {
 	    throw new IllegalStateException("AppConstantes class");

@@ -261,16 +261,17 @@ public class Usuario {
 	}
 	
 	public Boolean consistenciaCurp() {
+		boolean bol = true;
 	    this.nombre = this.nombre.toUpperCase().replace("JOSE ", "");
 	    this.nombre = this.nombre.toUpperCase().replace("MARIA ", "");
 
 		if( (!this.paterno.substring(0, 2).equals(this.curp.substring(0, 2)) || this.materno.charAt(0) != this.curp.charAt(2)) 
-				|| (this.nombre.charAt(0) != this.curp.charAt(3) || !this.fecNacimiento.substring(2, 8).equals(this.curp.substring(4, 10)))
+			|| (this.nombre.charAt(0) != this.curp.charAt(3) || !this.fecNacimiento.substring(2, 8).equals(this.curp.substring(4, 10)))
 			|| (!paterno.contains(this.curp.substring(13, 14)) || !materno.contains(this.curp.substring(14, 15)) || !nombre.contains(this.curp.substring(15, 16)))) {
-			return false;
+			bol = false;
 		}
 		
-		return true;
+		return bol;
 	}
 
 	public DatosRequest consultaParamSiap(DatosRequest request) {
@@ -308,7 +309,8 @@ public class Usuario {
 		if (reporteDto.getIdRol() != null) {
 			condicion.append(" AND ID_ROL = ").append(this.getIdRol());
 		}
-		log.info(condicion.toString());
+		String str = condicion.toString();
+		log.info(str);
 		envioDatos.put("condicion", condicion.toString());
 		envioDatos.put("tipoReporte", reporteDto.getTipoReporte());
 		envioDatos.put("rutaNombreReporte", nombrePdfReportes);

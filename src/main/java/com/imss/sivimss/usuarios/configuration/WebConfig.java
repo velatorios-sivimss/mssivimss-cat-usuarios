@@ -1,4 +1,4 @@
-package com.imss.sivimss.usuarios.config;
+package com.imss.sivimss.usuarios.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

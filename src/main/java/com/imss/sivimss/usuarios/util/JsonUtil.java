@@ -10,18 +10,21 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.ResourceUtils;
 
 public class JsonUtil {
-	private static Logger LOG = LoggerFactory.getLogger(JsonUtil.class);
+	private static Logger log = LoggerFactory.getLogger(JsonUtil.class);
     private JsonUtil() {
     }
 
     public static String readFromJson(String filename) {
+    	String messageError="";
         try {
             File file = ResourceUtils.getFile("classpath:"+ filename);
             return new String(Files.readAllBytes(file.toPath()));
         } catch (FileNotFoundException e) {
-            LOG.error("Exception in : readFromJson(): File Not Found: " + filename);
+        	messageError = "Exception in : readFromJson(): File Not Found: " + filename;
+            log.error(messageError);
         } catch (IOException e) {
-            LOG.error("Exception in : readFromJson(): IOException: " + e.getMessage());
+        	messageError = "Exception in : readFromJson(): IOException: " + e.getMessage();
+            log.error(messageError);
         }
         return null;
     }

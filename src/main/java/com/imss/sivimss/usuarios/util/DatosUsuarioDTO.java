@@ -21,8 +21,8 @@ public class DatosUsuarioDTO {
 	public String matricula;
 	
 	@JsonProperty
-	public Integer IDOOAD;
+	public Integer idOoad;
 	
 	@JsonProperty
-	public String CVEDEPARTAMENTO;
+	public String cveDepartamento;
 }

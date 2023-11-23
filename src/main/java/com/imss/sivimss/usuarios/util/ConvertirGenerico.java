@@ -2,6 +2,11 @@ package com.imss.sivimss.usuarios.util;
 
 public class ConvertirGenerico {
 
+	  private ConvertirGenerico() {
+	    throw new IllegalStateException("ConvertirGenerico class");
+	  }
+
+
 	public static <T> T convertInstanceOfObject(Object o) {
 	    try {
 	       return (T) o;

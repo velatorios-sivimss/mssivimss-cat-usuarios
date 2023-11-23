@@ -1,6 +1,5 @@
 package com.imss.sivimss.usuarios.util;
 
-import java.util.Date;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
@@ -18,7 +17,6 @@ public class ValidacionErrores {
 
 	private boolean error;
 
-	private Date fecha;
 
 	public Map<String, String> getErrores() {
 		return errores;
@@ -53,10 +51,9 @@ public class ValidacionErrores {
 		this.error = error;
 	}
 
-	public ValidacionErrores(Map<String, String> errores, Date fecha) {
+	public ValidacionErrores(Map<String, String> errores) {
 		super();
 		this.errores = errores;
-		this.fecha = fecha;
 		this.mensaje = "Error en la petición";
 		this.codigo = HttpStatus.BAD_REQUEST.value();
 		this.error=true;

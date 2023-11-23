@@ -45,14 +45,14 @@ logging:
 
 endpoints:
    dominio: ${msit_CATALOGOS}
-   generico-reportes: ${msit_GENERICO_REPORTES}
+   generico-reportes: ${msit_REPORTES_GENERALES}
 
 jwt:
   secretkey-usuarios: ${msit_SECRET_KEY}
   secretkey-dominios: ${msit_SECRET_KEY_DOMINIO}
   expiration-milliseconds: ${msit_SECRET_KEY_EXPIRATION}
 
-formato_fecha: ${msit_formato_fecha}
+formato_fecha: ${msit_FORMATO_FECHA}
 
 management:
   endpoints:

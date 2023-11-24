@@ -39,7 +39,7 @@ public interface UsuarioMapper {
 	public List<Map<String, Object>> buscarUsuarios(@Param("where") String where);
 
 	@Select("SELECT su.ID_USUARIO AS id, sp.CVE_CURP AS curp, su.CVE_MATRICULA AS matricula, sp.NOM_PERSONA  AS nombre, sp.NOM_PRIMER_APELLIDO  AS paterno, sp.NOM_SEGUNDO_APELLIDO  AS materno,"
-			+ " DATE_FORMAT(sp.FEC_NAC, '%d/%m/%Y') AS fecNacimiento, su.ID_ESTADO_NACIMIENTO AS idEdoNacimiento, se.DES_ESTADO AS desEdoNacimiento, sp.REF_CORREO AS correo, su.ID_OFICINA AS idOficina,"
+			+ " DATE_FORMAT(sp.FEC_NAC, '%d/%m/%Y') AS fecNacimiento, sp.ID_ESTADO_NACIMIENTO AS idEdoNacimiento, se.DES_ESTADO AS desEdoNacimiento, sp.REF_CORREO AS correo, su.ID_OFICINA AS idOficina,"
 			+ " sno.DES_NIVELOFICINA AS oficina, su.ID_DELEGACION AS idDelegacion, sd.DES_DELEGACION AS delegacion, su.ID_VELATORIO AS idVelatorio, sv.DES_VELATORIO AS velatorio, su.ID_ROL AS idRol,"
 			+ " sr.DES_ROL AS rol, su.IND_ACTIVO AS estatus, su.CVE_USUARIO AS usuario, 'XXXXXXXXXXXXX' AS contrasenia"
 			+ " FROM SVT_USUARIOS su " + " JOIN SVC_PERSONA sp ON sp.ID_PERSONA = su.ID_PERSONA "
@@ -47,7 +47,7 @@ public interface UsuarioMapper {
 			+ " JOIN SVC_DELEGACION sd ON sd.ID_DELEGACION = su.ID_DELEGACION "
 			+ " JOIN SVC_VELATORIO sv ON sv.ID_VELATORIO = su.ID_VELATORIO "
 			+ " JOIN SVC_NIVEL_OFICINA sno ON sno.ID_OFICINA = su.ID_OFICINA "
-			+ " LEFT JOIN SVC_ESTADO se ON se.ID_ESTADO = su.ID_ESTADO_NACIMIENTO " 
+			+ " LEFT JOIN SVC_ESTADO se ON se.ID_ESTADO = sp.ID_ESTADO_NACIMIENTO " 
 			+ " ${where}")
 	public List<Map<String, Object>> detalleUsuario(@Param("where") String where);
 

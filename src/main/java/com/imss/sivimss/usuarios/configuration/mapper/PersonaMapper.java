@@ -9,9 +9,9 @@ import com.imss.sivimss.usuarios.model.entity.PersonaEntity;
 
 public interface PersonaMapper {
 
-	@Insert(value = "INSERT INTO SVC_PERSONA (CVE_RFC, CVE_CURP, CVE_NSS, NOM_PERSONA, NOM_PRIMER_APELLIDO, NOM_SEGUNDO_APELLIDO, NUM_SEXO, REF_OTRO_SEXO, FEC_NAC, ID_PAIS, ID_ESTADO, REF_TELEFONO, REF_TELEFONO_FIJO, REF_CORREO, TIP_PERSONA, NUM_INE) "
+	@Insert(value = "INSERT INTO SVC_PERSONA (CVE_RFC, CVE_CURP, CVE_NSS, NOM_PERSONA, NOM_PRIMER_APELLIDO, NOM_SEGUNDO_APELLIDO, NUM_SEXO, REF_OTRO_SEXO, FEC_NAC, ID_PAIS, ID_ESTADO, REF_TELEFONO, REF_TELEFONO_FIJO, REF_CORREO, TIP_PERSONA, NUM_INE, ID_ESTADO_NACIMIENTO) "
 			+ "VALUES ( #{in.cveRFC}, #{in.cveCURP}, #{in.cveNSS}, #{in.nombre}, #{in.paterno}, #{in.materno}, #{in.numSexo}, #{in.desOtroSexo}, #{in.fecNac}, #{in.idPais}, #{in.idEstado}, #{in.desTelefono }, #{in.desTelefonoFijo }, #{in.correo}, #{in.tipPersona}"
-			+ ",#{in.numINE} )")
+			+ ",#{in.numINE},#{in.idEstadoNacimiento} )")
 	@Options(useGeneratedKeys = true,keyProperty = "idPersona", keyColumn="idPersona")
 	public int agregarPersona(@Param("in")PersonaEntity persona);
 	

@@ -34,6 +34,7 @@ public class UsuarioRequest {
 	private String fecAlta;
 	private String fecActualizacion;
 	private String fecBaja;
+	private Integer indContratante;
 	/*
 	 * Datos de Persona
 	 * 

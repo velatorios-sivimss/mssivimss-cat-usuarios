@@ -61,6 +61,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 	private static final String NOMBRE_PDF_REPORTES = "reportes/generales/ReporteCatUsuarios.jrxml";
 
 	private static final String INFONOENCONTRADA = "45";
+	private static final String ERROR_GUARDAR_USUARIO = "5";
 
 
 	@Autowired
@@ -347,13 +348,14 @@ public class UsuarioServiceImpl implements UsuarioService {
 				usuarioMapper.agregarNuevoUsuario(usu);
 				resp = usu.getIdUsuario();
 				session.commit();
+				return new Response<>(false, HttpStatus.OK.value(), AppConstantes.EXITO, resp);
 			} catch (Exception e) {
 				e.printStackTrace();
 				session.rollback();
+				return new Response<>(false, HttpStatus.OK.value(), "ERROR", ERROR_GUARDAR_USUARIO);
 			}
 		}
 
-		return new Response<>(false, HttpStatus.OK.value(), AppConstantes.EXITO, resp);
 	}
 
 	@Override

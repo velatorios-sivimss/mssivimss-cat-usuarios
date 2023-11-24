@@ -20,7 +20,7 @@ public interface UsuarioMapper {
 	@Options(useGeneratedKeys = true, keyProperty = "idUsuario", keyColumn = "idUsuario")
 	public int agregarNuevoUsuario(@Param("in") UsuarioEntity usuario);
 
-	@Select("SELECT su.ID_USUARIO AS idUsuario, su.CVE_MATRICULA AS matricula, sp.CVE_CURP AS curp, sp.NOM_PERSONA AS nombre, sp.NOM_PRIMER_APELLIDO AS paterno"
+	@Select("SELECT su.ID_USUARIO AS id, su.CVE_MATRICULA AS matricula, sp.CVE_CURP AS curp, sp.NOM_PERSONA AS nombre, sp.NOM_PRIMER_APELLIDO AS paterno"
 			+ ", sp.NOM_SEGUNDO_APELLIDO AS materno, DATE_FORMAT(sp.FEC_NAC , '%d/%m/%Y') AS fecNacimiento, sp.ID_ESTADO AS idEdoNacimiento, sp.REF_CORREO AS correo"
 			+ ", su.ID_OFICINA AS idOficina, sno.DES_NIVELOFICINA AS desOficina, su.ID_DELEGACION AS idDelegacion, su.ID_VELATORIO  AS idVelatorio, su.ID_ROL AS idRol"
 			+ ", sr.DES_ROL AS desRol, su.IND_ACTIVO AS estatus, su.CVE_USUARIO AS usuario" + " FROM SVT_USUARIOS su "
@@ -38,7 +38,7 @@ public interface UsuarioMapper {
 			+ " JOIN SVC_ROL sr ON sr.ID_ROL = su.ID_ROL " + " ${where}")
 	public List<Map<String, Object>> buscarUsuarios(@Param("where") String where);
 
-	@Select("SELECT su.ID_USUARIO AS idUsuario, sp.CVE_CURP AS curp, su.CVE_MATRICULA AS matricula, sp.NOM_PERSONA  AS nombre, sp.NOM_PRIMER_APELLIDO  AS paterno, sp.NOM_SEGUNDO_APELLIDO  AS materno,"
+	@Select("SELECT su.ID_USUARIO AS id, sp.CVE_CURP AS curp, su.CVE_MATRICULA AS matricula, sp.NOM_PERSONA  AS nombre, sp.NOM_PRIMER_APELLIDO  AS paterno, sp.NOM_SEGUNDO_APELLIDO  AS materno,"
 			+ " DATE_FORMAT(sp.FEC_NAC, '%d/%m/%Y') AS fecNacimiento, su.ID_ESTADO_NACIMIENTO AS idEdoNacimiento, se.DES_ESTADO AS desEdoNacimiento, sp.REF_CORREO AS correo, su.ID_OFICINA AS idOficina,"
 			+ " sno.DES_NIVELOFICINA AS oficina, su.ID_DELEGACION AS idDelegacion, sd.DES_DELEGACION AS delegacion, su.ID_VELATORIO AS idVelatorio, sv.DES_VELATORIO AS velatorio, su.ID_ROL AS idRol,"
 			+ " sr.DES_ROL AS rol, su.IND_ACTIVO AS estatus, su.CVE_USUARIO AS usuario, 'XXXXXXXXXXXXX' AS contrasenia"

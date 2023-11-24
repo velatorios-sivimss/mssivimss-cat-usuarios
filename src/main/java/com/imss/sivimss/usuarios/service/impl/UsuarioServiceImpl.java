@@ -16,9 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -315,7 +312,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		per.setMaterno(usuarioRequest.getMaterno());
 		per.setNumSexo(usuarioRequest.getNumsexo());
 		per.setDesOtroSexo(usuarioRequest.getDesOtroSexo());
-		per.setFecNac(usuarioRequest.getFecNac());
+		per.setFecNac(usuarioRequest.getFecNacimiento());
 		per.setIdPais(usuarioRequest.getIdPais());
 		per.setIdEstado(usuarioRequest.getIdEstado());
 		per.setDesTelefono(usuarioRequest.getDesTelefono());
@@ -323,16 +320,16 @@ public class UsuarioServiceImpl implements UsuarioService {
 		per.setCorreo(usuarioRequest.getCorreo());
 		per.setTipPersona(usuarioRequest.getTipPersona());
 		per.setNumINE(usuarioRequest.getNumINE());
+		per.setIdEstadoNacimiento(usuarioRequest.getIdEdoNacimiento());
 
 		usu.setMatricula(usuarioRequest.getClaveMatricula());
 		usu.setIdOficina(usuarioRequest.getIdOficina());
 		usu.setIdDelegacion(usuarioRequest.getIdDelegacion());
 		usu.setIdVelatorio(usuarioRequest.getIdVelatorio());
-		
 		usu.setIdRol(usuarioRequest.getIdRol());
 		usu.setCveUsuario(usuarioRequest.getCveUsuario() == null ? "" : usuarioRequest.getCveUsuario());
 		usu.setCveContrasenia(usuarioRequest.getCveContasenia() == null ? "" : usuarioRequest.getCveContasenia());
-		usu.setIndContratante(1);
+		usu.setIndContratante(usuarioRequest.getIndContratante());
 		usu.setIndActivo(1);
 		usu.setIdUsuarioAlta(usuarioDto.getIdUsuario() == null ? 0 : usuarioDto.getIdUsuario());
 		usu.setCveContrasenia(passwordEncoder.encode(contrasena));
@@ -379,7 +376,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		usu.setIdRol(usuarioRequest.getIdRol());
 		usu.setCveUsuario(usuarioRequest.getCveUsuario() == null ? "" : usuarioRequest.getCveUsuario());
 		usu.setCveContrasenia(usuarioRequest.getCveContasenia() == null ? "" : usuarioRequest.getCveContasenia());
-		usu.setIndContratante(1);
+		usu.setIndContratante(usuarioRequest.getIndContratante());
 		usu.setIndActivo(usuarioRequest.getEstatus());
 		usu.setIdUsuarioMidifica(usuarioDto.getIdUsuario() == null ? 0 : usuarioDto.getIdUsuario());
 		int resp = 0;

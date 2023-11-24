@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.imss.sivimss.usuarios.configuration.mapper.PersonaMapper;
 import com.imss.sivimss.usuarios.configuration.mapper.UsuarioMapper;
+import com.imss.sivimss.usuarios.configuration.mapper.ConsultaNativa;
 
 import javax.sql.DataSource;
 
@@ -57,6 +58,7 @@ public class Database {
 	    Configuration configuration = new Configuration(environment);
 	    configuration.addMapper(PersonaMapper.class);    
 	    configuration.addMapper(UsuarioMapper.class);    
+	    configuration.addMapper(ConsultaNativa.class);    
 	    SqlSessionFactoryBuilder builder = new SqlSessionFactoryBuilder();	    
 	    return builder.build(configuration);
         }catch(Exception e){

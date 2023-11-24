@@ -15,7 +15,7 @@ public interface PersonaMapper {
 	@Options(useGeneratedKeys = true,keyProperty = "idPersona", keyColumn="idPersona")
 	public int agregarPersona(@Param("in")PersonaEntity persona);
 	
-	@Update(value = " UPDATE SVC_PERSONA SET DES_CORREO  = #{in.correo} , ID_USUARIO_MODIFICA = #{in.idUsuarioModifica} , FEC_ACTUALIZACION = CURRENT_TIMESTAMP() "
+	@Update(value = " UPDATE SVC_PERSONA SET REF_CORREO  = #{in.correo} , ID_USUARIO_MODIFICA = #{in.idUsuarioModifica} , FEC_ACTUALIZACION = CURRENT_TIMESTAMP() "
 			+ "WHERE ID_PERSONA =  #{in.idPersona}  ")
 	public int actualizarPersona(@Param("in")PersonaEntity persona);
 }

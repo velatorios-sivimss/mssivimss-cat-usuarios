@@ -54,7 +54,7 @@ public interface UsuarioMapper {
 	@Select("SELECT COUNT(*) AS valor FROM SVT_USUARIOS su  JOIN SVC_PERSONA sp ON sp.ID_PERSONA = su.ID_PERSONA WHERE sp.CVE_CURP = #{curp} ")
 	public List<Map<String, Object>> validaCurp(@Param("curp") String curp);
 
-	@Select("SELECT sr.ID_ROL AS idRol, sr.DES_ROL desRol FROM SVC_ROL sr WHERE sr.IND_ACTIVO = 1 AND sr.ID_OFICINA = #{idOficina}")
+	@Select("SELECT sr.ID_ROL AS id, sr.DES_ROL nombre FROM SVC_ROL sr WHERE sr.IND_ACTIVO = 1 AND sr.ID_OFICINA = #{idOficina}")
 	public List<Map<String, Object>> catalogoRoles(@Param("idOficina") String idOficina);
 
 	@Select("SELECT COUNT(*) AS valor FROM SVT_USUARIOS su  WHERE su.CVE_MATRICULA = #{matricula} ")

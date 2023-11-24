@@ -28,4 +28,5 @@ public class PersonaEntity {
 	private String fecAlta;
 	private String fecActualizacion;
 	private String fecBaja;
+	private Integer idEstadoNacimiento;
 }

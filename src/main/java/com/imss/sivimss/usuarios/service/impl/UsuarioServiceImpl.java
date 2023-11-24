@@ -15,6 +15,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,6 +26,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
 import com.imss.sivimss.usuarios.beans.Usuario;
+import com.imss.sivimss.usuarios.beans.UsuarioQuerys;
 import com.imss.sivimss.usuarios.configuration.MyBatisConfig;
 import com.imss.sivimss.usuarios.configuration.mapper.PersonaMapper;
 import com.imss.sivimss.usuarios.configuration.mapper.UsuarioMapper;
@@ -35,6 +40,7 @@ import com.imss.sivimss.usuarios.util.AppConstantes;
 import com.imss.sivimss.usuarios.util.ConvertirGenerico;
 import com.imss.sivimss.usuarios.util.DatosRequest;
 import com.imss.sivimss.usuarios.util.LogUtil;
+import com.imss.sivimss.usuarios.util.PaginadoUtil;
 import com.imss.sivimss.usuarios.util.ProviderServiceRestTemplate;
 import com.imss.sivimss.usuarios.util.Response;
 
@@ -57,6 +63,9 @@ public class UsuarioServiceImpl implements UsuarioService {
 	private static final String INFONOENCONTRADA = "45";
 
 
+	@Autowired
+	private UsuarioQuerys usuarioQuerys ;
+	
 	@Autowired
 	private ProviderServiceRestTemplate providerRestTemplate;
 
@@ -185,40 +194,31 @@ public class UsuarioServiceImpl implements UsuarioService {
 	/*
 	 * *********************** ***********************
 	 *************************/
+	
+
 	@Override
-	public Response<Object> consUsuarios(DatosRequest request, Authentication authentication) throws IOException {
-		List<Map<String, Object>> resp = null;
-		SqlSessionFactory sqlSessionFactory = MyBatisConfig.buildqlSessionFactory();
-		try (SqlSession session = sqlSessionFactory.openSession()) {
-			UsuarioMapper usuarioMapper = session.getMapper(UsuarioMapper.class);
-			try {
-				resp = usuarioMapper.consultaUsuarios();
-			} catch (Exception e) {
-				e.printStackTrace();
-				session.rollback();
-			}
-		}
-		return new Response<>(false, HttpStatus.OK.value(), AppConstantes.EXITO, resp);
+	public Response<Object> consUsuarios(DatosRequest request, Authentication authentication) throws IOException {			
+			Page<Map<String, Object>> objetoMapeado = null;
+			Integer pagina =  Integer.parseInt( request.getDatos().get("pagina").toString() );
+			Integer tamanio =  Integer.parseInt( request.getDatos().get("tamanio").toString() );
+
+			String query = usuarioQuerys.queryConsultaUsuarios(request);
+				objetoMapeado = PaginadoUtil.paginado(pagina, tamanio, query);
+		return new Response<>(false, HttpStatus.OK.value(), AppConstantes.EXITO, objetoMapeado);
 
 	}
 
 	@Override
 	public Response<Object> buscarUsuarios(DatosRequest request, Authentication authentication) throws IOException {
+		
+		Page<Map<String, Object>> objetoMapeado = null;
+		Integer pagina =  Integer.parseInt( request.getDatos().get("pagina").toString() );
+		Integer tamanio =  Integer.parseInt( request.getDatos().get("tamanio").toString() );
 
-		String where = crearWhere(request);
-		List<Map<String, Object>> resp = null;
-
-		SqlSessionFactory sqlSessionFactory = MyBatisConfig.buildqlSessionFactory();
-		try (SqlSession session = sqlSessionFactory.openSession()) {
-			UsuarioMapper usuarioMapper = session.getMapper(UsuarioMapper.class);
-			try {
-				resp = usuarioMapper.buscarUsuarios(where);
-			} catch (Exception e) {
-				e.printStackTrace();
-				session.rollback();
-			}
-		}
-		return new Response<>(false, HttpStatus.OK.value(), AppConstantes.EXITO, resp);
+		String query = usuarioQuerys.queryConsultaUsuarios(request);
+		objetoMapeado = PaginadoUtil.paginado(pagina, tamanio, query);
+			
+		return new Response<>(false, HttpStatus.OK.value(), AppConstantes.EXITO, objetoMapeado);
 	}
 
 	@Override
@@ -437,21 +437,6 @@ public class UsuarioServiceImpl implements UsuarioService {
 
 	private String generarUsuario(String primerNombre, String paterno, Integer consecutivo) {
 		return primerNombre.concat(paterno.substring(0, 1)).concat(String.format("%03d", consecutivo + 1));
-	}
-	private String crearWhere(DatosRequest request) {
-		Gson gson = new Gson();
-		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
-		UsuarioRequest usuarioRequest = gson.fromJson(datosJson, UsuarioRequest.class);
-		String where = " WHERE 1 = 1 ";
-		if (usuarioRequest.getIdOficina() != null)
-			where = where + " AND su.ID_OFICINA = " + usuarioRequest.getIdOficina();
-		if (usuarioRequest.getIdDelegacion() != null)
-			where = where + " AND su.ID_DELEGACION = " + usuarioRequest.getIdDelegacion();
-		if (usuarioRequest.getIdVelatorio() != null)
-			where = where + " AND su.ID_VELATORIO =" + usuarioRequest.getIdVelatorio();
-		if (usuarioRequest.getIdRol() != null)
-			where = where + " AND su.ID_ROL = " + usuarioRequest.getIdRol();
-		return where;
 	}
 
 }

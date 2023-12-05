@@ -291,6 +291,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		return new Response<>(false, HttpStatus.OK.value(), AppConstantes.EXITO, resp);
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Response<Object> agregarUsuario(DatosRequest request, Authentication authentication) throws IOException {
 		Gson gson = new Gson();
@@ -338,9 +339,10 @@ public class UsuarioServiceImpl implements UsuarioService {
 		usu.setIndActivo(1);
 		usu.setIdUsuarioAlta(usuarioDto.getIdUsuario() == null ? 0 : usuarioDto.getIdUsuario());
 		usu.setCveContrasenia(passwordEncoder.encode(contrasena));
-		int resp = 0;
 		SqlSessionFactory sqlSessionFactory = MyBatisConfig.buildqlSessionFactory();
 		try (SqlSession session = sqlSessionFactory.openSession()) {
+			ArrayList<LinkedHashMap> datos = new ArrayList<>();
+			LinkedHashMap<String, Object> mapaDatos = new LinkedHashMap<>();
 			PersonaMapper personaMapper = session.getMapper(PersonaMapper.class);
 			UsuarioMapper usuarioMapper = session.getMapper(UsuarioMapper.class);
 			try {
@@ -348,10 +350,13 @@ public class UsuarioServiceImpl implements UsuarioService {
 				personaMapper.agregarPersona(per);
 				usu.setIdPersona(per.getIdPersona());
 				usuarioMapper.agregarNuevoUsuario(usu);
-				resp = usu.getIdUsuario();
 				usu.setCveContrasenia(contrasena.toString());
 				session.commit();
-				return new Response<>(false, HttpStatus.OK.value(), AppConstantes.EXITO, usu);
+			    mapaDatos.put("id", usu.getIdUsuario());
+			    mapaDatos.put("usuario", usu.getCveUsuario());
+			    mapaDatos.put("contrasenia", contrasena.toString());
+			    datos.add(mapaDatos);
+				return new Response<>(false, HttpStatus.OK.value(), AppConstantes.EXITO, datos);
 			} catch (Exception e) {
 				e.printStackTrace();
 				session.rollback();

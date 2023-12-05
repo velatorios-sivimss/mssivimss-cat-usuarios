@@ -322,13 +322,18 @@ public class UsuarioServiceImpl implements UsuarioService {
 		per.setNumINE(usuarioRequest.getNumINE());
 		per.setIdEstadoNacimiento(usuarioRequest.getIdEdoNacimiento());
 
+		usu.setNombre(usuarioRequest.getNombre());
+		usu.setPaterno(usuarioRequest.getPaterno());
+		usu.setMaterno(usuarioRequest.getMaterno());
 		usu.setMatricula(usuarioRequest.getClaveMatricula());
+		usu.setCorreo(usuarioRequest.getCorreo());
+		usu.setCurp(usuarioRequest.getCurp());
+		usu.setFecNacimiento(usuarioRequest.getFecNacimiento());
 		usu.setIdOficina(usuarioRequest.getIdOficina());
 		usu.setIdDelegacion(usuarioRequest.getIdDelegacion());
 		usu.setIdVelatorio(usuarioRequest.getIdVelatorio());
 		usu.setIdRol(usuarioRequest.getIdRol());
-		usu.setCveUsuario(usuarioRequest.getCveUsuario() == null ? "" : usuarioRequest.getCveUsuario());
-		usu.setCveContrasenia(usuarioRequest.getCveContasenia() == null ? "" : usuarioRequest.getCveContasenia());
+		usu.setIdEstadoNacimiento(usuarioRequest.getIdEdoNacimiento());;
 		usu.setIndContratante(usuarioRequest.getIndContratante());
 		usu.setIndActivo(1);
 		usu.setIdUsuarioAlta(usuarioDto.getIdUsuario() == null ? 0 : usuarioDto.getIdUsuario());
@@ -344,8 +349,9 @@ public class UsuarioServiceImpl implements UsuarioService {
 				usu.setIdPersona(per.getIdPersona());
 				usuarioMapper.agregarNuevoUsuario(usu);
 				resp = usu.getIdUsuario();
+				usu.setCveContrasenia(contrasena.toString());
 				session.commit();
-				return new Response<>(false, HttpStatus.OK.value(), AppConstantes.EXITO, resp);
+				return new Response<>(false, HttpStatus.OK.value(), AppConstantes.EXITO, usu);
 			} catch (Exception e) {
 				e.printStackTrace();
 				session.rollback();

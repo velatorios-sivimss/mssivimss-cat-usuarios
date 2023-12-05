@@ -31,4 +31,5 @@ public class UsuarioEntity {
 	private String id;
 	private String desOficina;
 	private Integer valor;
+	private Integer idEstadoNacimiento;
 }

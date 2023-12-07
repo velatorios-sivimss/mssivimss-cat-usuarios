@@ -19,5 +19,5 @@ public interface ConsultaNativa {
         }
     }
 	@SelectProvider(type = PureSqlProvider.class, method = "sql")
-	public List<Map<String, Object>> selectPaginado(String sql );
+	public List<Map<String, Object>> execSelect(String sql );
 }

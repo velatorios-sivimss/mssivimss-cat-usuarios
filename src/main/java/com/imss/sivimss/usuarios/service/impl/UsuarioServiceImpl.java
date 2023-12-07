@@ -25,6 +25,7 @@ import com.google.gson.Gson;
 import com.imss.sivimss.usuarios.beans.Usuario;
 import com.imss.sivimss.usuarios.beans.UsuarioQuerys;
 import com.imss.sivimss.usuarios.configuration.MyBatisConfig;
+import com.imss.sivimss.usuarios.configuration.mapper.ConsultaNativa;
 import com.imss.sivimss.usuarios.configuration.mapper.PersonaMapper;
 import com.imss.sivimss.usuarios.configuration.mapper.UsuarioMapper;
 import com.imss.sivimss.usuarios.model.request.BusquedaDto;
@@ -222,13 +223,13 @@ public class UsuarioServiceImpl implements UsuarioService {
 	@Override
 	public Response<Object> detalleUsuario(DatosRequest request, Authentication authentication) throws IOException {
 
-		String where = " WHERE su.ID_USUARIO = " + request.getDatos().get("id").toString();
-		List<Map<String, Object>> resp = null;
+		String id = request.getDatos().get("id").toString();
+		List<Map<String, Object>> resp = new ArrayList<>();
 		SqlSessionFactory sqlSessionFactory = MyBatisConfig.buildqlSessionFactory();
 		try (SqlSession session = sqlSessionFactory.openSession()) {
-			UsuarioMapper usuarioMapper = session.getMapper(UsuarioMapper.class);
+			ConsultaNativa consultas = session.getMapper(ConsultaNativa.class);
 			try {
-				resp = usuarioMapper.detalleUsuario(where);
+				resp = consultas.execSelect(usuarioQuerys.queryDetalleUsuario(Integer.parseInt(id)));
 			} catch (Exception e) {
 				e.printStackTrace();
 				session.rollback();

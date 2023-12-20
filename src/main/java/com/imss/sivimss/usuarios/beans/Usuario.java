@@ -113,7 +113,6 @@ public class Usuario {
 		q.agregarParametroValues(IND_ACTIVO, "1");
 		q.agregarParametroValues("CVE_USUARIO", "'" + this.claveUsuario + "'");
 		q.agregarParametroValues("CVE_CONTRASENIA", "'" + this.password + "'");
-		q.agregarParametroValues("ID_ESTADO_NACIMIENTO", "" + this.idEdoNacimiento + "");
 		q.agregarParametroValues("FEC_ALTA", "CURRENT_TIMESTAMP()");
 		q.agregarParametroValues("ID_USUARIO_ALTA", "'" + this.idUsuarioAlta + "'");
 		q.agregarParametroValues("FEC_ACTUALIZACION", "NULL");
